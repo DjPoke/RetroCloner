@@ -363,31 +363,31 @@ function love.update(dt)
 		end
 	elseif mode == MODE_EDIT_LEVELS then
 		if current_level > 0 then
+			local mx = love.mouse.getX()
+			local my = love.mouse.getY()
+			
 			if current_level_mode == LEVEL_MODE_BLOCKS then
-				local mx = love.mouse.getX()
-				local my = love.mouse.getY()
-				
 				local xc = 400 - (game_data.levels_data.sw * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM / 2)
 				local yc = 160
 				
 				local bx = math.floor((mx - xc) / (game_data.block_width * game_data.pixel_size * LEVELS_ZOOM))
 				local by = math.floor((my - yc) / (game_data.block_height * LEVELS_ZOOM))
 
-				-- draw
 				if love.mouse.isDown(1) == true then
+					-- draw blocks in the level
 					if bx >= 0 and bx < game_data.levels_data.sw then
 						if by >= 0 and by < game_data.levels_data.sh then
 							game_data.levels[current_level].blocks[bx - current_level_scroll_x][by - current_level_scroll_y] = current_level_selected_block
 						end
 					end
 				elseif love.mouse.isDown(2) == true then
+					-- clear blocks in the level
 					if bx >= 0 and bx < game_data.levels_data.sw then
 						if by >= 0 and by < game_data.levels_data.sh then
 							game_data.levels[current_level].blocks[bx - current_level_scroll_x][by - current_level_scroll_y] = 0
 						end
 					end
 				end
-			elseif current_level_mode == LEVEL_MODE_ACTORS then
 			end
 
 			-- scroll the level's (in blocks)
@@ -954,15 +954,18 @@ function love.draw()
 			love.graphics.setColor(1, 1, 1)
 
 			for i = 1, #game_data.levels[current_level].actors do
-				local real_x = game_data.levels[current_level].actors[i].startx + (current_level_scroll_x * game_data.pixel_size * SCREEN_ZOOM)
-				local real_y = game_data.levels[current_level].actors[i].starty + (current_level_scroll_y * SCREEN_ZOOM)
+				local actor = game_data.levels[current_level].actors[i].number
+				local sprite = GetActorSprite(actor, "idle", 1)
+
+				local real_x = game_data.levels[current_level].actors[i].startx - (current_level_scroll_x * game_data.pixel_size * SCREEN_ZOOM)
+				local real_y = game_data.levels[current_level].actors[i].starty - (current_level_scroll_y * SCREEN_ZOOM)
 				local real_pos_x = pos_x + real_x
 				local real_pos_y = pos_y + real_y
 				
-				if real_x >= 0 and real_x < game_data.levels_data.sw then
-					if real_y >= 0 and real_y < game_data.levels_data.sh then
+				if real_x >= 0 and real_x < ((game_data.levels_data.sw - 2) * game_data.block_width * game_data.pixel_size * SCREEN_ZOOM) then
+					if real_y >= 0 and real_y < ((game_data.levels_data.sh - 2) * game_data.block_height * SCREEN_ZOOM) then
 						if #img_sprites > 0 then
-							love.graphics.draw(img_sprites[1], real_pos_x, real_pos_y, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
+							love.graphics.draw(img_sprites[sprite], real_pos_x, real_pos_y, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
 						end
 					end
 				end
@@ -1983,7 +1986,7 @@ function love.keypressed(key)
 					end
 					
 					-- add player actor to the level
-					table.insert(t.actors, {startx = 0, starty = 0, x = 0, y = 0, animation = 0, frame = 0})
+					table.insert(t.actors, {number = 1, startx = 0, starty = 0, x = 0, y = 0, animation = 0, frame = 0})
 
 					-- add new void level
 					table.insert(game_data.levels, t)
@@ -2167,5 +2170,29 @@ function love.keypressed(key)
 			mode = MODE_MENU
 		end
 	elseif mode == MODE_EDIT_GAMES_DATA then
+	end
+end
+
+function love.mousepressed(x, y, button, istouch, presses)
+	if mode == MODE_EDIT_LEVELS then
+		if current_level_mode == LEVEL_MODE_ACTORS then
+			-- position actors
+			if button == 1 then
+				if current_level_selected_actor == 1 then
+					beep:stop()
+					beep:play()
+				else
+					local xc = 400 - (game_data.levels_data.sw * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM / 2)
+					local yc = 160
+				
+					local sx = (x - xc) - (current_level_scroll_x * game_data.pixel_size * LEVELS_ZOOM)
+					local sy = (y - yc) - (current_level_scroll_y * LEVELS_ZOOM)
+					
+					print(sx, sy)
+					
+					table.insert(game_data.levels[current_level].actors, {number = current_level_selected_actor, startx = sx, starty = sy, x = sx, y = sy, animation = GetActorAnimationNumber(current_level_selected_actor, "idle"), frame = 1})
+				end
+			end
+		end
 	end
 end

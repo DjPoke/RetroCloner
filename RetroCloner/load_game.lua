@@ -263,6 +263,9 @@ function LoadGame(d, f, t)
 		
 		for j = 1, cpt_actors do
 			cpt = cpt + 1
+			local number = tonumber(ts[cpt])
+
+			cpt = cpt + 1
 			local startx = tonumber(ts[cpt])
 
 			cpt = cpt + 1
@@ -280,7 +283,7 @@ function LoadGame(d, f, t)
 			cpt = cpt + 1
 			local frame = tonumber(ts[cpt])
 			
-			table.insert(t2.actors, {startx = startx, starty = starty, x = x, y = y, animation = animation, frame = frame})
+			table.insert(t2.actors, {number = number, startx = startx, starty = starty, x = x, y = y, animation = animation, frame = frame})
 		end
 		
 		table.insert(t.levels, t2)

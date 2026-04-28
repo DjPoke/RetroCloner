@@ -3,7 +3,7 @@ TODO
 ====
 
 * Faire l'éditeur de niveaux:
-	- En mode stylo "actors", le positionnement des acteurs se fait sans la grille
+	- Voir pour le bug du scrolling sur les acteurs positionnés
 	- On ne doit pas pouvoir utiliser le stylo "actors" avec l'acteur 1, cela doit beeper
 	- En mode édition, l'acteur sélectionné clignotte
 	- En mode édition, on change d'acteur avec "tab"
