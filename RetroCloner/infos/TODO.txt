@@ -3,17 +3,12 @@ TODO
 ====
 
 * Faire l'éditeur de niveaux:
-	- On ne doit pas pouvoir utiliser le stylo "actors" avec l'acteur 1, cela doit beeper
-	- En mode édition, on clique pour le repositionner
-	- En mode édition, on change d'acteur avec "tab"
-	- On supprime les acteurs à la souris en mode édition avec la touche "d"
 	- En mode stylo "actors", le positionnement des acteurs se fait sans la grille
-
-* Faire le jeu dans le player:
-	- Intégrer les fonctions essentielles dans le fichier run plutôt que dans le main
-
-* Faire le testeur de niveau:
-	- Tester dans l'éditeur, à l'aide des fonctions run
+	- On ne doit pas pouvoir utiliser le stylo "actors" avec l'acteur 1, cela doit beeper
+	- En mode édition, l'acteur sélectionné clignotte
+	- En mode édition, on change d'acteur avec "tab"
+	- En mode édition, on clique pour repositionner l'acteur sélectionné
+	- On supprime l'acteur sélectionné à la souris en mode édition avec la touche "d"
 
 * Faire l'import d'images
 	- Convertir à la foulée les images importées, en fonction du preset en cours
