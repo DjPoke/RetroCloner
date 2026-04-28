@@ -29,5 +29,6 @@ Actually, you can create a ".love" executable for Linux by copying the "game.txt
 You need the 11.5 version of love for your game to works.
 
 
-Enjoy ;)
-DjPoke
+### Enjoy ;)
+
+### DjPoke
