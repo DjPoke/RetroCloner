@@ -1,0 +1,30 @@
+====
+TODO
+====
+
+* Faire l'éditeur de niveaux:
+	- On ne doit pas pouvoir utiliser le stylo "actors" avec l'acteur 1, cela doit beeper
+	- En mode édition, on clique pour le repositionner
+	- En mode édition, on change d'acteur avec "tab"
+	- On supprime les acteurs à la souris en mode édition avec la touche "d"
+	- En mode stylo "actors", le positionnement des acteurs se fait sans la grille
+
+* Faire le jeu dans le player:
+	- Intégrer les fonctions essentielles dans le fichier run plutôt que dans le main
+
+* Faire le testeur de niveau:
+	- Tester dans l'éditeur, à l'aide des fonctions run
+
+* Faire l'import d'images
+	- Convertir à la foulée les images importées, en fonction du preset en cours
+	- Pouvoir importer une image d'intro, une image de décoration, une image de gameover, une image de victoire
+
+* Faire l'import de musiques
+	- Importer et pouvoir jouer des ogg en boucle
+	- Aperçu possible
+	
+* Faire l'import de sons
+	- Importer et pouvoir jouer des wav
+	- Aperçu possible
+
+ETC.
