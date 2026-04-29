@@ -5,10 +5,6 @@ TODO
 * Faire l'éditeur de niveaux:
 	- Bug du loop animation qui ne se lance pas dans le menu animations, quand on revient
 	- Bug: quand un level est supprimée et ajouté de nouveau, il ne doit pas conserver sa taille
-	- En mode édition, l'acteur sélectionné clignotte
-	- En mode édition, on change d'acteur avec "tab"
-	- En mode édition, on clique pour repositionner l'acteur sélectionné
-	- En mode édition, on supprime l'acteur sélectionné avec la touche "d"
 
 * Faire l'import d'images
 	- Convertir à la foulée les images importées, en fonction du preset en cours

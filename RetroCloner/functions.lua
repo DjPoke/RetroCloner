@@ -43,6 +43,7 @@ function ResetAll()
 	current_level_mode = 0
 	current_level_selected_block = 0
 	current_level_selected_actor = 0
+	current_level_edited_actor_instance = 0
 	current_level_actors_edit_mode = false
 	current_level_scroll_x = 0
 	current_level_scroll_y = 0
@@ -557,4 +558,21 @@ function UpdateLevelsData()
 	end
 end
 
+function GetActorInstanceScrolling()
+	-- scroll the screen to show edited actor instance
+	current_level_scroll_x = math.floor(game_data.levels[current_level].actors[current_level_edited_actor_instance].start_x / game_data.block_width)
+		
+	if current_level_scroll_x >= game_data.levels_data.sw * (game_data.levels_data.w - 1) then
+		current_level_scroll_x = game_data.levels_data.sw * (game_data.levels_data.w - 1)
+	end
+		
+	current_level_scroll_x = -current_level_scroll_x
 
+	current_level_scroll_y = math.floor(game_data.levels[current_level].actors[current_level_edited_actor_instance].start_y / game_data.block_height)
+		
+	if current_level_scroll_y >= game_data.levels_data.sh * (game_data.levels_data.h - 1) then
+		current_level_scroll_y = game_data.levels_data.sw * (game_data.levels_data.h - 1)
+	end
+
+	current_level_scroll_y = -current_level_scroll_y
+end

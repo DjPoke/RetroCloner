@@ -65,9 +65,6 @@ SPRITES_ZOOM = 16
 ANIMATION_ZOOM = 2
 LEVELS_ZOOM = 2
 
-FAST_TIME = 0.05
-SLOW_TIME = 0.20
-
 GAME_AREA = 1
 SCORE_AREA = 2
 LIVES_AREA = 3
@@ -79,6 +76,9 @@ ENTITY_TYPE_BONUS = 3
 
 MAX_ANIMATION_TIME = 2.0
 MAX_FRAMES_BY_ANIMATION = 8
+
+MAX_BLINK_TIME = 0.5
+MID_BLINK_TIME = 0.25
 
 -- arrays
 presets = { "CPC-Mode0", "CPC-Mode1", "C64", "ZX-Spectrum" }
@@ -168,6 +168,7 @@ current_level = 0
 current_level_mode = 0
 current_level_selected_block = 0
 current_level_selected_actor = 0
+current_level_edited_actor_instance = 0
 current_level_actors_edit_mode = false
 current_level_scroll_x = 0
 current_level_scroll_y = 0
@@ -186,8 +187,8 @@ text_message = ""
 
 beep = nil
 
-fast_timer = 0.0
 animation_timer = 0.0
+blink_timer = 0.0
 
 animation_playing = false
 animation_frame = 0
@@ -363,9 +364,15 @@ function love.update(dt)
 		end
 	elseif mode == MODE_EDIT_LEVELS then
 		if current_level > 0 then
+			-- blink in editor mode
+			blink_timer = blink_timer + dt
+			if blink_timer >= MAX_BLINK_TIME then blink_timer = 0 end
+			
+			-- get mouse coordinates
 			local mx = love.mouse.getX()
 			local my = love.mouse.getY()
 			
+			-- draw blocks with the mouse
 			if current_level_mode == LEVEL_MODE_BLOCKS then
 				local xc = 400 - (game_data.levels_data.sw * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM / 2)
 				local yc = 160
@@ -939,14 +946,14 @@ function love.draw()
 			
 			for x = 0, game_data.levels_data.sw - 1 do
 				for y = 0, game_data.levels_data.sh - 1 do
-					local real_x = x - current_level_scroll_x
-					local real_y = y - current_level_scroll_y
-					local real_pos_x = pos_x + (x * game_data.block_width * game_data.pixel_size * SCREEN_ZOOM)
-					local real_pos_y = pos_y + (y * game_data.block_height * SCREEN_ZOOM)
+					local bx = x - current_level_scroll_x
+					local by = y - current_level_scroll_y
+					local real_x = pos_x + (x * game_data.block_width * game_data.pixel_size * SCREEN_ZOOM)
+					local real_y = pos_y + (y * game_data.block_height * SCREEN_ZOOM)
 					
-					if game_data.levels[current_level].blocks[real_x][real_y] > 0 then
+					if game_data.levels[current_level].blocks[bx][by] > 0 then
 						if #img_blocks > 0 then
-							love.graphics.draw(img_blocks[game_data.levels[current_level].blocks[real_x][real_y]], real_pos_x, real_pos_y, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
+							love.graphics.draw(img_blocks[game_data.levels[current_level].blocks[bx][by]], real_x, real_y, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
 						end
 					end
 				end
@@ -965,7 +972,21 @@ function love.draw()
 				local real_y = pos_y + y
 				
 				if #img_sprites > 0 then
-					love.graphics.draw(img_sprites[sprite], real_x, real_y, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
+					if current_level_actors_edit_mode == false then
+						-- draw all actors
+						love.graphics.draw(img_sprites[sprite], real_x, real_y, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
+					elseif current_level_actors_edit_mode == true then
+						-- editing actor instance i
+						if i == current_level_edited_actor_instance then
+							if blink_timer < MID_BLINK_TIME then
+								love.graphics.draw(img_sprites[sprite], real_x, real_y, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
+							end
+						else
+							love.graphics.draw(img_sprites[sprite], real_x, real_y, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
+						end
+					end
+					
+
 				end
 			end
 
@@ -1010,7 +1031,7 @@ function love.draw()
 		love.graphics.print("[W]idth - [H]eight - [L][Shift] Set level", 10, 480)
 		love.graphics.print("[Tab] Set block/actor - [S]wap blocks/actors", 10, 500)
 		love.graphics.print("[M]emorize scrolling - [R]emember scrolling", 10, 520)
-		love.graphics.print("[F]ill blocks - [E]dit actor", 10, 540)
+		love.graphics.print("[F]ill blocks - [E]dit actor - [Del] actor", 10, 540)
 		love.graphics.print("[Esc] Back", 10, 560)
 	elseif mode == MODE_EDIT_GAMES_DATA then
 	end
@@ -1971,6 +1992,9 @@ function love.keypressed(key)
 			if key == "a" then
 				-- add a new level
 				if #game_data.levels < game_data.max_levels then
+					-- disable edit mode
+					current_level_actors_edit_mode = false
+
 					-- prepare void level
 					local t = {
 						blocks = {},
@@ -2010,6 +2034,9 @@ function love.keypressed(key)
 			if key == "d" then
 				-- delete current level
 				if current_level > 0 then
+					-- disable edit mode
+					current_level_actors_edit_mode = false
+
 					table.remove(game_data.scrolling_start_x, current_level)
 					table.remove(game_data.scrolling_start_y, current_level)
 					table.remove(game_data.levels, current_level)
@@ -2020,6 +2047,9 @@ function love.keypressed(key)
 			if key == "l" then
 				-- change level to edit
 				if current_level > 0 then
+					-- disable edit mode
+					current_level_actors_edit_mode = false
+					
 					if love.keyboard.isDown("lshift") then
 						if current_level > 1 then
 							current_level = current_level - 1
@@ -2039,6 +2069,9 @@ function love.keypressed(key)
 			if key == "w" then
 				-- change width of the level, if possible, in screens
 				if current_level > 0 then
+					-- disable edit mode
+					current_level_actors_edit_mode = false
+
 					local player_type = 0
 					
 					for i = 1, #player_types do
@@ -2071,6 +2104,9 @@ function love.keypressed(key)
 			if key == "h" then
 				-- change height of the level, if possible, in screens
 				if current_level > 0 then
+					-- disable edit mode
+					current_level_actors_edit_mode = false
+
 					local player_type = 0
 					
 					for i = 1, #player_types do
@@ -2102,6 +2138,9 @@ function love.keypressed(key)
 			
 			-- swap between modes
 			if key == "s" then
+				-- disable edit mode
+				current_level_actors_edit_mode = false
+
 				if current_level_mode == LEVEL_MODE_BLOCKS then
 					current_level_mode = LEVEL_MODE_ACTORS
 				elseif current_level_mode == LEVEL_MODE_ACTORS then
@@ -2109,40 +2148,59 @@ function love.keypressed(key)
 				end
 			end
 			
-			-- change selected block or actor
+			-- change selected block/actor, or change edited actor instance
 			if key == "tab" then
-				if current_level_mode == LEVEL_MODE_BLOCKS then
-					if current_level_selected_block > 0 then
-						if love.keyboard.isDown("lshift") then
-							if current_level_selected_block > 1 then
-								current_level_selected_block = current_level_selected_block - 1
-							elseif current_level_selected_block == 1 then
-								current_level_selected_block = #game_data.blocks
+				if current_level_actors_edit_mode == false then
+					if current_level_mode == LEVEL_MODE_BLOCKS then
+						if current_level_selected_block > 0 then
+							if love.keyboard.isDown("lshift") then
+								if current_level_selected_block > 1 then
+									current_level_selected_block = current_level_selected_block - 1
+								elseif current_level_selected_block == 1 then
+									current_level_selected_block = #game_data.blocks
+								end
+							else
+								if current_level_selected_block < #game_data.blocks then
+									current_level_selected_block = current_level_selected_block + 1
+								elseif current_level_selected_block == #game_data.blocks then
+									current_level_selected_block = 1
+								end
 							end
-						else
-							if current_level_selected_block < #game_data.blocks then
-								current_level_selected_block = current_level_selected_block + 1
-							elseif current_level_selected_block == #game_data.blocks then
-								current_level_selected_block = 1
+						end
+					elseif current_level_mode == LEVEL_MODE_ACTORS then
+						if current_level_selected_actor > 0 then
+							if love.keyboard.isDown("lshift") then
+								if current_level_selected_actor > 1 then
+									current_level_selected_actor = current_level_selected_actor - 1
+								elseif current_level_selected_actor == 1 then
+									current_level_selected_actor = #game_data.actors
+								end
+							else
+								if current_level_selected_actor < #game_data.actors then
+									current_level_selected_actor = current_level_selected_actor + 1
+								elseif current_level_selected_actor == #game_data.actors then
+									current_level_selected_actor = 1
+								end
 							end
 						end
 					end
-				elseif current_level_mode == LEVEL_MODE_ACTORS then
-					if current_level_selected_actor > 0 then
-						if love.keyboard.isDown("lshift") then
-							if current_level_selected_actor > 1 then
-								current_level_selected_actor = current_level_selected_actor - 1
-							elseif current_level_selected_actor == 1 then
-								current_level_selected_actor = #game_data.actors
-							end
-						else
-							if current_level_selected_actor < #game_data.actors then
-								current_level_selected_actor = current_level_selected_actor + 1
-							elseif current_level_selected_actor == #game_data.actors then
-								current_level_selected_actor = 1
-							end
-						end						
+				elseif current_level_actors_edit_mode == true then
+					if love.keyboard.isDown("lshift") then
+						if current_level_edited_actor_instance > 1 then
+							current_level_edited_actor_instance = current_level_edited_actor_instance - 1
+						elseif current_level_edited_actor_instance == 1 then
+							current_level_edited_actor_instance = #game_data.levels[current_level].actors
+						end
+					else
+						if current_level_edited_actor_instance < #game_data.levels[current_level].actors then
+							current_level_edited_actor_instance = current_level_edited_actor_instance + 1
+						elseif current_level_edited_actor_instance == #game_data.levels[current_level].actors then
+							current_level_edited_actor_instance = 1
+						end
 					end
+
+					-- scroll the screen to show edited actor instance
+					GetActorInstanceScrolling()
 				end
 			end
 
@@ -2161,9 +2219,32 @@ function love.keypressed(key)
 			if key == "e" then
 				-- set edit mode for actors
 				current_level_actors_edit_mode = true
+				current_level_edited_actor_instance = 1
+				
+				-- scroll the screen to show edited actor instance
+				GetActorInstanceScrolling()
+			end
+
+			if key == "delete" then
+				if current_level_actors_edit_mode == true then
+					if current_level_edited_actor_instance > 1 then
+						table.remove(game_data.levels[current_level].actors, current_level_edited_actor_instance)
+						
+						current_level_edited_actor_instance = current_level_edited_actor_instance - 1
+						
+						-- scroll the screen to show edited actor instance
+						GetActorInstanceScrolling()
+					elseif current_level_edited_actor_instance == 1 then
+						beep:stop()
+						beep:play()
+					end
+				end
 			end
 			
 			if key == "f" then
+				-- disable edit mode
+				current_level_actors_edit_mode = false
+
 				-- floodfill the level
 				local mx = love.mouse.getX()
 				local my = love.mouse.getY()
@@ -2188,7 +2269,12 @@ function love.keypressed(key)
 		end
 		
 		if key == "escape" then
-			mode = MODE_MENU
+			if current_level_actors_edit_mode == false then
+				mode = MODE_MENU
+			elseif current_level_actors_edit_mode == true then
+				current_level_actors_edit_mode = false
+				current_level_edited_actor_instance = 0
+			end
 		end
 	elseif mode == MODE_EDIT_GAMES_DATA then
 	end
@@ -2196,28 +2282,43 @@ end
 
 function love.mousepressed(x, y, button, istouch, presses)
 	if mode == MODE_EDIT_LEVELS then
-		if current_level_mode == LEVEL_MODE_ACTORS then
-			-- position actors
-			if button == 1 then
-				if current_level_selected_actor == 1 then
-					beep:stop()
-					beep:play()
-				else
-					-- top left corner
-					local xc = 400 - (game_data.levels_data.sw * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM / 2)
-					local yc = 160
-					
-					-- position = mouse - top-left corner - scrolling
-					local x_pos = (x - xc - (current_level_scroll_x * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM)) / (game_data.pixel_size * LEVELS_ZOOM)
-					local y_pos = (y - yc - (current_level_scroll_y * game_data.block_height * LEVELS_ZOOM)) / (LEVELS_ZOOM)
-					
-					x_pos = Quantize(x_pos, game_data.block_width)
-					y_pos = Quantize(y_pos, game_data.block_height)
+		-- position actors
+		if button == 1 then
+			if current_level_actors_edit_mode == false then
+				if current_level_mode == LEVEL_MODE_ACTORS then
+					if current_level_selected_actor == 1 then
+						beep:stop()
+						beep:play()
+					else
+						-- top left corner
+						local xc = 400 - (game_data.levels_data.sw * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM / 2)
+						local yc = 160
+						
+						-- position = mouse - top-left corner - scrolling
+						local x_pos = (x - xc - (current_level_scroll_x * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM)) / (game_data.pixel_size * LEVELS_ZOOM)
+						local y_pos = (y - yc - (current_level_scroll_y * game_data.block_height * LEVELS_ZOOM)) / (LEVELS_ZOOM)
+						
+						x_pos = Quantize(x_pos, game_data.block_width)
+						y_pos = Quantize(y_pos, game_data.block_height)
 
-					print(x_pos, y_pos)
-					
-					table.insert(game_data.levels[current_level].actors, {number = current_level_selected_actor, start_x = x_pos, start_y = y_pos, x = x_pos, y = y_pos, animation = GetActorAnimationNumber(current_level_selected_actor, "idle"), frame = 1})
+						table.insert(game_data.levels[current_level].actors, {number = current_level_selected_actor, start_x = x_pos, start_y = y_pos, x = x_pos, y = y_pos, animation = GetActorAnimationNumber(current_level_selected_actor, "idle"), frame = 1})
+					end
 				end
+			elseif current_level_actors_edit_mode == true then
+				-- top left corner
+				local xc = 400 - (game_data.levels_data.sw * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM / 2)
+				local yc = 160
+					
+				-- position = mouse - top-left corner - scrolling
+				local x_pos = (x - xc - (current_level_scroll_x * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM)) / (game_data.pixel_size * LEVELS_ZOOM)
+				local y_pos = (y - yc - (current_level_scroll_y * game_data.block_height * LEVELS_ZOOM)) / (LEVELS_ZOOM)
+					
+				x_pos = Quantize(x_pos, game_data.block_width)
+				y_pos = Quantize(y_pos, game_data.block_height)
+
+				-- change start coordinates
+				game_data.levels[current_level].actors[current_level_edited_actor_instance].start_x = x_pos
+				game_data.levels[current_level].actors[current_level_edited_actor_instance].start_y = y_pos
 			end
 		end
 	end
