@@ -8,8 +8,8 @@
 --    (c) 2026 M.I.T Licence
 --
 --  A tool to make retro games
---    that looks like retro
---          computers
+-- for PC that looks like retro
+--        computer games
 --
 ------------------------------
 
@@ -916,7 +916,7 @@ function love.draw()
 			local r, g, b = GetPenRGB(game_data.game_paper)
 			love.graphics.setColor(r, g, b)
 
-			local area_x = math.floor((800 - game_data.areas[GAME_AREA].width * game_data.pixel_size * SCREEN_ZOOM) / 2)
+			local area_x = 400 - math.floor((game_data.areas[GAME_AREA].width * game_data.pixel_size * SCREEN_ZOOM) / 2)
 			local area_y = 160
 		
 			love.graphics.rectangle("fill", area_x, area_y, game_data.areas[GAME_AREA].width * game_data.pixel_size * SCREEN_ZOOM, game_data.areas[GAME_AREA].height * SCREEN_ZOOM)
@@ -928,8 +928,11 @@ function love.draw()
 			local pos_x = area_x + offset_x
 			local pos_y = area_y + offset_y
 			
+			local area_width = (game_data.levels_data.sw * game_data.block_width) * game_data.pixel_size * SCREEN_ZOOM
+			local area_height = (game_data.levels_data.sh * game_data.block_height) * SCREEN_ZOOM
+			
 			-- enable scissor for the game window
-			love.graphics.setScissor(pos_x, pos_y, game_data.levels_data.sw * game_data.block_width * game_data.pixel_size * SCREEN_ZOOM, game_data.levels_data.sw * game_data.block_height * SCREEN_ZOOM)
+			love.graphics.setScissor(pos_x, pos_y, area_width, area_height)
 			
 			-- draw level's blocks
 			love.graphics.setColor(1, 1, 1)
@@ -956,13 +959,13 @@ function love.draw()
 				local actor = game_data.levels[current_level].actors[i].number
 				local sprite = GetActorSprite(actor, "idle", 1)
 
-				local real_x = game_data.levels[current_level].actors[i].start_x + (current_level_scroll_x * game_data.block_width * game_data.pixel_size * SCREEN_ZOOM)
-				local real_y = game_data.levels[current_level].actors[i].start_y + (current_level_scroll_y * game_data.block_height * SCREEN_ZOOM)
-				local real_pos_x = pos_x + real_x
-				local real_pos_y = pos_y + real_y
+				local x = (game_data.levels[current_level].actors[i].start_x + (current_level_scroll_x * game_data.block_width)) * game_data.pixel_size * SCREEN_ZOOM
+				local y = (game_data.levels[current_level].actors[i].start_y + (current_level_scroll_y * game_data.block_height)) * SCREEN_ZOOM
+				local real_x = pos_x + x
+				local real_y = pos_y + y
 				
 				if #img_sprites > 0 then
-					love.graphics.draw(img_sprites[sprite], real_pos_x, real_pos_y, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
+					love.graphics.draw(img_sprites[sprite], real_x, real_y, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
 				end
 			end
 
@@ -2200,13 +2203,20 @@ function love.mousepressed(x, y, button, istouch, presses)
 					beep:stop()
 					beep:play()
 				else
+					-- top left corner
 					local xc = 400 - (game_data.levels_data.sw * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM / 2)
 					local yc = 160
-				
-					local sx = (x - xc) - (current_level_scroll_x * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM)
-					local sy = (y - yc) - (current_level_scroll_y * game_data.block_height * LEVELS_ZOOM)
 					
-					table.insert(game_data.levels[current_level].actors, {number = current_level_selected_actor, start_x = sx, start_y = sy, x = sx, y = sy, animation = GetActorAnimationNumber(current_level_selected_actor, "idle"), frame = 1})
+					-- position = mouse - top-left corner - scrolling
+					local x_pos = (x - xc - (current_level_scroll_x * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM)) / (game_data.pixel_size * LEVELS_ZOOM)
+					local y_pos = (y - yc - (current_level_scroll_y * game_data.block_height * LEVELS_ZOOM)) / (LEVELS_ZOOM)
+					
+					x_pos = Quantize(x_pos, game_data.block_width)
+					y_pos = Quantize(y_pos, game_data.block_height)
+
+					print(x_pos, y_pos)
+					
+					table.insert(game_data.levels[current_level].actors, {number = current_level_selected_actor, start_x = x_pos, start_y = y_pos, x = x_pos, y = y_pos, animation = GetActorAnimationNumber(current_level_selected_actor, "idle"), frame = 1})
 				end
 			end
 		end

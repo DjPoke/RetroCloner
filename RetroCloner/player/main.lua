@@ -8,7 +8,8 @@
 --    (c) 2026 M.I.T Licence
 --
 --  A tool to play retro games
---       from Retro Cloner
+-- for PC that looks like retro
+--        computer games
 --
 ------------------------------
 

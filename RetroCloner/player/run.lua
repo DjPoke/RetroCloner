@@ -129,8 +129,8 @@ function DrawGame()
 		for x = 0, (game_data.levels_data.sw * game_data.levels_data.w) - 1 do
 			for y = 0, (game_data.levels_data.sh * game_data.levels_data.h) - 1 do
 				local block = game_data.levels[run.vars.level].blocks[x][y]
-				local xc = x * game_data.block_width * game_data.pixel_size * WINDOW_ZOOM
-				local yc = y * game_data.block_height * WINDOW_ZOOM
+				local xc = ScaleWidth(x * game_data.block_width, WINDOW_ZOOM)
+				local yc = ScaleHeight(y * game_data.block_height, WINDOW_ZOOM)
 				
 				if block > 0 then
 					love.graphics.draw(img_blocks[block], px + xc, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM)
@@ -145,7 +145,10 @@ function DrawGame()
 			
 			if animation > 0 and frame > 0 then
 				local sprite = game_data.animations[animation][frame]
-				love.graphics.draw(img_sprites[sprite], px + game_data.levels[run.vars.level].actors[i].x, py + game_data.levels[run.vars.level].actors[i].y, 0, game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM)
+				local xc = ScaleWidth(game_data.levels[run.vars.level].actors[i].x, WINDOW_ZOOM)
+				local yc = ScaleHeight(game_data.levels[run.vars.level].actors[i].y, WINDOW_ZOOM)
+			
+				love.graphics.draw(img_sprites[sprite], px + xc, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM)
 			end
 		end
 	end

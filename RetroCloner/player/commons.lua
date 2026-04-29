@@ -144,6 +144,11 @@ function ScaleHeight(h, zoom)
 	return h * zoom
 end
 
+-- quantize value
+function Quantize(v, q)
+	return math.floor(v / q) * q
+end
+
 -- get actor's sprite using actor number, animation name and frame
 function GetActorSprite(actor, animation_name, frame)
 	local animation_number = game_data.actors[actor].type[animation_name]
