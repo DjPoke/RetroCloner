@@ -3,11 +3,12 @@
 ## What is RetroCloner ?
 
 RetroCloner is a tool made with lua/löve2d to create retro games for PC easily, faking Amstrad CPC, C64 or ZX Spectrum graphics.
-This project is in Work In Progress state. For now, this project is developped under Linux Mint.
+This project is in Work In Progress state. For now, it is developped under Linux Mint.
 
 ![screenshot1](screenshot1.jpg)
 
 ## Short tutorial
+0) Install Löve2d 11.5, go inside RetroCloner folder, open a terminal here and type "love ."
 1) Create a new project by pressing "a" key. Type a filename and choose the computer graphics preset you want.
 2) Don't forget to save your project frequently, by pressing "c" key.
 3) Edit your palette by pressing "f" key, if possible! A the bottom of the window, you can see the keys to edit the palette.
