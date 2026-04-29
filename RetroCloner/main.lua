@@ -928,6 +928,9 @@ function love.draw()
 			local pos_x = area_x + offset_x
 			local pos_y = area_y + offset_y
 			
+			-- enable scissor for the game window
+			love.graphics.setScissor(pos_x, pos_y, game_data.levels_data.sw * game_data.block_width * game_data.pixel_size * SCREEN_ZOOM, game_data.levels_data.sw * game_data.block_height * SCREEN_ZOOM)
+			
 			-- draw level's blocks
 			love.graphics.setColor(1, 1, 1)
 			
@@ -938,13 +941,9 @@ function love.draw()
 					local real_pos_x = pos_x + (x * game_data.block_width * game_data.pixel_size * SCREEN_ZOOM)
 					local real_pos_y = pos_y + (y * game_data.block_height * SCREEN_ZOOM)
 					
-					if real_x >= 0 and real_x < (game_data.levels_data.sw * game_data.levels_data.w) then
-						if real_y >= 0 and real_y < (game_data.levels_data.sh * game_data.levels_data.h) then
-							if game_data.levels[current_level].blocks[real_x][real_y] > 0 then
-								if #img_blocks > 0 then
-									love.graphics.draw(img_blocks[game_data.levels[current_level].blocks[real_x][real_y]], real_pos_x, real_pos_y, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
-								end
-							end
+					if game_data.levels[current_level].blocks[real_x][real_y] > 0 then
+						if #img_blocks > 0 then
+							love.graphics.draw(img_blocks[game_data.levels[current_level].blocks[real_x][real_y]], real_pos_x, real_pos_y, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
 						end
 					end
 				end
@@ -957,19 +956,18 @@ function love.draw()
 				local actor = game_data.levels[current_level].actors[i].number
 				local sprite = GetActorSprite(actor, "idle", 1)
 
-				local real_x = game_data.levels[current_level].actors[i].startx - (current_level_scroll_x * game_data.pixel_size * SCREEN_ZOOM)
-				local real_y = game_data.levels[current_level].actors[i].starty - (current_level_scroll_y * SCREEN_ZOOM)
+				local real_x = game_data.levels[current_level].actors[i].startx + (current_level_scroll_x * game_data.block_width * game_data.pixel_size * SCREEN_ZOOM)
+				local real_y = game_data.levels[current_level].actors[i].starty + (current_level_scroll_y * game_data.block_height * SCREEN_ZOOM)
 				local real_pos_x = pos_x + real_x
 				local real_pos_y = pos_y + real_y
 				
-				if real_x >= 0 and real_x < ((game_data.levels_data.sw - 2) * game_data.block_width * game_data.pixel_size * SCREEN_ZOOM) then
-					if real_y >= 0 and real_y < ((game_data.levels_data.sh - 2) * game_data.block_height * SCREEN_ZOOM) then
-						if #img_sprites > 0 then
-							love.graphics.draw(img_sprites[sprite], real_pos_x, real_pos_y, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
-						end
-					end
+				if #img_sprites > 0 then
+					love.graphics.draw(img_sprites[sprite], real_pos_x, real_pos_y, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
 				end
 			end
+
+			-- disable scissor
+			love.graphics.setScissor()
 			
 			-- print the scroll values
 			love.graphics.setColor(0, 1, 1)
@@ -1009,7 +1007,7 @@ function love.draw()
 		love.graphics.print("[W]idth - [H]eight - [L][Shift] Set level", 10, 480)
 		love.graphics.print("[Tab] Set block/actor - [S]wap blocks/actors", 10, 500)
 		love.graphics.print("[M]emorize scrolling - [R]emember scrolling", 10, 520)
-		love.graphics.print("[E]dit actor", 10, 540)
+		love.graphics.print("[F]ill blocks - [E]dit actor", 10, 540)
 		love.graphics.print("[Esc] Back", 10, 560)
 	elseif mode == MODE_EDIT_GAMES_DATA then
 	end
@@ -2161,6 +2159,26 @@ function love.keypressed(key)
 				-- set edit mode for actors
 				current_level_actors_edit_mode = true
 			end
+			
+			if key == "f" then
+				-- floodfill the level
+				local mx = love.mouse.getX()
+				local my = love.mouse.getY()
+
+				local xc = 400 - (game_data.levels_data.sw * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM / 2)
+				local yc = 160
+				
+				local bx = math.floor((mx - xc) / (game_data.block_width * game_data.pixel_size * LEVELS_ZOOM))
+				local by = math.floor((my - yc) / (game_data.block_height * LEVELS_ZOOM))
+				
+				bx = bx - current_level_scroll_x
+				by = by - current_level_scroll_y
+				
+				local w = game_data.levels_data.sw * game_data.levels_data.w
+				local h = game_data.levels_data.sh * game_data.levels_data.h
+
+				FloodFill(game_data.levels[current_level].blocks, w, h, bx, by, current_level_selected_block, game_data.levels[current_level].blocks[bx][by])
+			end
 		elseif key ~= "escape" then
 			beep:stop()
 			beep:play()
@@ -2185,8 +2203,8 @@ function love.mousepressed(x, y, button, istouch, presses)
 					local xc = 400 - (game_data.levels_data.sw * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM / 2)
 					local yc = 160
 				
-					local sx = (x - xc) - (current_level_scroll_x * game_data.pixel_size * LEVELS_ZOOM)
-					local sy = (y - yc) - (current_level_scroll_y * LEVELS_ZOOM)
+					local sx = (x - xc) - (current_level_scroll_x * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM)
+					local sy = (y - yc) - (current_level_scroll_y * game_data.block_height * LEVELS_ZOOM)
 					
 					print(sx, sy)
 					
