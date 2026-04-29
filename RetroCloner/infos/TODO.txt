@@ -5,6 +5,8 @@ TODO
 * Faire l'éditeur de niveaux:
 	- Bug du loop animation qui ne se lance pas dans le menu animations, quand on revient
 	- Bug: quand un level est supprimé et ajouté de nouveau, il ne doit pas conserver sa taille
+	- Bug du message en rouge dans blocks, qui passe sous l'image
+	- Bug des sprites qui ne sont pas limités en couleur
 
 * Faire l'import d'images
 	- Convertir à la foulée les images importées, en fonction du preset en cours
