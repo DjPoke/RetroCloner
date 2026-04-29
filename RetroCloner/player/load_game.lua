@@ -441,5 +441,15 @@ function LoadGame(d, f, t)
 		t.scrolling_start_y[i] = tonumber(ts[cpt])
 	end
 	
+	---------------------------------------------------
+
+	-- lives
+	cpt = cpt + 1
+	t.vars.lives = tonumber(ts[cpt])
+	
+	-- game speed
+	cpt = cpt + 1
+	t.vars.game_speed = tonumber(ts[cpt])
+	
 	return t
 end

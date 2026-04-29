@@ -3,7 +3,12 @@ TODO
 ====
 
 * Bugs:
-	- TODO!
+	- ???
+
+* Faire l'édition des parametres du jeu:
+	- Faire une liste de parametres en ligne verticale, avec leurs valeurs à droite
+	- Haut/bas permet de choisir un parametre
+	- Gauche/droite permet de changer la valeur du paramètres
 
 * Faire l'import d'images
 	- Convertir à la foulée les images importées, en fonction du preset en cours

@@ -65,9 +65,13 @@ game_data = {
 	border_paper = 0,
 	areas = {},
 	fonts = "",
-	lives = 0, -- TODO
 	scrolling_start_x = {},
-	scrolling_start_y = {}
+	scrolling_start_y = {},
+	-- Edit Game Data
+	vars = {
+		lives = 0,
+		game_speed = 0.0
+	}
 }
 
 img_blocks = {}

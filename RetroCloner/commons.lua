@@ -160,3 +160,27 @@ end
 function GetActorAnimationNumber(actor, animation_name)
 	return game_data.actors[actor].type[animation_name]
 end
+
+-- convert a number to a string, and add 0 before
+function ToString2(n, z)
+	local s = tostring(n)
+	
+	if #s > z then
+		s = ""
+		
+		for i = 1, z do
+			s = s .. "9"
+		end
+	elseif #s < z then
+		while #s < z do
+			s = "0" .. s
+		end
+	end
+	
+	return s
+end
+
+function SetDefaultGameData()
+	game_data.vars.lives = 3
+	game_data.vars.game_speed = 0.1
+end

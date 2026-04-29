@@ -121,9 +121,13 @@ game_data = {
 	border_paper = 0,
 	areas = {},
 	fonts = "",
-	lives = 0, -- TODO!
 	scrolling_start_x = {},
-	scrolling_start_y = {}
+	scrolling_start_y = {},
+	-- Edit Game Data
+	vars = {
+		lives = 0,
+		game_speed = 0.0
+	}
 }
 
 -- blocks & sprites, converted to images
@@ -625,9 +629,9 @@ function love.draw()
 		love.graphics.rectangle("fill", screen_x + (game_data.areas[GAME_AREA].x * game_data.pixel_size * SCREEN_ZOOM), screen_y + (game_data.areas[GAME_AREA].y * SCREEN_ZOOM), game_data.areas[GAME_AREA].width * game_data.pixel_size * SCREEN_ZOOM, game_data.areas[GAME_AREA].height * SCREEN_ZOOM)
 				
 		-- draw text's areas
-		FontsPrint("SCORE 0000000", screen_x + (game_data.areas[SCORE_AREA].x * game_data.pixel_size * SCREEN_ZOOM), screen_y + (game_data.areas[SCORE_AREA].y * SCREEN_ZOOM), game_data.areas[SCORE_AREA].width * SCREEN_ZOOM, game_data.areas[SCORE_AREA].height * SCREEN_ZOOM, GAME_FONT, FONT_DOWN_SCALE / SCREEN_ZOOM, game_data.text_paper, game_data.text_pen)
-		FontsPrint("LIVES 03", screen_x + (game_data.areas[LIVES_AREA].x * game_data.pixel_size * SCREEN_ZOOM), screen_y + (game_data.areas[LIVES_AREA].y * SCREEN_ZOOM), game_data.areas[LIVES_AREA].width * SCREEN_ZOOM, game_data.areas[LIVES_AREA].height * SCREEN_ZOOM, GAME_FONT, FONT_DOWN_SCALE / SCREEN_ZOOM, game_data.text_paper, game_data.text_pen)
-		FontsPrint("LEVEL 1", screen_x + (game_data.areas[LEVEL_AREA].x * game_data.pixel_size * SCREEN_ZOOM), screen_y + (game_data.areas[LEVEL_AREA].y * SCREEN_ZOOM), game_data.areas[LEVEL_AREA].width * SCREEN_ZOOM, game_data.areas[LEVEL_AREA].height * SCREEN_ZOOM, GAME_FONT, FONT_DOWN_SCALE / SCREEN_ZOOM, game_data.text_paper, game_data.text_pen)
+		FontsPrint("SCORE " .. ToString2(run.vars.score, 7), screen_x + (game_data.areas[SCORE_AREA].x * game_data.pixel_size * SCREEN_ZOOM), screen_y + (game_data.areas[SCORE_AREA].y * SCREEN_ZOOM), game_data.areas[SCORE_AREA].width * SCREEN_ZOOM, game_data.areas[SCORE_AREA].height * SCREEN_ZOOM, GAME_FONT, FONT_DOWN_SCALE / SCREEN_ZOOM, game_data.text_paper, game_data.text_pen)
+		FontsPrint("LIVES " .. ToString2(game_data.vars.lives, 2), screen_x + (game_data.areas[LIVES_AREA].x * game_data.pixel_size * SCREEN_ZOOM), screen_y + (game_data.areas[LIVES_AREA].y * SCREEN_ZOOM), game_data.areas[LIVES_AREA].width * SCREEN_ZOOM, game_data.areas[LIVES_AREA].height * SCREEN_ZOOM, GAME_FONT, FONT_DOWN_SCALE / SCREEN_ZOOM, game_data.text_paper, game_data.text_pen)
+		FontsPrint("LEVEL " .. ToString2(run.vars.level, 3), screen_x + (game_data.areas[LEVEL_AREA].x * game_data.pixel_size * SCREEN_ZOOM), screen_y + (game_data.areas[LEVEL_AREA].y * SCREEN_ZOOM), game_data.areas[LEVEL_AREA].width * SCREEN_ZOOM, game_data.areas[LEVEL_AREA].height * SCREEN_ZOOM, GAME_FONT, FONT_DOWN_SCALE / SCREEN_ZOOM, game_data.text_paper, game_data.text_pen)
 			
 		for i = 1, LEVEL_AREA do
 			if area_selected == i then
@@ -1149,6 +1153,11 @@ function love.keypressed(key)
 				-- set fonts filter
 				GAME_TITLE_FONT:setFilter("nearest", "nearest")
 				GAME_FONT:setFilter("nearest", "nearest")
+				
+				-- initialize player's data
+				run.vars.score = 0
+				game_data.vars.lives = 3
+				run.vars.level = 1
 	
 				mode = MODE_EDIT_SCREEN
 			else
@@ -1251,7 +1260,11 @@ function love.keypressed(key)
 	
 					LoadPreset("presets/" .. presets[selected_preset] .. ".txt")
 					
+					-- update level's data
 					UpdateLevelsData()
+					
+					-- set default game data
+					SetDefaultGameData()
 					
 					new_project_mode = NEW_PROJECT_MODE
 					mode = MODE_MENU

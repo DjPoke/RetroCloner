@@ -645,6 +645,10 @@ true
 256
 2
 1
+name
+platformer
+walk
+0
 jump
 0
 climb
@@ -653,12 +657,8 @@ die
 0
 idle
 1
-name
-platformer
 hflip
 false
-walk
-0
 END
 2
 idle
@@ -6884,3 +6884,5 @@ background
 wall
 0
 0
+3
+0.1
