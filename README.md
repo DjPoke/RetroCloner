@@ -27,6 +27,8 @@ This project is in Work In Progress state. For now, it is developped under Linux
 
 ![screenshot2](screenshot2.jpg)
 
+![screenshot3](screenshot3.jpg)
+
 Actually, you can create a ".love" executable for Linux by copying the "game.txt" file which is inside "home/your_user_name/.local/share/love/RetroCloner/your_game_name/" into the RetroCloner player game folder. Then, like you can do with löve2d, zip the files inside the player folder, and rename the ".zip" file to ".love" file.
 You need the 11.5 version of love for your game to works.
 
