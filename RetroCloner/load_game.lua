@@ -266,10 +266,10 @@ function LoadGame(d, f, t)
 			local number = tonumber(ts[cpt])
 
 			cpt = cpt + 1
-			local startx = tonumber(ts[cpt])
+			local start_x = tonumber(ts[cpt])
 
 			cpt = cpt + 1
-			local starty = tonumber(ts[cpt])
+			local start_y = tonumber(ts[cpt])
 
 			cpt = cpt + 1
 			local x = tonumber(ts[cpt])
@@ -283,7 +283,7 @@ function LoadGame(d, f, t)
 			cpt = cpt + 1
 			local frame = tonumber(ts[cpt])
 			
-			table.insert(t2.actors, {number = number, startx = startx, starty = starty, x = x, y = y, animation = animation, frame = frame})
+			table.insert(t2.actors, {number = number, start_x = start_x, start_y = start_y, x = x, y = y, animation = animation, frame = frame})
 		end
 		
 		table.insert(t.levels, t2)

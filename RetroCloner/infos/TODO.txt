@@ -3,11 +3,10 @@ TODO
 ====
 
 * Faire l'éditeur de niveaux:
-	- Corriger le bug du mode Test
 	- En mode édition, l'acteur sélectionné clignotte
 	- En mode édition, on change d'acteur avec "tab"
 	- En mode édition, on clique pour repositionner l'acteur sélectionné
-	- On supprime l'acteur sélectionné à la souris en mode édition avec la touche "d"
+	- En mode édition, on supprime l'acteur sélectionné avec la touche "d"
 
 * Faire l'import d'images
 	- Convertir à la foulée les images importées, en fonction du preset en cours

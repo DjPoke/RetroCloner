@@ -26,9 +26,15 @@ function run.load()
 	
 	run.vars.animation_timer = 0.0
 	
-	-- TODO! edit me!
-	game_data.levels[run.vars.level].actors[1].animation = 1
-	game_data.levels[run.vars.level].actors[1].frame = 1
+	-- reset actors positions and animations
+	for i = 1, #game_data.levels do
+		for j = 1, #game_data.levels[i].actors do
+			game_data.levels[i].actors[j].x = game_data.levels[i].actors[j].start_x
+			game_data.levels[i].actors[j].y = game_data.levels[i].actors[j].start_y
+			game_data.levels[i].actors[j].animation = GetActorAnimationNumber(game_data.levels[i].actors[j].number, "idle")
+			game_data.levels[i].actors[j].frame = 1
+		end
+	end
 end
 
 function run.update(dt)
@@ -117,15 +123,28 @@ function DrawGame()
 
 	px = px + ScaleWidth(offset_x, game_data.pixel_size, WINDOW_ZOOM)
 	py = py + ScaleHeight(offset_y, WINDOW_ZOOM)
-
+	
 	if #game_data.levels > 0 then
+		-- draw blocks
+		for x = 0, (game_data.levels_data.sw * game_data.levels_data.w) - 1 do
+			for y = 0, (game_data.levels_data.sh * game_data.levels_data.h) - 1 do
+				local block = game_data.levels[run.vars.level].blocks[x][y]
+				local xc = x * game_data.block_width * game_data.pixel_size * WINDOW_ZOOM
+				local yc = y * game_data.block_height * WINDOW_ZOOM
+				
+				if block > 0 then
+					love.graphics.draw(img_blocks[block], px + xc, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM)
+				end
+			end
+		end
+	
+		-- draw actors
 		for i = 1, #game_data.levels[run.vars.level].actors do
 			local animation = game_data.levels[run.vars.level].actors[i].animation
 			local frame = game_data.levels[run.vars.level].actors[i].frame
 			
 			if animation > 0 and frame > 0 then
 				local sprite = game_data.animations[animation][frame]
-				
 				love.graphics.draw(img_sprites[sprite], px + game_data.levels[run.vars.level].actors[i].x, py + game_data.levels[run.vars.level].actors[i].y, 0, game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM)
 			end
 		end

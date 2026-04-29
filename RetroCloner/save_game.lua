@@ -106,8 +106,8 @@ function SaveGame(d, f, t)
 
 			for j = 1, #t.levels[i].actors do
 				ts = ts .. tostring(t.levels[i].actors[j].number) .. "\r\n"
-				ts = ts .. tostring(t.levels[i].actors[j].startx) .. "\r\n"
-				ts = ts .. tostring(t.levels[i].actors[j].starty) .. "\r\n"
+				ts = ts .. tostring(t.levels[i].actors[j].start_x) .. "\r\n"
+				ts = ts .. tostring(t.levels[i].actors[j].start_y) .. "\r\n"
 				ts = ts .. tostring(t.levels[i].actors[j].x) .. "\r\n"
 				ts = ts .. tostring(t.levels[i].actors[j].y) .. "\r\n"
 				ts = ts .. tostring(t.levels[i].actors[j].animation) .. "\r\n"

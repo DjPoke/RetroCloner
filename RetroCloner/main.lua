@@ -956,8 +956,8 @@ function love.draw()
 				local actor = game_data.levels[current_level].actors[i].number
 				local sprite = GetActorSprite(actor, "idle", 1)
 
-				local real_x = game_data.levels[current_level].actors[i].startx + (current_level_scroll_x * game_data.block_width * game_data.pixel_size * SCREEN_ZOOM)
-				local real_y = game_data.levels[current_level].actors[i].starty + (current_level_scroll_y * game_data.block_height * SCREEN_ZOOM)
+				local real_x = game_data.levels[current_level].actors[i].start_x + (current_level_scroll_x * game_data.block_width * game_data.pixel_size * SCREEN_ZOOM)
+				local real_y = game_data.levels[current_level].actors[i].start_y + (current_level_scroll_y * game_data.block_height * SCREEN_ZOOM)
 				local real_pos_x = pos_x + real_x
 				local real_pos_y = pos_y + real_y
 				
@@ -1082,9 +1082,9 @@ function love.keypressed(key)
 				-- reset actors positions
 				for i = 1, #game_data.levels do
 					for j = 1, #game_data.levels[i].actors do
-						game_data.levels[i].actors[j].x = game_data.levels[i].actors[j].startx
-						game_data.levels[i].actors[j].y = game_data.levels[i].actors[j].starty
-						game_data.levels[i].actors[j].animation = GetActorAnimationNumber(j, "idle")
+						game_data.levels[i].actors[j].x = game_data.levels[i].actors[j].start_x
+						game_data.levels[i].actors[j].y = game_data.levels[i].actors[j].start_y
+						game_data.levels[i].actors[j].animation = GetActorAnimationNumber(game_data.levels[i].actors[j].number, "idle")
 						game_data.levels[i].actors[j].frame = 1
 					end
 				end
@@ -1984,7 +1984,7 @@ function love.keypressed(key)
 					end
 					
 					-- add player actor to the level
-					table.insert(t.actors, {number = 1, startx = 0, starty = 0, x = 0, y = 0, animation = 0, frame = 0})
+					table.insert(t.actors, {number = 1, start_x = 0, start_y = 0, x = 0, y = 0, animation = 0, frame = 0})
 
 					-- add new void level
 					table.insert(game_data.levels, t)
@@ -2206,9 +2206,7 @@ function love.mousepressed(x, y, button, istouch, presses)
 					local sx = (x - xc) - (current_level_scroll_x * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM)
 					local sy = (y - yc) - (current_level_scroll_y * game_data.block_height * LEVELS_ZOOM)
 					
-					print(sx, sy)
-					
-					table.insert(game_data.levels[current_level].actors, {number = current_level_selected_actor, startx = sx, starty = sy, x = sx, y = sy, animation = GetActorAnimationNumber(current_level_selected_actor, "idle"), frame = 1})
+					table.insert(game_data.levels[current_level].actors, {number = current_level_selected_actor, start_x = sx, start_y = sy, x = sx, y = sy, animation = GetActorAnimationNumber(current_level_selected_actor, "idle"), frame = 1})
 				end
 			end
 		end
