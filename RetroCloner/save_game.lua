@@ -199,6 +199,7 @@ function SaveGame(d, f, t)
 		-- save game data
 		ts = ts .. tostring(t.vars.lives) .. "\r\n" 		-- lives of the player
 		ts = ts .. tostring(t.vars.game_speed) .. "\r\n"	-- game speed
+		ts = ts .. tostring(t.vars.game_goal) .. "\r\n"		-- game goal
 
 		-- write data
 		file:write(ts)

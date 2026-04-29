@@ -126,7 +126,8 @@ game_data = {
 	-- Edit Game Data
 	vars = {
 		lives = 0,
-		game_speed = 0.0
+		game_speed = 0.0,
+		game_goal = 0
 	}
 }
 
