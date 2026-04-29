@@ -471,7 +471,7 @@ function ShowCursor(x, y, w, h, r, g, b)
 end
 
 -- return if they are too many colors
-function TooManyColors(t, p)
+function TooManyColorsInBlock(t)
 	local col = {}
 	local cpt = 0
 	
@@ -493,6 +493,34 @@ function TooManyColors(t, p)
 	end
 	
 	if cpt <= game_data.colors_by_block then
+		return false
+	end
+	
+	return true
+end
+
+function TooManyColorsInSprite(t)
+	local col = {}
+	local cpt = 0
+	
+	for x = 0, game_data.sprite_width - 1 do
+		for y = 0, game_data.sprite_height - 1 do
+			local flag = false
+			
+			for i = 1, #col do
+				if col[i] == t[x][y] then
+					flag = true
+				end
+			end
+			
+			if flag == false then
+				table.insert(col, t[x][y])
+				cpt = cpt + 1
+			end
+		end
+	end
+	
+	if cpt <= game_data.colors_by_sprite then
 		return false
 	end
 	

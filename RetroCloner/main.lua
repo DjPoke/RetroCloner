@@ -300,14 +300,16 @@ function love.update(dt)
 				if block_x >= 0 and block_x < game_data.block_width then
 					if block_y >= 0 and block_y < game_data.block_height then
 						game_data.blocks[current_block][block_x][block_y] = pen_color
-						block_too_many_color = TooManyColors(game_data.blocks[current_block])
+
+						block_too_many_color = TooManyColorsInBlock(game_data.blocks[current_block])
 					end
 				end
 			elseif love.mouse.isDown(2) == true then
 				if block_x >= 0 and block_x < game_data.block_width then
 					if block_y >= 0 and block_y < game_data.block_height then
 						game_data.blocks[current_block][block_x][block_y] = 0
-						block_too_many_color = TooManyColors(game_data.blocks[current_block])
+						
+						block_too_many_color = TooManyColorsInBlock(game_data.blocks[current_block])
 					end
 				end
 			end
@@ -328,14 +330,16 @@ function love.update(dt)
 				if sprite_x >= 0 and sprite_x < game_data.sprite_width then
 					if sprite_y >= 0 and sprite_y < game_data.sprite_height then
 						game_data.sprites[current_sprite][sprite_x][sprite_y] = pen_color
-						sprite_too_many_color = TooManyColors(game_data.sprites[current_sprite])
+						
+						sprite_too_many_color = TooManyColorsInSprite(game_data.sprites[current_sprite])
 					end
 				end
 			elseif love.mouse.isDown(2) == true then
 				if sprite_x >= 0 and sprite_x < game_data.sprite_width then
 					if sprite_y >= 0 and sprite_y < game_data.sprite_height then
 						game_data.sprites[current_sprite][sprite_x][sprite_y] = 0
-						sprite_too_many_color = TooManyColors(game_data.sprites[current_sprite])
+
+						sprite_too_many_color = TooManyColorsInSprite(game_data.sprites[current_sprite])
 					end
 				end
 			end
@@ -654,24 +658,24 @@ function love.draw()
 		-- draw pen
 		love.graphics.setFont(EDITOR_FONT)
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("Pen " .. pen_color, 140, 120)
+		love.graphics.print("Pen " .. pen_color, 140, 100)
 		local r, g, b = GetPenRGB(pen_color)
 		love.graphics.setColor(r, g, b)
-		love.graphics.rectangle("fill", 260, 120, 32, 16)
+		love.graphics.rectangle("fill", 260, 100, 32, 16)
 		
 		-- draw current block number
 		love.graphics.setColor(0, 1, 1)
 
 		if current_block > 0 then
-			love.graphics.print("Block " .. tostring(current_block) .. " : " .. game_data.blocks_data[current_block].type, 320, 120)
+			love.graphics.print("Block " .. tostring(current_block) .. " : " .. game_data.blocks_data[current_block].type, 320, 100)
 		else
-			love.graphics.print("No blocks!", 320, 120)
+			love.graphics.print("No blocks!", 320, 100)
 		end
 
 		-- draw error message if too many colors
 		if block_too_many_color == true then
 			love.graphics.setColor(1, 0, 0)
-			love.graphics.print("Error: too many colors for this preset!", 80, 160)
+			love.graphics.print("Error: too many colors for this preset!", 80, 120)
 		end
 		
 		-- draw current block
@@ -708,28 +712,28 @@ function love.draw()
 		-- draw pen
 		love.graphics.setFont(EDITOR_FONT)
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("Pen " .. pen_color, 240, 120)
+		love.graphics.print("Pen " .. pen_color, 240, 100)
 		local r, g, b = GetPenRGB(pen_color)
 		love.graphics.setColor(r, g, b)
-		love.graphics.rectangle("fill", 360, 120, 32, 16)
+		love.graphics.rectangle("fill", 360, 100, 32, 16)
 		
 		-- draw current sprite number
 		love.graphics.setColor(0, 1, 1)
 
 		if current_sprite > 0 then
-			love.graphics.print("Sprite " .. tostring(current_sprite), 420, 120)
+			love.graphics.print("Sprite " .. tostring(current_sprite), 420, 100)
 		else
-			love.graphics.print("No sprites!", 420, 120)
+			love.graphics.print("No sprites!", 420, 100)
 		end
 		
 		if pen_color == 0 then
-		love.graphics.print("(Transparent) ", 240, 140)
+			love.graphics.print("(Transparent) ", 240, 120)
 		end
 
 		-- draw error message if too many colors
 		if sprite_too_many_color == true then
 			love.graphics.setColor(1, 0, 0)
-			love.graphics.print("Error: too many colors for this preset!", 80, 160)
+			love.graphics.print("Error: too many colors for this preset!", 80, 140)
 		end
 		
 		-- draw current sprite
@@ -1501,7 +1505,7 @@ function love.keypressed(key)
 				if block_x >= 0 and block_x < game_data.block_width then
 					if block_y >= 0 and block_y < game_data.block_height then
 						FloodFill(game_data.blocks[current_block], game_data.block_width, game_data.block_height, block_x, block_y, pen_color, game_data.blocks[current_block][block_x][block_y])
-						block_too_many_color = TooManyColors(game_data.blocks[current_block])
+						block_too_many_color = TooManyColorsInBlock(game_data.blocks[current_block])
 					end
 				end
 			end
@@ -1587,7 +1591,7 @@ function love.keypressed(key)
 		elseif key == "f" then
 			if current_sprite > 0 then
 				FloodFill(game_data.sprites[current_sprite], game_data.sprite_width, game_data.sprite_height, sprite_x, sprite_y, pen_color, game_data.sprites[current_sprite][sprite_x][sprite_y])
-				sprite_too_many_color = TooManyColors(game_data.sprites[current_sprite])
+				sprite_too_many_color = TooManyColorsInSprite(game_data.sprites[current_sprite])
 			end
 		elseif key == "escape" then
 			ConvertSpritesToImages()
@@ -1994,6 +1998,15 @@ function love.keypressed(key)
 				if #game_data.levels < game_data.max_levels then
 					-- disable edit mode
 					current_level_actors_edit_mode = false
+					
+					if current_level == 0 then
+						game_data.levels_data = {
+							w = 1,
+							h = 1,
+							sw = math.floor(game_data.areas[GAME_AREA].width / game_data.block_width),
+							sh = math.floor(game_data.areas[GAME_AREA].height / game_data.block_height)
+						}
+					end
 
 					-- prepare void level
 					local t = {
@@ -2015,7 +2028,7 @@ function love.keypressed(key)
 
 					-- add new void level
 					table.insert(game_data.levels, t)
-					
+
 					current_level = current_level + 1
 					
 					game_data.scrolling_start_x[current_level] = 0
@@ -2040,7 +2053,9 @@ function love.keypressed(key)
 					table.remove(game_data.scrolling_start_x, current_level)
 					table.remove(game_data.scrolling_start_y, current_level)
 					table.remove(game_data.levels, current_level)
+					
 					current_level = #game_data.levels
+					
 				end
 			end
 			
