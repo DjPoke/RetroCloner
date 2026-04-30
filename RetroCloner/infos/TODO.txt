@@ -7,7 +7,6 @@ TODO
 
 * Faire le déplacement du jouer
 	- Déplacer le joueur en fonction du type de joueur
-	- Limiter les scrolling à droite du niveau
 	- Limiter la sortie d'écran pendant les divers scrollings
 
 * Faire l'édition des parametres du jeu:
