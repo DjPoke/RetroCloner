@@ -65,6 +65,9 @@ entity_types = {"player", "enemy", "bonus"}
 -- game goals
 game_goals = {"go to exit (right)", "kill all enemies", "kill all enemies and exit (right)", "take all bonus", "take a key and goto exit"}
 
+-- types of scrollings
+scrolling_types = {"no scrolling", "middle of screen", "auto", "screens scrolling"}
+
 -- convert blocks to images
 function ConvertBlocksToImages()
 	-- convert blocks to images
@@ -186,7 +189,9 @@ end
 function SetDefaultGameData()
 	game_data.vars.lives = 3
 	game_data.vars.game_speed = 0.1
-	
-	 -- first goal of "game_goals" array
 	game_data.vars.game_goal = 1
+	game_data.vars.scrolling_type = 1
+	game_data.vars.scrolling_speed = 1
+	game_data.vars.scrolling_horizontally = true
+	game_data.vars.scrolling_vertically = false
 end

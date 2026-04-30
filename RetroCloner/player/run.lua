@@ -56,6 +56,83 @@ function run.update(dt)
 			end
 		end
 	end
+	
+	-- move the player
+	if game_data.actors[1].type.name == "platformer" then
+		if love.keyboard.isDown("left") then
+			game_data.levels[run.vars.level].actors[1].x = game_data.levels[run.vars.level].actors[1].x - 1
+		elseif love.keyboard.isDown("right") then
+			game_data.levels[run.vars.level].actors[1].x = game_data.levels[run.vars.level].actors[1].x + 1
+		end
+	end
+
+	--local instance_number = game_data.levels[run.vars.level].actors[1].number
+	
+	-- perform scrolling
+	if game_data.vars.scrolling_type == 2 then
+		-- scroll when the player is in the middle of the screen
+		if game_data.vars.scrolling_horizontally == true and game_data.vars.scrolling_vertically == false then
+			if game_data.levels[run.vars.level].actors[1].x + run.vars.scrolling_x > (game_data.levels_data.sw * game_data.block_width / 2) then
+				local scroll_value = game_data.levels[run.vars.level].actors[1].x - (game_data.levels_data.sw * game_data.block_width / 2) + run.vars.scrolling_x
+				
+				run.vars.scrolling_x = run.vars.scrolling_x - game_data.vars.scrolling_speed
+				game_data.levels[run.vars.level].actors[1].x = game_data.levels[run.vars.level].actors[1].x - scroll_value + game_data.vars.scrolling_speed
+			end
+		elseif game_data.vars.scrolling_horizontally == false and game_data.vars.scrolling_vertically == true then
+			if game_data.levels[run.vars.level].actors[1].y + run.vars.scrolling_y > (game_data.levels_data.sh * game_data.block_height / 2) then
+				local scroll_value = game_data.levels[run.vars.level].actors[1].y - (game_data.levels_data.sh * game_data.block_height / 2) + run.vars.scrolling_y
+				
+				run.vars.scrolling_y = run.vars.scrolling_y - game_data.vars.scrolling_speed
+				game_data.levels[run.vars.level].actors[1].y = game_data.levels[run.vars.level].actors[1].y - scroll_value + game_data.vars.scrolling_speed
+			end
+		elseif game_data.vars.scrolling_horizontally == true and game_data.vars.scrolling_vertically == true then
+			if game_data.levels[run.vars.level].actors[1].x + run.vars.scrolling_x > (game_data.levels_data.sw * game_data.block_width / 2) then
+				local scroll_value = game_data.levels[run.vars.level].actors[1].x - (game_data.levels_data.sw * game_data.block_width / 2) + run.vars.scrolling_x
+				
+				run.vars.scrolling_x = run.vars.scrolling_x - game_data.vars.scrolling_speed
+				game_data.levels[run.vars.level].actors[1].x = game_data.levels[run.vars.level].actors[1].x - scroll_value + game_data.vars.scrolling_speed
+			end
+
+			if game_data.levels[run.vars.level].actors[1].y + run.vars.scrolling_y > (game_data.levels_data.sh * game_data.block_height / 2) then
+				local scroll_value = game_data.levels[run.vars.level].actors[1].y - (game_data.levels_data.sh * game_data.block_height / 2) + run.vars.scrolling_y
+				
+				run.vars.scrolling_y = run.vars.scrolling_y - game_data.vars.scrolling_speed
+				game_data.levels[run.vars.level].actors[1].y = game_data.levels[run.vars.level].actors[1].y - scroll_value + game_data.vars.scrolling_speed
+			end
+		end
+	elseif game_data.vars.scrolling_type == 3 then
+		-- auto scroll
+		if tick == true then
+			if game_data.vars.scrolling_horizontally == true and game_data.vars.scrolling_vertically == false then
+				if game_data.levels[run.vars.level].actors[1].x > math.abs(run.vars.scrolling_x) then
+					run.vars.scrolling_x = run.vars.scrolling_x - game_data.vars.scrolling_speed
+				end
+			elseif game_data.vars.scrolling_horizontally == false and game_data.vars.scrolling_vertically == true then
+				if game_data.levels[run.vars.level].actors[1].y > math.abs(run.vars.scrolling_y) then
+					run.vars.scrolling_y = run.vars.scrolling_y - game_data.vars.scrolling_speed
+				end
+			elseif game_data.vars.scrolling_horizontally == true and game_data.vars.scrolling_vertically == true then
+				if game_data.levels[run.vars.level].actors[1].x > math.abs(run.vars.scrolling_x) then
+					run.vars.scrolling_x = run.vars.scrolling_x - game_data.vars.scrolling_speed
+				end
+
+				if game_data.levels[run.vars.level].actors[1].y > math.abs(run.vars.scrolling_y) then
+					run.vars.scrolling_y = run.vars.scrolling_y - game_data.vars.scrolling_speed
+				end
+			end
+		end
+	elseif game_data.vars.scrolling_type == 4 then
+		-- scroll when the player go out of a screen
+		if game_data.vars.scrolling_horizontally == true and game_data.vars.scrolling_vertically == false then
+			run.vars.scrolling_x = -math.floor(game_data.levels[run.vars.level].actors[1].x / (game_data.levels_data.sw * game_data.block_width)) * (game_data.levels_data.sw * game_data.block_width)
+		elseif game_data.vars.scrolling_horizontally == false and game_data.vars.scrolling_vertically == true then
+			run.vars.scrolling_y = -math.floor(game_data.levels[run.vars.level].actors[1].y / (game_data.levels_data.sh * game_data.block_height)) * (game_data.levels_data.sh * game_data.block_height)
+		elseif game_data.vars.scrolling_horizontally == true and game_data.vars.scrolling_vertically == true then
+			run.vars.scrolling_x = -math.floor(game_data.levels[run.vars.level].actors[1].x / (game_data.levels_data.sw * game_data.block_width)) * (game_data.levels_data.sw * game_data.block_width)
+			run.vars.scrolling_y = -math.floor(game_data.levels[run.vars.level].actors[1].y / (game_data.levels_data.sh * game_data.block_height)) * (game_data.levels_data.sh * game_data.block_height)
+		end
+
+	end
 end
 
 function run.draw()
@@ -130,6 +207,10 @@ function DrawGame()
 				local block = game_data.levels[run.vars.level].blocks[x][y]
 				local xc = ScaleWidth(x * game_data.block_width, WINDOW_ZOOM)
 				local yc = ScaleHeight(y * game_data.block_height, WINDOW_ZOOM)
+
+				-- scrolling
+				xc = xc + ScaleWidth(run.vars.scrolling_x, WINDOW_ZOOM)
+				yc = yc + ScaleHeight(run.vars.scrolling_y, WINDOW_ZOOM)
 				
 				if block > 0 then
 					love.graphics.draw(img_blocks[block], px + xc, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM)
@@ -146,7 +227,11 @@ function DrawGame()
 				local sprite = game_data.animations[animation][frame]
 				local xc = ScaleWidth(game_data.levels[run.vars.level].actors[i].x, WINDOW_ZOOM)
 				local yc = ScaleHeight(game_data.levels[run.vars.level].actors[i].y, WINDOW_ZOOM)
-			
+
+				-- scrolling
+				xc = xc + ScaleWidth(run.vars.scrolling_x, WINDOW_ZOOM)
+				yc = yc + ScaleHeight(run.vars.scrolling_y, WINDOW_ZOOM)
+
 				love.graphics.draw(img_sprites[sprite], px + xc, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM)
 			end
 		end

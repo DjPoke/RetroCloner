@@ -127,7 +127,11 @@ game_data = {
 	vars = {
 		lives = 0,
 		game_speed = 0.0,
-		game_goal = 0
+		game_goal = 0,
+		scrolling_type = 0,
+		scrolling_speed = 0,
+		scrolling_horizontally = false,
+		scrolling_vertically = false
 	}
 }
 

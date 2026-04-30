@@ -455,5 +455,35 @@ function LoadGame(d, f, t)
 	cpt = cpt + 1
 	t.vars.game_goal = tonumber(ts[cpt])
 	
+	-- scrolling type
+	cpt = cpt + 1
+	t.vars.scrolling_type = tonumber(ts[cpt])
+	
+	-- scrolling speed
+	cpt = cpt + 1
+	t.vars.scrolling_speed = tonumber(ts[cpt])
+
+	-- scrolling horizontally
+	cpt = cpt + 1
+	
+	if ts[cpt] == "true" then
+		t.vars.scrolling_horizontally = true
+	elseif ts[cpt] == "false" then
+		t.vars.scrolling_horizontally = false
+	else
+		return nil
+	end
+
+	-- scrolling vertically
+	cpt = cpt + 1
+	
+	if ts[cpt] == "true" then
+		t.vars.scrolling_vertically = true
+	elseif ts[cpt] == "false" then
+		t.vars.scrolling_vertically = false
+	else
+		return nil
+	end
+	
 	return t
 end

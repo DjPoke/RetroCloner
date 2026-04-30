@@ -5,6 +5,11 @@ TODO
 * Bugs:
 	- ???
 
+* Faire le déplacement du jouer
+	- Déplacer le joueur en fonction du type de joueur
+	- Limiter les scrolling à droite du niveau
+	- Limiter la sortie d'écran pendant les divers scrollings
+
 * Faire l'édition des parametres du jeu:
 	- Faire une liste de parametres en ligne verticale, avec leurs valeurs à droite
 	- Haut/bas permet de choisir un parametre

@@ -197,9 +197,13 @@ function SaveGame(d, f, t)
 		end
 		
 		-- save game data
-		ts = ts .. tostring(t.vars.lives) .. "\r\n" 		-- lives of the player
-		ts = ts .. tostring(t.vars.game_speed) .. "\r\n"	-- game speed
-		ts = ts .. tostring(t.vars.game_goal) .. "\r\n"		-- game goal
+		ts = ts .. tostring(t.vars.lives) .. "\r\n" 					-- lives of the player
+		ts = ts .. tostring(t.vars.game_speed) .. "\r\n"				-- game speed
+		ts = ts .. tostring(t.vars.game_goal) .. "\r\n"					-- game goal
+		ts = ts .. tostring(t.vars.scrolling_type) .. "\r\n"			-- scrolling type
+		ts = ts .. tostring(t.vars.scrolling_speed) .. "\r\n"			-- scrolling speed
+		ts = ts .. tostring(t.vars.scrolling_horizontally) .. "\r\n"	-- scrolling horizontally
+		ts = ts .. tostring(t.vars.scrolling_vertically) .. "\r\n"		-- scrolling vertically
 
 		-- write data
 		file:write(ts)
