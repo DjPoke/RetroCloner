@@ -2,12 +2,12 @@ require("tools")
 
 function LoadGame(d, f, t)	
 	-- check for errors
-	if love.filesystem.getInfo(d .. "/" .. f) == nil then
+	if love.filesystem.getInfo("saves/" .. d .. "/" .. f) == nil then
 		return nil
 	end
 	
 	-- read the file
-	file = love.filesystem.newFile(d .. "/" .. f)
+	file = love.filesystem.newFile("saves/" .. d .. "/" .. f)
 	file:open("r")
 	
 	local file_string = ""

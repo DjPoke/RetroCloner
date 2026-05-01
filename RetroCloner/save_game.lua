@@ -4,12 +4,12 @@ function SaveGame(d, f, t)
 	
 	-- create a new directory
 	if love.filesystem.getInfo(d) == nil then
-		success = love.filesystem.createDirectory(d)
+		success = love.filesystem.createDirectory("saves/" .. d)
 	end
 	
 	-- write the file
 	if success then
-		file = love.filesystem.newFile(d .. "/" .. f)
+		file = love.filesystem.newFile("saves/" .. d .. "/" .. f)
 		file:open("w")
 		
 		local ts = ""

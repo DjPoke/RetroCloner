@@ -229,6 +229,9 @@ function love.load()
 	-- set window title
 	love.window.setTitle(EDITOR_WINDOW_TITLE)
 	
+	-- create saves directory
+	love.filesystem.createDirectory("saves")
+	
 	-- load beep sound
 	beep = love.audio.newSource("sounds/beep.wav", "static")
 end
@@ -240,9 +243,17 @@ function love.update(dt)
 			project_name = ""
 			file_list = {}
 			
-			-- get folder's list in the save directory (Linux/MacOS only)
-			for file in io.popen("ls -- " .. love.filesystem.getSaveDirectory()):lines() do
-				table.insert(file_list, file)
+			-- get folder's list in the save directory
+			local items = love.filesystem.getDirectoryItems("saves")
+
+			for _, item in ipairs(items) do
+				local path = "saves/" .. item
+				local info = love.filesystem.getInfo(path)
+				
+				if info and info.type == "directory" then
+					print(item)
+					table.insert(file_list, item)
+				end
 			end
 			
 			if #file_list == 0 then

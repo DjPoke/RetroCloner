@@ -8,6 +8,8 @@ TODO
 * Terminer les déplacements du jouer
 	- Déplacer le joueur en fonction de son type (WIP)
 	- Animer le player en fonction de son type (WIP)
+	- Ajouter les contrôles au joystick
+	- Faire le cas où les animations des acteurs sont à 0
 
 * Faire l'édition des parametres du jeu:
 	- Faire une liste de parametres en ligne verticale, avec leurs valeurs à droite
