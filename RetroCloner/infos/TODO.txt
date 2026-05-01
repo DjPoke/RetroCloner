@@ -7,7 +7,6 @@ TODO
 
 * Terminer les déplacements du jouer
 	- Déplacer le joueur en fonction de son type (WIP)
-	- Ajouter les contrôles au joystick
 	- Traiter le cas où les animations des acteurs sont à 0 dans run.lua
 
 * Faire l'édition des parametres du jeu:

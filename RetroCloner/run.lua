@@ -23,6 +23,9 @@ local game_speed_tick = false
 local moving = false
 local moving_down = false
 
+local joysticks = nil
+local joy = nil
+
 -- run functions
 function run.load()
 	-- initialize player's data
@@ -52,6 +55,10 @@ function run.load()
 			game_data.levels[i].actors[j].frame = 1
 		end
 	end
+	
+	-- get joystick
+	joysticks = love.joystick.getJoysticks()
+    joy = joysticks[1]
 end
 
 function run.update(dt)
@@ -75,12 +82,57 @@ function run.update(dt)
 		local old_y = game_data.levels[run.vars.level].actors[1].y
 		local new_x = old_x
 		local new_y = old_y
+		
+		local joy_up = false
+		local joy_down = false
+		local joy_left = false
+		local joy_right = false
 	
 		if game_speed_tick == true then	
 			-- move the player
 			local actor_number = game_data.levels[run.vars.level].actors[1].number
+
+			-- get keyboard fist
+			joy_up = love.keyboard.isDown("up")
+			joy_down = love.keyboard.isDown("down")
+			joy_left = love.keyboard.isDown("left")
+			joy_right = love.keyboard.isDown("right")
 			
-			-- (TODO!)
+			-- get joystick after, is keyboard is not used
+			if joy ~= nil then
+				-- using dpad
+				if joy_up == false then joy_up = joy:isGamepadDown("dpup") end
+				if joy_down == false then joy_down = joy:isGamepadDown("dpdown") end
+				if joy_left == false then joy_left = joy:isGamepadDown("dpleft") end
+				if joy_right == false then joy_right = joy:isGamepadDown("dpright") end
+				
+				-- using left joystick
+				if joy_up == false then
+					if joy:getGamepadAxis("lefty") < 0 then
+						joy_up = true
+					end
+				end
+
+				if joy_down == false then
+					if joy:getGamepadAxis("lefty") > 0 then
+						joy_down = true
+					end
+				end
+
+				if joy_left == false then
+					if joy:getGamepadAxis("leftx") < 0 then
+						joy_left = true
+					end
+				end
+
+				if joy_right == false then
+					if joy:getGamepadAxis("leftx") > 0 then
+						joy_right = true
+					end
+				end
+			end
+			
+			-- (TODO! set all player's type gameplay)
 			if game_data.actors[actor_number].type.name == "platformer" then
 				moving = false
 				moving_down = false
@@ -91,7 +143,7 @@ function run.update(dt)
 					run.vars.on_stairs = false
 				end
 			
-				if love.keyboard.isDown("left") then
+				if joy_left == true then
 					if game_data.levels[run.vars.level].actors[1].animation >= 1 and game_data.levels[run.vars.level].actors[1].animation <= 4 then
 						game_data.levels[run.vars.level].actors[1].hflip = true
 						run.vars.direction = 180
@@ -106,7 +158,7 @@ function run.update(dt)
 						-- walk left
 						new_x = new_x - 1
 					end
-				elseif love.keyboard.isDown("right") then
+				elseif joy_right == true then
 					if game_data.levels[run.vars.level].actors[1].animation >= 1 and game_data.levels[run.vars.level].actors[1].animation <= 4 then
 						game_data.levels[run.vars.level].actors[1].hflip = false
 						run.vars.direction = 0
@@ -121,7 +173,7 @@ function run.update(dt)
 						-- walk right
 						new_x = new_x + 1
 					end
-				elseif love.keyboard.isDown("up") then
+				elseif joy_up == true then
 					-- climb up
 					run.vars.direction = 270
 					moving = true
@@ -134,7 +186,7 @@ function run.update(dt)
 						
 						new_y = new_y - 1
 					end
-				elseif love.keyboard.isDown("down") then
+				elseif joy_down == true then
 					-- climb down
 					run.vars.direction = 90
 					moving = true
@@ -213,12 +265,12 @@ function run.update(dt)
 				local dir_x = 0
 				local dir_y = 0
 				
-				if love.keyboard.isDown("up") then
-					if love.keyboard.isDown("left") then
+				if joy_up == true then
+					if joy_left == true then
 						dir = 225
 						dir_x = -1
 						dir_y = -1
-					elseif love.keyboard.isDown("right") then
+					elseif joy_right == true then
 						dir = 315
 						dir_x = 1
 						dir_y = -1
@@ -227,12 +279,12 @@ function run.update(dt)
 						dir_x = 0
 						dir_y = -1
 					end
-				elseif love.keyboard.isDown("down") then
-					if love.keyboard.isDown("left") then
+				elseif joy_down == true then
+					if joy_left == true then
 						dir = 135
 						dir_x = -1
 						dir_y = 1
-					elseif love.keyboard.isDown("right") then
+					elseif joy_right == true then
 						dir = 45
 						dir_x = 1
 						dir_y = 1
@@ -241,12 +293,12 @@ function run.update(dt)
 						dir_x = 0
 						dir_y = 1
 					end
-				elseif love.keyboard.isDown("left") then
-					if love.keyboard.isDown("up") then
+				elseif joy_left == true then
+					if joy_up == true then
 						dir = 225						
 						dir_x = -1
 						dir_y = -1
-					elseif love.keyboard.isDown("down") then
+					elseif joy_down == true then
 						dir = 135
 						dir_x = -1
 						dir_y = 1
@@ -255,12 +307,12 @@ function run.update(dt)
 						dir_x = -1
 						dir_y = 0
 					end
-				elseif love.keyboard.isDown("right") then
-					if love.keyboard.isDown("up") then
+				elseif joy_right == true then
+					if joy_up == true then
 						dir = 315
 						dir_x = 1
 						dir_y = -1
-					elseif love.keyboard.isDown("down") then
+					elseif joy_down == true then
 						dir = 45
 						dir_x = 1
 						dir_y = 1
@@ -509,35 +561,64 @@ function run.draw()
 	FontsPrint("LEVEL " .. ToString2(run.vars.level, 3), ScaleX(game_data.areas[LEVEL_AREA].x, WINDOW_ZOOM), ScaleY(game_data.areas[LEVEL_AREA].y, WINDOW_ZOOM), game_data.areas[LEVEL_AREA].width * WINDOW_ZOOM, game_data.areas[LEVEL_AREA].height * WINDOW_ZOOM, GAME_FONT, FONT_DOWN_SCALE / WINDOW_ZOOM, game_data.text_paper, game_data.text_pen)
 end
 
+-- keyboard buttons
 function run.keypressed(key, scancode, isrepeat)
 	local actor_number = game_data.levels[run.vars.level].actors[1].number
 
 	-- fire with keyboard
 	if key == "x" then
-		-- fire 1: "x" (TODO! add other kinds of players)
-		if game_data.actors[actor_number].type.name == "platformer" then
-			-- the player is on the ground ?
-			if run.vars.on_the_ground == true or run.vars.on_stairs == true then
-				-- the player is idle or walking or climbing ?
-				if game_data.levels[run.vars.level].actors[1].animation == 1 or game_data.levels[run.vars.level].actors[1].animation == 2 or game_data.levels[run.vars.level].actors[1].animation == 4 then
-					-- jump
-					game_data.levels[run.vars.level].actors[1].animation = 3
-					game_data.levels[run.vars.level].actors[1].frame = 1
-					run.vars.jump_power = -game_data.vars.jump_power
-				end
+		-- fire 1: "a"
+		Fire1(actor_number)
+		
+	elseif key == "c" then
+		-- fire 2: "b"
+		Fire2(actor_number)
+	end
+end
+
+-- gamepad buttons
+function love.gamepadpressed(joystick, button)
+	local actor_number = game_data.levels[run.vars.level].actors[1].number
+
+	if joy == joystick then
+		-- fire with keyboard
+		if button == "a" then
+			-- fire 1: "a"
+			Fire1(actor_number)
+			
+		elseif button == "b" then
+			-- fire 2: "b"
+			Fire2(actor_number)
+		end
+	end
+end
+
+-- fire 1 button (TODO! add other kinds of players)
+function Fire1(a)
+	if game_data.actors[a].type.name == "platformer" then
+		-- the player is on the ground ?
+		if run.vars.on_the_ground == true or run.vars.on_stairs == true then
+			-- the player is idle or walking or climbing ?
+			if game_data.levels[run.vars.level].actors[1].animation == 1 or game_data.levels[run.vars.level].actors[1].animation == 2 or game_data.levels[run.vars.level].actors[1].animation == 4 then
+				-- jump
+				game_data.levels[run.vars.level].actors[1].animation = 3
+				game_data.levels[run.vars.level].actors[1].frame = 1
+				run.vars.jump_power = -game_data.vars.jump_power
 			end
 		end
-	elseif key == "c" then
-		-- fire 2: "c" (TODO! add other kinds of players)
-		if game_data.actors[actor_number].type.name == "platformer" then
-			-- the player is on the ground ?
-			if run.vars.on_the_ground == true then
-				-- the player is idle or walking ?
-				if game_data.levels[run.vars.level].actors[1].animation == 1 or game_data.levels[run.vars.level].actors[1].animation == 2 then
-					-- hit
-					game_data.levels[run.vars.level].actors[1].animation = 5
-					game_data.levels[run.vars.level].actors[1].frame = 1
-				end
+	end
+end
+
+-- fire 2 button (TODO! add other kinds of players)
+function Fire2(a)
+	if game_data.actors[a].type.name == "platformer" then
+		-- the player is on the ground ?
+		if run.vars.on_the_ground == true then
+			-- the player is idle or walking ?
+			if game_data.levels[run.vars.level].actors[1].animation == 1 or game_data.levels[run.vars.level].actors[1].animation == 2 then
+				-- hit
+				game_data.levels[run.vars.level].actors[1].animation = 5
+				game_data.levels[run.vars.level].actors[1].frame = 1
 			end
 		end
 	end
@@ -1049,6 +1130,9 @@ end
 function AnimateCharacter(i, moving)
 	local actor_number = game_data.levels[run.vars.level].actors[i].number
 	local animation = game_data.levels[run.vars.level].actors[i].animation
+	
+	-- animation not configured ? exit
+	if animation == 0 then return false end
 	
 	local loop = game_data.animations_loop[animation].loop
 	local v1  = game_data.animations_loop[animation].v1
