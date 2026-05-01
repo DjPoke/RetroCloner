@@ -37,13 +37,23 @@ player_levels_max_size = {
 enemy_types = {
 	{name = "static", idle = 0},
 	{name = "moving left-right", idle = 0, walking = 0},
-	{name = "sniper", idle = 0, fire = 0}
+	{name = "sniper", idle = 0, fire = 0},
+	{name = "oscillate left-right", idle = 0, walking = 0, fire = 0},
+	{name = "oscillate up_down", idle = 0, walking = 0, fire = 0},
+	{name = "turn", idle = 0, walking = 0, fire = 0},
+	{name = "seek", idle = 0, walking = 0, fire = 0},
+	{name = "random", idle = 0, walking = 0, fire = 0}
 }
 
 enemy_animations = {
 	{"idle"},
 	{"idle", "walking"},
-	{"idle", "fire"}
+	{"idle", "fire"},
+	{"idle", "walking", "fire"},
+	{"idle", "walking", "fire"},
+	{"idle", "walking", "fire"},
+	{"idle", "walking", "fire"},
+	{"idle", "walking", "fire"}
 }
 
 -- types of bonus-malus
