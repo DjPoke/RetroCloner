@@ -207,6 +207,7 @@ function SaveGame(d, f, t)
 		ts = ts .. tostring(t.vars.scrolling_speed) .. "\r\n"			-- scrolling speed
 		ts = ts .. tostring(t.vars.scrolling_horizontally) .. "\r\n"	-- scrolling horizontally
 		ts = ts .. tostring(t.vars.scrolling_vertically) .. "\r\n"		-- scrolling vertically
+		ts = ts .. tostring(t.vars.scroll_backward) .. "\r\n"			-- scroll backward
 		ts = ts .. tostring(t.vars.gravity) .. "\r\n"					-- gravity
 		ts = ts .. tostring(t.vars.jump_power) .. "\r\n"				-- jump power
 

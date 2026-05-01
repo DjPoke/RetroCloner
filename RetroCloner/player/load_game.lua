@@ -495,6 +495,17 @@ function LoadGame(d, f, t)
 		return nil
 	end
 
+	-- scroll backward
+	cpt = cpt + 1
+	
+	if ts[cpt] == "true" then
+		t.vars.scroll_backward = true
+	elseif ts[cpt] == "false" then
+		t.vars.scroll_backward = false
+	else
+		return nil
+	end
+
 	-- gravity
 	cpt = cpt + 1
 	t.vars.gravity = tonumber(ts[cpt])

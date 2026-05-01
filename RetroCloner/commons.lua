@@ -195,6 +195,7 @@ function SetDefaultGameData()
 	game_data.vars.scrolling_speed = 1
 	game_data.vars.scrolling_horizontally = true
 	game_data.vars.scrolling_vertically = false
+	game_data.vars.scroll_backward = true
 	game_data.vars.gravity = 8
 	game_data.vars.jump_power = 10
 end

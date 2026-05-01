@@ -77,6 +77,7 @@ game_data = {
 		scrolling_speed = 0,
 		scrolling_horizontally = false,
 		scrolling_vertically = false,
+		scroll_backward = false,
 		gravity = 0,
 		jump_power = 0
 	}
