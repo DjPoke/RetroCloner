@@ -127,11 +127,14 @@ game_data = {
 	vars = {
 		lives = 0,
 		game_speed = 0.0,
+		animations_speed = 0.0,
 		game_goal = 0,
 		scrolling_type = 0,
 		scrolling_speed = 0,
 		scrolling_horizontally = false,
-		scrolling_vertically = false
+		scrolling_vertically = false,
+		gravity = 0,
+		jump_power = 0
 	}
 }
 
@@ -832,7 +835,7 @@ function love.draw()
 			
 		else
 			love.graphics.print("No animations!", 300, 80)
-		end		
+		end
 
 		-- draw shortcuts
 		love.graphics.setColor(0, 1, 1)
@@ -1072,7 +1075,7 @@ function love.textinput(t)
 	end
 end
 
-function love.keypressed(key)
+function love.keypressed(key, scancode, isrepeat)
 	if mode == MODE_MENU then
 		if key == "a" then
 			mode = MODE_NEW_PROJECT
@@ -1321,6 +1324,9 @@ function love.keypressed(key)
 		end
 	elseif mode == MODE_EXPORT_EXECUTABLE_GAME then
 	elseif mode == MODE_TEST_GAME then
+		-- execute run keys
+		run.keypressed(key, scancode, isrepeat)
+
 		if key == "escape" then
 			-- set editor window size
 			love.window.setMode(EDITOR_WINDOW_WIDTH, EDITOR_WINDOW_HEIGHT, {fullscreen = false, resizable = false, vsync = 1})
@@ -2042,7 +2048,7 @@ function love.keypressed(key)
 					end
 					
 					-- add player actor to the level
-					table.insert(t.actors, {number = 1, start_x = 0, start_y = 0, x = 0, y = 0, animation = 0, frame = 0})
+					table.insert(t.actors, {number = 1, start_x = 0, start_y = 0, x = 0, y = 0, animation = 0, frame = 0, hflip = false, vflip = false})
 
 					-- add new void level
 					table.insert(game_data.levels, t)
@@ -2314,7 +2320,9 @@ function love.keypressed(key)
 end
 
 function love.mousepressed(x, y, button, istouch, presses)
-	if mode == MODE_EDIT_LEVELS then
+	if mode == MODE_TEST_GAME then
+		run.keypressed(key, scancode, isrepeat)
+	elseif mode == MODE_EDIT_LEVELS then
 		-- position actors
 		if button == 1 then
 			if current_level_actors_edit_mode == false then
@@ -2334,7 +2342,7 @@ function love.mousepressed(x, y, button, istouch, presses)
 						x_pos = Quantize(x_pos, game_data.block_width)
 						y_pos = Quantize(y_pos, game_data.block_height)
 
-						table.insert(game_data.levels[current_level].actors, {number = current_level_selected_actor, start_x = x_pos, start_y = y_pos, x = x_pos, y = y_pos, animation = GetActorAnimationNumber(current_level_selected_actor, "idle"), frame = 1})
+						table.insert(game_data.levels[current_level].actors, {number = current_level_selected_actor, start_x = x_pos, start_y = y_pos, x = x_pos, y = y_pos, animation = GetActorAnimationNumber(current_level_selected_actor, "idle"), frame = 1, hflip = false, vflip = false})
 					end
 				end
 			elseif current_level_actors_edit_mode == true then

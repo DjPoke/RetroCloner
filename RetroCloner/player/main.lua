@@ -71,11 +71,14 @@ game_data = {
 	vars = {
 		lives = 0,
 		game_speed = 0.0,
+		animations_speed = 0.0,
 		game_goal = 0,
 		scrolling_type = 0,
 		scrolling_speed = 0,
 		scrolling_horizontally = false,
-		scrolling_vertically = false
+		scrolling_vertically = false,
+		gravity = 0,
+		jump_power = 0
 	}
 }
 
@@ -140,4 +143,8 @@ end
 function love.draw()
 	-- draw the game
 	run.draw()
+end
+
+function love.keypressed(key, scancode, isrepeat)
+	run.keypressed(key, scancode, isrepeat)
 end

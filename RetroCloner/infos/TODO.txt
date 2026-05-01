@@ -3,16 +3,20 @@ TODO
 ====
 
 * Bugs:
-	- ???
+	- ...
 
-* Faire le déplacement du jouer
-	- Déplacer le joueur en fonction du type de joueur
-	- Limiter la sortie d'écran pendant les divers scrollings
+* Terminer les déplacements du jouer
+	- Déplacer le joueur en fonction de son type (WIP)
+	- Animer le player en fonction de son type (WIP)
 
 * Faire l'édition des parametres du jeu:
 	- Faire une liste de parametres en ligne verticale, avec leurs valeurs à droite
 	- Haut/bas permet de choisir un parametre
 	- Gauche/droite permet de changer la valeur du paramètres
+
+* Faire les acteurs:
+	- Ajouter la possibilité de scaler les acteurs en x1, x2 ou x3, pour obtenir des boss
+	- Créer divers types de comportements et d'animations pour les monstres
 
 * Faire l'import d'images
 	- Convertir à la foulée les images importées, en fonction du preset en cours

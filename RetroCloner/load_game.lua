@@ -283,7 +283,13 @@ function LoadGame(d, f, t)
 			cpt = cpt + 1
 			local frame = tonumber(ts[cpt])
 			
-			table.insert(t2.actors, {number = number, start_x = start_x, start_y = start_y, x = x, y = y, animation = animation, frame = frame})
+			cpt = cpt + 1
+			local hflip = tonumber(ts[cpt])
+
+			cpt = cpt + 1
+			local vflip = tonumber(ts[cpt])
+
+			table.insert(t2.actors, {number = number, start_x = start_x, start_y = start_y, x = x, y = y, animation = animation, frame = frame, hflip = hflip, vflip = vflip})
 		end
 		
 		table.insert(t.levels, t2)
@@ -451,6 +457,10 @@ function LoadGame(d, f, t)
 	cpt = cpt + 1
 	t.vars.game_speed = tonumber(ts[cpt])
 
+	-- animations speed
+	cpt = cpt + 1
+	t.vars.animations_speed = tonumber(ts[cpt])
+
 	-- game goal
 	cpt = cpt + 1
 	t.vars.game_goal = tonumber(ts[cpt])
@@ -484,6 +494,14 @@ function LoadGame(d, f, t)
 	else
 		return nil
 	end
+
+	-- gravity
+	cpt = cpt + 1
+	t.vars.gravity = tonumber(ts[cpt])
+	
+	-- jump power
+	cpt = cpt + 1
+	t.vars.jump_power = tonumber(ts[cpt])
 	
 	return t
 end

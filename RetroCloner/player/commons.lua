@@ -6,8 +6,8 @@ player_types = {
 	{name = "run & gun (top view)", idle = 0, run = 0, fire1 = 0, fire2 = 0, die = 0, directions = 8 },
 	{name = "maze & chase", idle = 0, run = 0, die = 0 },
 	{name = "fixed shooter", idle = 0, move = 0, die = 0 },
-	{name = "horizontal shooter", idle = 0, move = 0, fire1 = 0, fire2 = 0, die = 0 },
-	{name = "vertical shooter", idle = 0, move = 0, fire1 = 0, fire2 = 0, die = 0 }
+	{name = "horizontal shooter", idle = 0, move = 0, fire1 = 0, fire2 = 0, die = 0, hflip = false },
+	{name = "vertical shooter", idle = 0, move = 0, fire1 = 0, fire2 = 0, die = 0, vflip = false }
 }
 
 player_animations = {
@@ -188,10 +188,13 @@ end
 
 function SetDefaultGameData()
 	game_data.vars.lives = 3
-	game_data.vars.game_speed = 0.1
+	game_data.vars.game_speed = 0.02
+	game_data.vars.animations_speed = 0.30
 	game_data.vars.game_goal = 1
 	game_data.vars.scrolling_type = 1
 	game_data.vars.scrolling_speed = 1
 	game_data.vars.scrolling_horizontally = true
 	game_data.vars.scrolling_vertically = false
+	game_data.vars.gravity = 8
+	game_data.vars.jump_power = 10
 end
