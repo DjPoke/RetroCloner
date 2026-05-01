@@ -390,6 +390,17 @@ function run.update(dt)
 				new_x, new_y = SlidingCollisionZ(new_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.direction, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
 			end
 			
+			-- limit left and up movements
+			if game_data.vars.scroll_backward == false then
+				if new_x + run.vars.scrolling_x < 0 then
+					new_x = -run.vars.scrolling_x
+				end
+
+				if new_y + run.vars.scrolling_y < 0 then
+					new_y = -run.vars.scrolling_y
+				end
+			end
+			
 			-- update coordinates of the player
 			game_data.levels[run.vars.level].actors[1].x = new_x
 			game_data.levels[run.vars.level].actors[1].y = new_y
@@ -423,24 +434,7 @@ function run.update(dt)
 	if game_data.vars.scrolling_type == 2 then
 		-- scroll when the player is in the middle of the screen
 		if game_data.vars.scrolling_horizontally == true and game_data.vars.scrolling_vertically == false then
-			if game_data.levels[run.vars.level].actors[1].x + run.vars.scrolling_x > (game_data.levels_data.sw * game_data.block_width / 2) then
-				if -run.vars.scrolling_x < ((game_data.levels_data.w - 1) * game_data.levels_data.sw * game_data.block_width) then
-					local scroll_value = game_data.levels[run.vars.level].actors[1].x - (game_data.levels_data.sw * game_data.block_width / 2) + run.vars.scrolling_x
-					
-					run.vars.scrolling_x = run.vars.scrolling_x - game_data.vars.scrolling_speed
-					game_data.levels[run.vars.level].actors[1].x = game_data.levels[run.vars.level].actors[1].x - scroll_value + game_data.vars.scrolling_speed
-				end
-			end
-		elseif game_data.vars.scrolling_horizontally == false and game_data.vars.scrolling_vertically == true then
-			if game_data.levels[run.vars.level].actors[1].y + run.vars.scrolling_y > (game_data.levels_data.sh * game_data.block_height / 2) then
-				if -run.vars.scrolling_y < ((game_data.levels_data.h - 1) * game_data.levels_data.sh * game_data.block_height) then
-					local scroll_value = game_data.levels[run.vars.level].actors[1].y - (game_data.levels_data.sh * game_data.block_height / 2) + run.vars.scrolling_y
-					
-					run.vars.scrolling_y = run.vars.scrolling_y - game_data.vars.scrolling_speed
-					game_data.levels[run.vars.level].actors[1].y = game_data.levels[run.vars.level].actors[1].y - scroll_value + game_data.vars.scrolling_speed
-				end
-			end
-		elseif game_data.vars.scrolling_horizontally == true and game_data.vars.scrolling_vertically == true then
+			-- scroll forward x
 			if game_data.levels[run.vars.level].actors[1].x + run.vars.scrolling_x > (game_data.levels_data.sw * game_data.block_width / 2) then
 				if -run.vars.scrolling_x < ((game_data.levels_data.w - 1) * game_data.levels_data.sw * game_data.block_width) then
 					local scroll_value = game_data.levels[run.vars.level].actors[1].x - (game_data.levels_data.sw * game_data.block_width / 2) + run.vars.scrolling_x
@@ -450,12 +444,81 @@ function run.update(dt)
 				end
 			end
 
+			-- scroll backward x
+			if game_data.vars.scroll_backward == true then
+				if game_data.levels[run.vars.level].actors[1].x + run.vars.scrolling_x < (game_data.levels_data.sw * game_data.block_width / 2) then
+					if -run.vars.scrolling_x > 0 then
+						local scroll_value = game_data.levels[run.vars.level].actors[1].x - (game_data.levels_data.sw * game_data.block_width / 2) + run.vars.scrolling_x
+						
+						run.vars.scrolling_x = run.vars.scrolling_x + game_data.vars.scrolling_speed
+						game_data.levels[run.vars.level].actors[1].x = game_data.levels[run.vars.level].actors[1].x + scroll_value + game_data.vars.scrolling_speed
+					end
+				end
+			end
+		elseif game_data.vars.scrolling_horizontally == false and game_data.vars.scrolling_vertically == true then
+			-- scroll forward y
 			if game_data.levels[run.vars.level].actors[1].y + run.vars.scrolling_y > (game_data.levels_data.sh * game_data.block_height / 2) then
 				if -run.vars.scrolling_y < ((game_data.levels_data.h - 1) * game_data.levels_data.sh * game_data.block_height) then
 					local scroll_value = game_data.levels[run.vars.level].actors[1].y - (game_data.levels_data.sh * game_data.block_height / 2) + run.vars.scrolling_y
 					
 					run.vars.scrolling_y = run.vars.scrolling_y - game_data.vars.scrolling_speed
 					game_data.levels[run.vars.level].actors[1].y = game_data.levels[run.vars.level].actors[1].y - scroll_value + game_data.vars.scrolling_speed
+				end
+			end
+
+			-- scroll backward y
+			if game_data.vars.scroll_backward == true then
+				if game_data.levels[run.vars.level].actors[1].y + run.vars.scrolling_y < (game_data.levels_data.sh * game_data.block_height / 2) then
+					if -run.vars.scrolling_y > 0 then
+						local scroll_value = game_data.levels[run.vars.level].actors[1].y - (game_data.levels_data.sh * game_data.block_height / 2) + run.vars.scrolling_y
+						
+						run.vars.scrolling_y = run.vars.scrolling_y + game_data.vars.scrolling_speed
+						game_data.levels[run.vars.level].actors[1].y = game_data.levels[run.vars.level].actors[1].y + scroll_value + game_data.vars.scrolling_speed
+					end
+				end
+			end
+		elseif game_data.vars.scrolling_horizontally == true and game_data.vars.scrolling_vertically == true then
+			-- scroll forward x
+			if game_data.levels[run.vars.level].actors[1].x + run.vars.scrolling_x > (game_data.levels_data.sw * game_data.block_width / 2) then
+				if -run.vars.scrolling_x < ((game_data.levels_data.w - 1) * game_data.levels_data.sw * game_data.block_width) then
+					local scroll_value = game_data.levels[run.vars.level].actors[1].x - (game_data.levels_data.sw * game_data.block_width / 2) + run.vars.scrolling_x
+					
+					run.vars.scrolling_x = run.vars.scrolling_x - game_data.vars.scrolling_speed
+					game_data.levels[run.vars.level].actors[1].x = game_data.levels[run.vars.level].actors[1].x - scroll_value + game_data.vars.scrolling_speed
+				end
+			end
+			
+			-- scroll backward x
+			if game_data.vars.scroll_backward == true then
+				if game_data.levels[run.vars.level].actors[1].x + run.vars.scrolling_x < (game_data.levels_data.sw * game_data.block_width / 2) then
+					if -run.vars.scrolling_x > 0 then
+						local scroll_value = game_data.levels[run.vars.level].actors[1].x - (game_data.levels_data.sw * game_data.block_width / 2) + run.vars.scrolling_x
+						
+						run.vars.scrolling_x = run.vars.scrolling_x + game_data.vars.scrolling_speed
+						game_data.levels[run.vars.level].actors[1].x = game_data.levels[run.vars.level].actors[1].x + scroll_value + game_data.vars.scrolling_speed
+					end
+				end
+			end
+
+			-- scroll forward y
+			if game_data.levels[run.vars.level].actors[1].y + run.vars.scrolling_y > (game_data.levels_data.sh * game_data.block_height / 2) then
+				if -run.vars.scrolling_y < ((game_data.levels_data.h - 1) * game_data.levels_data.sh * game_data.block_height) then
+					local scroll_value = game_data.levels[run.vars.level].actors[1].y - (game_data.levels_data.sh * game_data.block_height / 2) + run.vars.scrolling_y
+					
+					run.vars.scrolling_y = run.vars.scrolling_y - game_data.vars.scrolling_speed
+					game_data.levels[run.vars.level].actors[1].y = game_data.levels[run.vars.level].actors[1].y - scroll_value + game_data.vars.scrolling_speed
+				end
+			end
+
+			-- scroll backward y
+			if game_data.vars.scroll_backward == true then
+				if game_data.levels[run.vars.level].actors[1].y + run.vars.scrolling_y < (game_data.levels_data.sh * game_data.block_height / 2) then
+					if -run.vars.scrolling_y > 0 then
+						local scroll_value = game_data.levels[run.vars.level].actors[1].y - (game_data.levels_data.sh * game_data.block_height / 2) + run.vars.scrolling_y
+						
+						run.vars.scrolling_y = run.vars.scrolling_y + game_data.vars.scrolling_speed
+						game_data.levels[run.vars.level].actors[1].y = game_data.levels[run.vars.level].actors[1].y + scroll_value + game_data.vars.scrolling_speed
+					end
 				end
 			end
 		end

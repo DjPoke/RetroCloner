@@ -200,11 +200,11 @@ text_message = ""
 
 beep = nil
 
-animation_timer = 0.0
-blink_timer = 0.0
-
 animation_playing = false
 animation_frame = 0
+animation_timer = 0.0
+
+blink_timer = 0.0
 
 -- requires
 require("tools")
@@ -400,25 +400,27 @@ function love.update(dt)
 			local my = love.mouse.getY()
 			
 			-- draw blocks with the mouse
-			if current_level_mode == LEVEL_MODE_BLOCKS then
-				local xc = 400 - (game_data.levels_data.sw * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM / 2)
-				local yc = 160
-				
-				local bx = math.floor((mx - xc) / (game_data.block_width * game_data.pixel_size * LEVELS_ZOOM))
-				local by = math.floor((my - yc) / (game_data.block_height * LEVELS_ZOOM))
+			if current_level_actors_edit_mode == false then
+				if current_level_mode == LEVEL_MODE_BLOCKS then
+					local xc = 400 - (game_data.levels_data.sw * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM / 2)
+					local yc = 160
+					
+					local bx = math.floor((mx - xc) / (game_data.block_width * game_data.pixel_size * LEVELS_ZOOM))
+					local by = math.floor((my - yc) / (game_data.block_height * LEVELS_ZOOM))
 
-				if love.mouse.isDown(1) == true then
-					-- draw blocks in the level
-					if bx >= 0 and bx < game_data.levels_data.sw then
-						if by >= 0 and by < game_data.levels_data.sh then
-							game_data.levels[current_level].blocks[bx - current_level_scroll_x][by - current_level_scroll_y] = current_level_selected_block
+					if love.mouse.isDown(1) == true then
+						-- draw blocks in the level
+						if bx >= 0 and bx < game_data.levels_data.sw then
+							if by >= 0 and by < game_data.levels_data.sh then
+								game_data.levels[current_level].blocks[bx - current_level_scroll_x][by - current_level_scroll_y] = current_level_selected_block
+							end
 						end
-					end
-				elseif love.mouse.isDown(2) == true then
-					-- clear blocks in the level
-					if bx >= 0 and bx < game_data.levels_data.sw then
-						if by >= 0 and by < game_data.levels_data.sh then
-							game_data.levels[current_level].blocks[bx - current_level_scroll_x][by - current_level_scroll_y] = 0
+					elseif love.mouse.isDown(2) == true then
+						-- clear blocks in the level
+						if bx >= 0 and bx < game_data.levels_data.sw then
+							if by >= 0 and by < game_data.levels_data.sh then
+								game_data.levels[current_level].blocks[bx - current_level_scroll_x][by - current_level_scroll_y] = 0
+							end
 						end
 					end
 				end
@@ -1647,6 +1649,10 @@ function love.keypressed(key, scancode, isrepeat)
 				
 				current_animation = current_animation + 1
 				current_frame = 1
+
+				animation_playing = false
+				animation_frame = 1
+				animation_timer = 0.0
 			end			
 		elseif key == "c" then
 			-- copy current frame
@@ -1665,6 +1671,10 @@ function love.keypressed(key, scancode, isrepeat)
 				table.remove(game_data.animations_loop, current_animation)
 				current_animation = #game_data.animations
 				current_frame = 1
+				
+				animation_playing = game_data.animations_loop[current_animation].loop
+				animation_frame = 1
+				animation_timer = 0.0
 			end
 		elseif key == "f" then
 			if current_animation > 0 then
@@ -1688,10 +1698,13 @@ function love.keypressed(key, scancode, isrepeat)
 					animation_playing = true
 					animation_frame = 1
 					animation_timer = 0.0
-				else
+				elseif game_data.animations_loop[current_animation].loop == true then
 					game_data.animations_loop[current_animation].loop = false
 					game_data.animations_loop[current_animation].v1 = 0
 					game_data.animations_loop[current_animation].v2 = 0
+					animation_playing = false
+					animation_frame = 1
+					animation_timer = 0.0
 				end
 			end
 		elseif key == "f1" then
@@ -1731,6 +1744,10 @@ function love.keypressed(key, scancode, isrepeat)
 			end
 			
 			animation_frame = 1
+							
+			animation_playing = game_data.animations_loop[current_animation].loop
+			animation_frame = 1
+			animation_timer = 0.0
 		elseif key == "pageup" then
 			-- edit next animation
 			if current_animation < #game_data.animations then
@@ -1740,6 +1757,10 @@ function love.keypressed(key, scancode, isrepeat)
 			end
 			
 			animation_frame = 1
+							
+			animation_playing = game_data.animations_loop[current_animation].loop
+			animation_frame = 1
+			animation_timer = 0.0
 		elseif key == "down" then
 			if current_animation > 0 then
 				if current_frame > 0 then
