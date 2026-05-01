@@ -12,7 +12,8 @@ run.vars = {
 	direction = 0,
 	jump_power = 0,
 	fall_power = 0,
-	on_the_ground = false
+	on_the_ground = false,
+	on_stairs = false
 }
 
 -- run vars
@@ -29,6 +30,7 @@ function run.load()
 	run.vars.jump_power = 0
 	run.vars.fall_power = 0
 	run.vars.on_the_ground = false
+	run.vars.on_stairs = false
 	
 	-- scrolling values
 	run.vars.scrolling_x = game_data.scrolling_start_x[run.vars.level]
@@ -78,6 +80,12 @@ function run.update(dt)
 			-- (TODO!)
 			if game_data.actors[actor_number].type.name == "platformer" then
 				local moving = false
+
+				if CanClimb(old_x, old_y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height) == true then
+					run.vars.on_stairs = true
+				else
+					run.vars.on_stairs = false
+				end
 			
 				if love.keyboard.isDown("left") then
 					game_data.levels[run.vars.level].actors[1].hflip = true
@@ -110,10 +118,26 @@ function run.update(dt)
 					-- climb up
 					run.vars.direction = 270
 					moving = true
+
+					if run.vars.on_stairs == true then
+						if game_data.levels[run.vars.level].actors[1].animation == 1 or game_data.levels[run.vars.level].actors[1].animation == 2 then
+							game_data.levels[run.vars.level].actors[1].animation = 4
+						end
+						
+						new_y = new_y - 1
+					end
 				elseif love.keyboard.isDown("down") then
 					-- climb down
 					run.vars.direction = 90
 					moving = true
+
+					if run.vars.on_stairs == true then
+						if game_data.levels[run.vars.level].actors[1].animation == 1 or game_data.levels[run.vars.level].actors[1].animation == 2 then
+							game_data.levels[run.vars.level].actors[1].animation = 4
+						end
+						
+						new_y = new_y + 1
+					end
 				end
 				
 				if run.vars.on_the_ground == true then
@@ -142,6 +166,11 @@ function run.update(dt)
 					run.vars.fall_power = 1
 				end
 
+				-- on stairs ? no more fall
+				if run.vars.on_stairs == true then
+					run.vars.fall_power = 0
+				end
+
 				-- apply gravity
 				new_y = new_y + run.vars.fall_power + run.vars.jump_power
 				
@@ -150,7 +179,7 @@ function run.update(dt)
 				new_y = CeilingCollision(old_x, new_y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
 				new_x = LeftCollision(new_x, old_y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
 				new_x = RightCollision(new_x, old_y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
-				new_x, run.vars.on_the_ground = SlidingCollisionZ(new_x, new_y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height, run.vars.on_the_ground)
+				new_x, run.vars.on_the_ground = CornerCollision(new_x, new_y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height, run.vars.on_the_ground)
 
 				-- restore idle animation
 				if run.vars.on_the_ground == true then
@@ -275,7 +304,7 @@ function run.update(dt)
 				-- check for player's collisions with blocks, because may be he has moved
 				new_x = SlidingCollisionX(new_x, old_y, game_data.sprite_width, game_data.sprite_height, run.vars.direction, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
 				new_y = SlidingCollisionY(old_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.direction, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
-				new_x, new_y = SlidingCollisionZ2(new_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.direction, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+				new_x, new_y = SlidingCollisionZ(new_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.direction, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
 			end
 			
 			-- update coordinates of the player
@@ -465,9 +494,9 @@ function run.keypressed(key, scancode, isrepeat)
 		-- fire 1: x (TODO!)
 		if game_data.actors[actor_number].type.name == "platformer" then
 			-- the player is on the ground ?
-			if run.vars.on_the_ground == true then
-				-- the player is idle or walking ?
-				if game_data.levels[run.vars.level].actors[1].animation == 1 or game_data.levels[run.vars.level].actors[1].animation == 2 then
+			if run.vars.on_the_ground == true or run.vars.on_stairs == true then
+				-- the player is idle or walking or climbing ?
+				if game_data.levels[run.vars.level].actors[1].animation == 1 or game_data.levels[run.vars.level].actors[1].animation == 2 or game_data.levels[run.vars.level].actors[1].animation == 4 then
 					-- jump
 					game_data.levels[run.vars.level].actors[1].animation = 3
 					game_data.levels[run.vars.level].actors[1].frame = 1
@@ -514,6 +543,7 @@ function DrawGame()
 	
 		-- draw actors
 		for i = 1, #game_data.levels[run.vars.level].actors do
+			local actor_number = game_data.levels[run.vars.level].actors[i].number
 			local animation = game_data.levels[run.vars.level].actors[i].animation
 			local frame = game_data.levels[run.vars.level].actors[i].frame
 			
@@ -521,7 +551,6 @@ function DrawGame()
 				local sprite = game_data.animations[animation][frame]
 				local xc = ScaleWidth(game_data.levels[run.vars.level].actors[i].x, WINDOW_ZOOM)
 				local yc = ScaleHeight(game_data.levels[run.vars.level].actors[i].y, WINDOW_ZOOM)
-				local actor_number = game_data.levels[run.vars.level].actors[i].number
 
 				-- scrolling
 				xc = xc + ScaleWidth(run.vars.scrolling_x, WINDOW_ZOOM)
@@ -547,6 +576,9 @@ function DrawGame()
 					flip_offset_y = ScaleHeight(game_data.sprite_height, WINDOW_ZOOM) / 2
 					
 					love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.direction), game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM, game_data.sprite_width / 2, game_data.sprite_height / 2)
+				else
+					--draw monsters and bonus
+					love.graphics.draw(img_sprites[sprite], px + xc, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM)
 				end
 			end
 		end
@@ -559,7 +591,7 @@ function Collision(x1, y1, w1, h1, x2, y2, w2, h2)
 end
 
 -- check block collision
-function BlockCollision(x, y, d, map)
+function BlockCollision(x, y, map)
 	-- collisions with game limits
 	if x < 0 or x > (game_data.levels_data.sw * game_data.levels_data.w) - 1 then return true end
 	if y < 0 or y > (game_data.levels_data.sh * game_data.levels_data.h) - 1 then return true end
@@ -572,9 +604,42 @@ function BlockCollision(x, y, d, map)
 		if game_data.blocks_data[block_number].type == "wall" then
 			return true
 		end
+	end
+	
+	return false
+end
 
+-- check platform collision
+function PlatformCollision(x, y, map)
+	-- collisions with game limits
+	if x < 0 or x > (game_data.levels_data.sw * game_data.levels_data.w) - 1 then return true end
+	if y < 0 or y > (game_data.levels_data.sh * game_data.levels_data.h) - 1 then return true end
+	
+	-- is there a block ?
+	if map.blocks[x][y] > 0 then
+		local block_number = map.blocks[x][y]
+		
 		-- collision with a platform
-		if game_data.blocks_data[block_number].type == "platform" and d >= 45 and d <= 135 then
+		if game_data.blocks_data[block_number].type == "platform" then
+			return true
+		end
+	end
+	
+	return false
+end
+
+-- check stairway collision
+function StairsCollision(x, y, map)
+	-- collisions with game limits
+	if x < 0 or x > (game_data.levels_data.sw * game_data.levels_data.w) - 1 then return true end
+	if y < 0 or y > (game_data.levels_data.sh * game_data.levels_data.h) - 1 then return true end
+	
+	-- is there a block ?
+	if map.blocks[x][y] > 0 then
+		local block_number = map.blocks[x][y]
+		
+		-- collision with a stairway
+		if game_data.blocks_data[block_number].type == "stairs" then
 			return true
 		end
 	end
@@ -602,7 +667,7 @@ function GroundCollision(x1, y1, w1, h1, map, w2, h2)
 	for x = x3, x3 + w3 - 1 do
 		y = y3 + h3 - 1
 		
-		if BlockCollision(x, y, 90, map) == true then
+		if BlockCollision(x, y, map) == true or PlatformCollision(x, y, map) == true then
 			y1 = (y * h2) - h1
 
 			return y1, true
@@ -632,7 +697,7 @@ function CeilingCollision(x1, y1, w1, h1, map, w2, h2)
 	for x = x3, x3 + w3 - 1 do
 		y = y3
 		
-		if BlockCollision(x, y, 270, map) == true then
+		if BlockCollision(x, y, map) == true then
 			y1 = (y + 1) * h2
 
 			return y1
@@ -662,7 +727,7 @@ function LeftCollision(x1, y1, w1, h1, map, w2, h2)
 	for y = y3, y3 + h3 - 1 do
 		x = x3
 			
-		if BlockCollision(x, y, d1, map) == true then
+		if BlockCollision(x, y, map) == true then
 			x1 = ((x + 1) * w2)
 					
 			return x1
@@ -692,7 +757,7 @@ function RightCollision(x1, y1, w1, h1, map, w2, h2)
 	for y = y3, y3 + h3 - 1 do
 		x = x3 + w3 - 1
 			
-		if BlockCollision(x, y, d1, map) == true then
+		if BlockCollision(x, y, map) == true then
 			x1 = (x * w2) - w1
 					
 			return x1
@@ -703,7 +768,7 @@ function RightCollision(x1, y1, w1, h1, map, w2, h2)
 end
 
 -- sliding collision between player's sprite and corners
-function SlidingCollisionZ(x1, y1, w1, h1, map, w2, h2, on_the_ground)
+function CornerCollision(x1, y1, w1, h1, map, w2, h2, on_the_ground)
 	-- offset with hotspot
 	local actor_number = game_data.levels[run.vars.level].actors[1].number
 	
@@ -722,7 +787,7 @@ function SlidingCollisionZ(x1, y1, w1, h1, map, w2, h2, on_the_ground)
 	x = x3 + w3 - 1
 	y = y3 + h3 - 1
 		
-	if BlockCollision(x, y, d1, map) == true then
+	if BlockCollision(x, y, map) == true then
 		x1 = (x * w2) - w1
 		y1 = (y * h2) - h1
 				
@@ -733,7 +798,7 @@ function SlidingCollisionZ(x1, y1, w1, h1, map, w2, h2, on_the_ground)
 	x = x3
 	y = y3 + h3 - 1
 		
-	if BlockCollision(x, y, d1, map) == true then
+	if BlockCollision(x, y, map) == true then
 		x1 = ((x + 1) * w2)
 		y1 = (y * h2) - h1
 				
@@ -744,7 +809,7 @@ function SlidingCollisionZ(x1, y1, w1, h1, map, w2, h2, on_the_ground)
 	x = x3
 	y = y3
 		
-	if BlockCollision(x, y, d1, map) == true then
+	if BlockCollision(x, y, map) == true then
 		x1 = ((x + 1) * w2)
 		y1 = ((y + 1) * h2)
 				
@@ -755,7 +820,7 @@ function SlidingCollisionZ(x1, y1, w1, h1, map, w2, h2, on_the_ground)
 	x = x3 + w3 - 1
 	y = y3
 		
-	if BlockCollision(x, y, d1, map) == true then
+	if BlockCollision(x, y, map) == true then
 		x1 = (x * w2) - w1
 		y1 = ((y + 1) * h2)
 				
@@ -763,6 +828,33 @@ function SlidingCollisionZ(x1, y1, w1, h1, map, w2, h2, on_the_ground)
 	end
 	
 	return x1, on_the_ground
+end
+
+-- check if the player can climb
+function CanClimb(x1, y1, w1, h1, map, w2, h2)
+	-- offset with hotspot
+	local actor_number = game_data.levels[run.vars.level].actors[1].number
+	
+	-- player's position, in blocks
+	local x3 = math.floor(x1 / w2)
+	local y3 = math.floor(y1 / h2)
+
+	-- how many blocks in the player's sprite ?
+	local w3 = math.floor(w1 / w2)
+	local h3 = math.floor(h1 / h2)
+	
+	if x3 * w2 ~= x1 then w3 = w3 + 1 end
+	if y3 * h2 ~= y1 then h3 = h3 + 1 end
+
+	for x = x3, x3 + w3 - 1 do
+		for y = y3, y3 + h3 - 1 do
+			if StairsCollision(x, y, map) == true then
+				return true
+			end
+		end
+	end
+	
+	return false
 end
 
 -- sliding collision between player's sprite and max 6 blocks inside the player
@@ -787,7 +879,7 @@ function SlidingCollisionX(x1, y1, w1, h1, d1, map, w2, h2)
 		for y = y3, y3 + h3 - 1 do
 			x = x3 + w3 - 1
 			
-			if BlockCollision(x, y, d1, map) == true then
+			if BlockCollision(x, y, map) == true then
 				x1 = (x * w2) - w1
 					
 				return x1
@@ -798,7 +890,7 @@ function SlidingCollisionX(x1, y1, w1, h1, d1, map, w2, h2)
 		for y = y3, y3 + h3 - 1 do
 			x = x3
 			
-			if BlockCollision(x, y, d1, map) == true then
+			if BlockCollision(x, y, map) == true then
 				x1 = ((x + 1) * w2)
 					
 				return x1
@@ -831,7 +923,7 @@ function SlidingCollisionY(x1, y1, w1, h1, d1, map, w2, h2)
 		for x = x3, x3 + w3 - 1 do
 			y = y3 + h3 - 1
 			
-			if BlockCollision(x, y, d1, map) == true then
+			if BlockCollision(x, y, map) == true or PlatformCollision(x, y, map) == true then
 				y1 = (y * h2) - h1
 				
 				return y1
@@ -842,7 +934,7 @@ function SlidingCollisionY(x1, y1, w1, h1, d1, map, w2, h2)
 		for x = x3, x3 + w3 - 1 do
 			y = y3
 			
-			if BlockCollision(x, y, d1, map) == true then
+			if BlockCollision(x, y, map) == true then
 				y1 = ((y + 1) * h2)
 					
 				return y1
@@ -854,7 +946,7 @@ function SlidingCollisionY(x1, y1, w1, h1, d1, map, w2, h2)
 end
 
 -- sliding collision between player's sprite and corners
-function SlidingCollisionZ2(x1, y1, w1, h1, d1, map, w2, h2)
+function SlidingCollisionZ(x1, y1, w1, h1, d1, map, w2, h2)
 	-- offset with hotspot
 	local actor_number = game_data.levels[run.vars.level].actors[1].number
 	
@@ -875,7 +967,7 @@ function SlidingCollisionZ2(x1, y1, w1, h1, d1, map, w2, h2)
 		x = x3 + w3 - 1
 		y = y3 + h3 - 1
 		
-		if BlockCollision(x, y, d1, map) == true then
+		if BlockCollision(x, y, map) == true or PlatformCollision(x, y, map) == true then
 			x1 = (x * w2) - w1
 			y1 = (y * h2) - h1
 				
@@ -886,7 +978,7 @@ function SlidingCollisionZ2(x1, y1, w1, h1, d1, map, w2, h2)
 		x = x3
 		y = y3 + h3 - 1
 		
-		if BlockCollision(x, y, d1, map) == true then
+		if BlockCollision(x, y, map) == true or PlatformCollision(x, y, map) == true then
 			x1 = ((x + 1) * w2)
 			y1 = (y * h2) - h1
 				
@@ -897,7 +989,7 @@ function SlidingCollisionZ2(x1, y1, w1, h1, d1, map, w2, h2)
 		x = x3
 		y = y3
 		
-		if BlockCollision(x, y, d1, map) == true then
+		if BlockCollision(x, y, map) == true then
 			x1 = ((x + 1) * w2)
 			y1 = ((y + 1) * h2)
 				
@@ -908,7 +1000,7 @@ function SlidingCollisionZ2(x1, y1, w1, h1, d1, map, w2, h2)
 		x = x3 + w3 - 1
 		y = y3
 		
-		if BlockCollision(x, y, d1, map) == true then
+		if BlockCollision(x, y, map) == true then
 			x1 = (x * w2) - w1
 			y1 = ((y + 1) * h2)
 				

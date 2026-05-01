@@ -251,7 +251,6 @@ function love.update(dt)
 				local info = love.filesystem.getInfo(path)
 				
 				if info and info.type == "directory" then
-					print(item)
 					table.insert(file_list, item)
 				end
 			end
@@ -823,21 +822,26 @@ function love.draw()
 			love.graphics.print(sel_list, 10, 140)
 			
 			-- draw current image
-			local f = game_data.animations[current_animation][current_frame]
+			local image = game_data.animations[current_animation][current_frame]
 			
-			if img_sprites[f] ~= nil then
+			if img_sprites[image] ~= nil then
 				love.graphics.setColor(1, 1, 1)
-				love.graphics.draw(img_sprites[f], 288, 180, 0, ANIMATION_ZOOM * game_data.pixel_size, ANIMATION_ZOOM)
+				
+				if image > 0 and image <= #img_sprites then
+					love.graphics.draw(img_sprites[image], 288, 180, 0, ANIMATION_ZOOM * game_data.pixel_size, ANIMATION_ZOOM)
+				end
+
+				-- draw current animated animation
+				if animation_playing == true then
+					if image > 0 and image <= #img_sprites then
+						love.graphics.draw(img_sprites[game_data.animations[current_animation][animation_frame]], 496, 180, 0, ANIMATION_ZOOM * game_data.pixel_size, ANIMATION_ZOOM)
+					end
+				end
 			else
 				love.graphics.setColor(0, 1, 1)
 				love.graphics.print("No sprite!", 320, 180)
 			end
-			
-			-- draw current animated animation
-			if animation_playing == true then
-				love.graphics.draw(img_sprites[game_data.animations[current_animation][animation_frame]], 496, 180, 0, ANIMATION_ZOOM * game_data.pixel_size, ANIMATION_ZOOM)
-			end
-			
+
 			-- show loop mode
 			love.graphics.setColor(0, 1, 1)
 			local loop = "off"
@@ -1722,7 +1726,9 @@ function love.keypressed(key, scancode, isrepeat)
 				current_animation = current_animation - 1
 			elseif current_animation == 1 then
 				current_animation = #game_data.animations
-			end			
+			end
+			
+			animation_frame = 1
 		elseif key == "pageup" then
 			-- edit next animation
 			if current_animation < #game_data.animations then
@@ -1730,6 +1736,8 @@ function love.keypressed(key, scancode, isrepeat)
 			elseif current_animation == #game_data.animations then
 				current_animation = 1
 			end
+			
+			animation_frame = 1
 		elseif key == "down" then
 			if current_animation > 0 then
 				if current_frame > 0 then
