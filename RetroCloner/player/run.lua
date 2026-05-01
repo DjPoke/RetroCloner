@@ -144,14 +144,17 @@ function run.update(dt)
 				end
 			
 				if joy_left == true then
-					if game_data.levels[run.vars.level].actors[1].animation >= 1 and game_data.levels[run.vars.level].actors[1].animation <= 4 then
+					if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") or 
+													game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "walk") or 
+													game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "jump") or 
+													game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "climb") then						
 						game_data.levels[run.vars.level].actors[1].hflip = true
 						run.vars.direction = 180
 						moving = true
 						
 						-- change animation if needed
-						if game_data.levels[run.vars.level].actors[1].animation == 1 then
-							game_data.levels[run.vars.level].actors[1].animation = 2
+						if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
+							game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "walk")
 							game_data.levels[run.vars.level].actors[1].frame = 1
 						end
 
@@ -159,14 +162,17 @@ function run.update(dt)
 						new_x = new_x - 1
 					end
 				elseif joy_right == true then
-					if game_data.levels[run.vars.level].actors[1].animation >= 1 and game_data.levels[run.vars.level].actors[1].animation <= 4 then
+					if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") or 
+													game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "walk") or 
+													game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "jump") or 
+													game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "climb") then						
 						game_data.levels[run.vars.level].actors[1].hflip = false
 						run.vars.direction = 0
 						moving = true
 						
 						-- change animation if needed
-						if game_data.levels[run.vars.level].actors[1].animation == 1 then
-							game_data.levels[run.vars.level].actors[1].animation = 2
+						if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
+							game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "walk")
 							game_data.levels[run.vars.level].actors[1].frame = 1
 						end
 						
@@ -179,8 +185,9 @@ function run.update(dt)
 					moving = true
 
 					if run.vars.on_stairs == true then
-						if game_data.levels[run.vars.level].actors[1].animation == 1 or game_data.levels[run.vars.level].actors[1].animation == 2 then
-							game_data.levels[run.vars.level].actors[1].animation = 4
+						if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") or 
+														game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "walk") then
+							game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "climb")
 							game_data.levels[run.vars.level].actors[1].frame = 1
 						end
 						
@@ -193,8 +200,9 @@ function run.update(dt)
 					moving_down = true
 
 					if run.vars.on_stairs == true then
-						if game_data.levels[run.vars.level].actors[1].animation == 1 or game_data.levels[run.vars.level].actors[1].animation == 2 then
-							game_data.levels[run.vars.level].actors[1].animation = 4
+						if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") or 
+														game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "walk") then
+							game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "climb")
 							game_data.levels[run.vars.level].actors[1].frame = 1
 						end
 						
@@ -204,9 +212,9 @@ function run.update(dt)
 				
 				if run.vars.on_the_ground == true then
 					if moving == false then
-						if game_data.levels[run.vars.level].actors[1].animation == 2 then
+						if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "walk") then
 							-- on the ground ? not moving ?
-							game_data.levels[run.vars.level].actors[1].animation = 1
+							game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "idle")
 							game_data.levels[run.vars.level].actors[1].frame = 1
 						end
 					end
@@ -247,16 +255,16 @@ function run.update(dt)
 				if run.vars.on_the_ground == true then
 					local actor_number = game_data.levels[run.vars.level].actors[1].number
 
-					if game_data.levels[run.vars.level].actors[1].animation == 3 then
-						game_data.levels[run.vars.level].actors[1].animation = 1
+					if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "jump") then
+						game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "idle")
 						game_data.levels[run.vars.level].actors[1].frame = 1
 					end
 				end
 
 				-- restore idle animation
 				if run.vars.on_stairs == false then
-					if game_data.levels[run.vars.level].actors[1].animation == 4 then
-						game_data.levels[run.vars.level].actors[1].animation = 1
+					if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "climb") then
+						game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "idle")
 						game_data.levels[run.vars.level].actors[1].frame = 1
 					end
 				end
@@ -322,7 +330,7 @@ function run.update(dt)
 						dir_y = 0
 					end
 				end
-
+				
 				-- update real direction
 				run.vars.direction = dir
 
@@ -330,8 +338,8 @@ function run.update(dt)
 					moving = true
 					
 					-- change animation if needed
-					if game_data.levels[run.vars.level].actors[1].animation == 1 then
-						game_data.levels[run.vars.level].actors[1].animation = 2
+					if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
+						game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "run")
 						game_data.levels[run.vars.level].actors[1].frame = 1
 						
 					end
@@ -342,8 +350,8 @@ function run.update(dt)
 					moving = true
 					
 					-- change animation if needed
-					if game_data.levels[run.vars.level].actors[1].animation == 1 then
-						game_data.levels[run.vars.level].actors[1].animation = 2
+					if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
+						game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "run")
 						game_data.levels[run.vars.level].actors[1].frame = 1
 					end
 					
@@ -355,8 +363,8 @@ function run.update(dt)
 					moving = true
 					
 					-- change animation if needed
-					if game_data.levels[run.vars.level].actors[1].animation == 1 then
-						game_data.levels[run.vars.level].actors[1].animation = 2
+					if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
+						game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "run")
 						game_data.levels[run.vars.level].actors[1].frame = 1
 						
 					end
@@ -367,8 +375,8 @@ function run.update(dt)
 					moving = true
 					
 					-- change animation if needed
-					if game_data.levels[run.vars.level].actors[1].animation == 1 then
-						game_data.levels[run.vars.level].actors[1].animation = 2
+					if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
+						game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "run")
 						game_data.levels[run.vars.level].actors[1].frame = 1
 					end
 					
@@ -599,9 +607,11 @@ function Fire1(a)
 		-- the player is on the ground ?
 		if run.vars.on_the_ground == true or run.vars.on_stairs == true then
 			-- the player is idle or walking or climbing ?
-			if game_data.levels[run.vars.level].actors[1].animation == 1 or game_data.levels[run.vars.level].actors[1].animation == 2 or game_data.levels[run.vars.level].actors[1].animation == 4 then
+			if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(a, "idle") or
+										game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(a, "walk") or
+										game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(a, "climb") then
 				-- jump
-				game_data.levels[run.vars.level].actors[1].animation = 3
+				game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(a, "jump")
 				game_data.levels[run.vars.level].actors[1].frame = 1
 				run.vars.jump_power = -game_data.vars.jump_power
 			end
@@ -615,9 +625,10 @@ function Fire2(a)
 		-- the player is on the ground ?
 		if run.vars.on_the_ground == true then
 			-- the player is idle or walking ?
-			if game_data.levels[run.vars.level].actors[1].animation == 1 or game_data.levels[run.vars.level].actors[1].animation == 2 then
+			if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(a, "idle") or
+										game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(a, "walk") then
 				-- hit
-				game_data.levels[run.vars.level].actors[1].animation = 5
+				game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(a, "hit")
 				game_data.levels[run.vars.level].actors[1].frame = 1
 			end
 		end
