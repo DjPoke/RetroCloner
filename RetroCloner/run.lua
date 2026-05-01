@@ -20,6 +20,9 @@ run.vars = {
 local animations_tick = false
 local game_speed_tick = false
 
+local moving = false
+local moving_down = false
+
 -- run functions
 function run.load()
 	-- initialize player's data
@@ -72,15 +75,16 @@ function run.update(dt)
 		local old_y = game_data.levels[run.vars.level].actors[1].y
 		local new_x = old_x
 		local new_y = old_y
-		
+	
 		if game_speed_tick == true then	
 			-- move the player
 			local actor_number = game_data.levels[run.vars.level].actors[1].number
 			
 			-- (TODO!)
 			if game_data.actors[actor_number].type.name == "platformer" then
-				local moving = false
-
+				moving = false
+				moving_down = false
+				
 				if CanClimb(old_x, old_y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height) == true then
 					run.vars.on_stairs = true
 				else
@@ -96,7 +100,6 @@ function run.update(dt)
 					if game_data.levels[run.vars.level].actors[1].animation == 1 then
 						game_data.levels[run.vars.level].actors[1].animation = 2
 						game_data.levels[run.vars.level].actors[1].frame = 1
-						
 					end
 
 					-- walk left
@@ -122,6 +125,7 @@ function run.update(dt)
 					if run.vars.on_stairs == true then
 						if game_data.levels[run.vars.level].actors[1].animation == 1 or game_data.levels[run.vars.level].actors[1].animation == 2 then
 							game_data.levels[run.vars.level].actors[1].animation = 4
+							game_data.levels[run.vars.level].actors[1].frame = 1
 						end
 						
 						new_y = new_y - 1
@@ -130,10 +134,12 @@ function run.update(dt)
 					-- climb down
 					run.vars.direction = 90
 					moving = true
+					moving_down = true
 
 					if run.vars.on_stairs == true then
 						if game_data.levels[run.vars.level].actors[1].animation == 1 or game_data.levels[run.vars.level].actors[1].animation == 2 then
 							game_data.levels[run.vars.level].actors[1].animation = 4
+							game_data.levels[run.vars.level].actors[1].frame = 1
 						end
 						
 						new_y = new_y + 1
@@ -175,7 +181,7 @@ function run.update(dt)
 				new_y = new_y + run.vars.fall_power + run.vars.jump_power
 				
 				-- check for player's collisions with blocks, because may be he has moved
-				new_y, run.vars.on_the_ground = GroundCollision(old_x, new_y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+				new_y, run.vars.on_the_ground = GroundCollision(old_x, new_y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height, run.vars.on_stairs, moving_down)
 				new_y = CeilingCollision(old_x, new_y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
 				new_x = LeftCollision(new_x, old_y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
 				new_x = RightCollision(new_x, old_y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
@@ -185,12 +191,17 @@ function run.update(dt)
 				if run.vars.on_the_ground == true then
 					local actor_number = game_data.levels[run.vars.level].actors[1].number
 
-					-- (TODO!)
-					if game_data.actors[actor_number].type.name == "platformer" then
-						if game_data.levels[run.vars.level].actors[1].animation == 3 then
-							game_data.levels[run.vars.level].actors[1].animation = 1
-							game_data.levels[run.vars.level].actors[1].frame = 1
-						end
+					if game_data.levels[run.vars.level].actors[1].animation == 3 then
+						game_data.levels[run.vars.level].actors[1].animation = 1
+						game_data.levels[run.vars.level].actors[1].frame = 1
+					end
+				end
+
+				-- restore idle animation
+				if run.vars.on_stairs == false then
+					if game_data.levels[run.vars.level].actors[1].animation == 4 then
+						game_data.levels[run.vars.level].actors[1].animation = 1
+						game_data.levels[run.vars.level].actors[1].frame = 1
 					end
 				end
 			elseif game_data.actors[actor_number].type.name == "run & gun (top view)" then
@@ -260,6 +271,8 @@ function run.update(dt)
 				run.vars.direction = dir
 
 				if dir_x == -1 then
+					moving = true
+					
 					-- change animation if needed
 					if game_data.levels[run.vars.level].actors[1].animation == 1 then
 						game_data.levels[run.vars.level].actors[1].animation = 2
@@ -270,6 +283,8 @@ function run.update(dt)
 					-- walk left
 					new_x = new_x - 1
 				elseif dir_x == 1 then
+					moving = true
+					
 					-- change animation if needed
 					if game_data.levels[run.vars.level].actors[1].animation == 1 then
 						game_data.levels[run.vars.level].actors[1].animation = 2
@@ -281,6 +296,8 @@ function run.update(dt)
 				end
 					
 				if dir_y == -1 then
+					moving = true
+					
 					-- change animation if needed
 					if game_data.levels[run.vars.level].actors[1].animation == 1 then
 						game_data.levels[run.vars.level].actors[1].animation = 2
@@ -291,6 +308,8 @@ function run.update(dt)
 					-- walk left
 					new_y = new_y - 1
 				elseif dir_y == 1 then
+					moving = true
+					
 					-- change animation if needed
 					if game_data.levels[run.vars.level].actors[1].animation == 1 then
 						game_data.levels[run.vars.level].actors[1].animation = 2
@@ -315,10 +334,16 @@ function run.update(dt)
 		-- it is time to animate characters
 		if animations_tick == true then
 			for i = 1, #game_data.levels[run.vars.level].actors do
-				if game_data.levels[run.vars.level].actors[i].frame < #game_data.animations[game_data.levels[run.vars.level].actors[i].animation] then
-					game_data.levels[run.vars.level].actors[i].frame = game_data.levels[run.vars.level].actors[i].frame + 1
-				elseif game_data.levels[run.vars.level].actors[i].frame == #game_data.animations[game_data.levels[run.vars.level].actors[i].animation] then
-					game_data.levels[run.vars.level].actors[i].frame = 1
+				-- the player is animated ?
+				if i == 1 then
+					if moving == true then
+						AnimateCharacter(1)
+					elseif game_data.levels[run.vars.level].actors[1].animation == 1 then
+						-- playing idle ?				
+						AnimateCharacter(1)
+					end
+				else
+					AnimateCharacter(i)
 				end
 			end
 		end
@@ -648,7 +673,7 @@ function StairsCollision(x, y, map)
 end
 
 -- checking if the player is on the ground
-function GroundCollision(x1, y1, w1, h1, map, w2, h2)
+function GroundCollision(x1, y1, w1, h1, map, w2, h2, on_stairs, moving_down)
 	-- offset with hotspot
 	local actor_number = game_data.levels[run.vars.level].actors[1].number
 	
@@ -667,7 +692,7 @@ function GroundCollision(x1, y1, w1, h1, map, w2, h2)
 	for x = x3, x3 + w3 - 1 do
 		y = y3 + h3 - 1
 		
-		if BlockCollision(x, y, map) == true or PlatformCollision(x, y, map) == true then
+		if BlockCollision(x, y, map) == true or PlatformCollision(x, y, map) == true or (StairsCollision(x, y, map) == true and on_stairs == false and moving_down == false) then
 			y1 = (y * h2) - h1
 
 			return y1, true
@@ -1009,6 +1034,15 @@ function SlidingCollisionZ(x1, y1, w1, h1, d1, map, w2, h2)
 	end
 	
 	return x1, y1
+end
+
+-- animate characters
+function AnimateCharacter(i)
+	if game_data.levels[run.vars.level].actors[i].frame < #game_data.animations[game_data.levels[run.vars.level].actors[i].animation] then
+		game_data.levels[run.vars.level].actors[i].frame = game_data.levels[run.vars.level].actors[i].frame + 1
+	elseif game_data.levels[run.vars.level].actors[i].frame == #game_data.animations[game_data.levels[run.vars.level].actors[i].animation] then
+		game_data.levels[run.vars.level].actors[i].frame = 1
+	end
 end
 
 return run
