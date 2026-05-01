@@ -1,6 +1,6 @@
 -- types of player
 player_types = {
-	{name = "platformer", idle = 0, walk = 0, jump = 0, climb = 0, die = 0, hflip = false },
+	{name = "platformer", idle = 0, walk = 0, jump = 0, climb = 0, hit = 0, die = 0, hflip = false },
 	{name = "beat'em up", idle = 0, walk = 0, jump = 0, punch = 0, kick = 0, jumping_kick = 0, wounded = 0, die = 0, hflip = false },
 	{name = "run & gun (edge view)", idle = 0, run = 0, jump = 0, fire = 0, crouch = 0, crouched_fire = 0, die = 0, hflip = false },
 	{name = "run & gun (top view)", idle = 0, run = 0, fire1 = 0, fire2 = 0, die = 0, directions = 8 },
@@ -11,7 +11,7 @@ player_types = {
 }
 
 player_animations = {
-	{"idle", "walk", "jump", "climb", "die", "hflip"},
+	{"idle", "walk", "jump", "climb", "hit", "die", "hflip"},
 	{"idle", "walk", "jump", "punch", "kick", "jumping_kick", "wounded", "die", "hflip"},
 	{"idle", "run", "jump", "fire", "crouch", "crouched_fire", "die", "hflip"},
 	{"idle", "run", "fire1", "fire2", "die", "directions"},

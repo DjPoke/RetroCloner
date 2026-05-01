@@ -1663,6 +1663,7 @@ function love.keypressed(key, scancode, isrepeat)
 				table.remove(game_data.animations, current_animation)
 				table.remove(game_data.animations_loop, current_animation)
 				current_animation = #game_data.animations
+				current_frame = 1
 			end
 		elseif key == "f" then
 			if current_animation > 0 then

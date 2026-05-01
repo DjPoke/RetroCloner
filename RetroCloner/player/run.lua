@@ -92,31 +92,35 @@ function run.update(dt)
 				end
 			
 				if love.keyboard.isDown("left") then
-					game_data.levels[run.vars.level].actors[1].hflip = true
-					run.vars.direction = 180
-					moving = true
-					
-					-- change animation if needed
-					if game_data.levels[run.vars.level].actors[1].animation == 1 then
-						game_data.levels[run.vars.level].actors[1].animation = 2
-						game_data.levels[run.vars.level].actors[1].frame = 1
-					end
+					if game_data.levels[run.vars.level].actors[1].animation >= 1 and game_data.levels[run.vars.level].actors[1].animation <= 4 then
+						game_data.levels[run.vars.level].actors[1].hflip = true
+						run.vars.direction = 180
+						moving = true
+						
+						-- change animation if needed
+						if game_data.levels[run.vars.level].actors[1].animation == 1 then
+							game_data.levels[run.vars.level].actors[1].animation = 2
+							game_data.levels[run.vars.level].actors[1].frame = 1
+						end
 
-					-- walk left
-					new_x = new_x - 1
-				elseif love.keyboard.isDown("right") then
-					game_data.levels[run.vars.level].actors[1].hflip = false
-					run.vars.direction = 0
-					moving = true
-					
-					-- change animation if needed
-					if game_data.levels[run.vars.level].actors[1].animation == 1 then
-						game_data.levels[run.vars.level].actors[1].animation = 2
-						game_data.levels[run.vars.level].actors[1].frame = 1
+						-- walk left
+						new_x = new_x - 1
 					end
-					
-					-- walk right
-					new_x = new_x + 1
+				elseif love.keyboard.isDown("right") then
+					if game_data.levels[run.vars.level].actors[1].animation >= 1 and game_data.levels[run.vars.level].actors[1].animation <= 4 then
+						game_data.levels[run.vars.level].actors[1].hflip = false
+						run.vars.direction = 0
+						moving = true
+						
+						-- change animation if needed
+						if game_data.levels[run.vars.level].actors[1].animation == 1 then
+							game_data.levels[run.vars.level].actors[1].animation = 2
+							game_data.levels[run.vars.level].actors[1].frame = 1
+						end
+						
+						-- walk right
+						new_x = new_x + 1
+					end
 				elseif love.keyboard.isDown("up") then
 					-- climb up
 					run.vars.direction = 270
@@ -334,16 +338,10 @@ function run.update(dt)
 		-- it is time to animate characters
 		if animations_tick == true then
 			for i = 1, #game_data.levels[run.vars.level].actors do
-				-- the player is animated ?
-				if i == 1 then
-					if moving == true then
-						AnimateCharacter(1)
-					elseif game_data.levels[run.vars.level].actors[1].animation == 1 then
-						-- playing idle ?				
-						AnimateCharacter(1)
-					end
-				else
-					AnimateCharacter(i)
+				-- animation not looping and ended ?
+				if AnimateCharacter(i, moving) == true then
+					game_data.levels[run.vars.level].actors[1].animation = 1
+					game_data.levels[run.vars.level].actors[1].frame = 1
 				end
 			end
 		end
@@ -516,7 +514,7 @@ function run.keypressed(key, scancode, isrepeat)
 
 	-- fire with keyboard
 	if key == "x" then
-		-- fire 1: x (TODO!)
+		-- fire 1: "x" (TODO! add other kinds of players)
 		if game_data.actors[actor_number].type.name == "platformer" then
 			-- the player is on the ground ?
 			if run.vars.on_the_ground == true or run.vars.on_stairs == true then
@@ -530,7 +528,18 @@ function run.keypressed(key, scancode, isrepeat)
 			end
 		end
 	elseif key == "c" then
-		-- fire 2: c
+		-- fire 2: "c" (TODO! add other kinds of players)
+		if game_data.actors[actor_number].type.name == "platformer" then
+			-- the player is on the ground ?
+			if run.vars.on_the_ground == true then
+				-- the player is idle or walking ?
+				if game_data.levels[run.vars.level].actors[1].animation == 1 or game_data.levels[run.vars.level].actors[1].animation == 2 then
+					-- hit
+					game_data.levels[run.vars.level].actors[1].animation = 5
+					game_data.levels[run.vars.level].actors[1].frame = 1
+				end
+			end
+		end
 	end
 end
 
@@ -1036,13 +1045,34 @@ function SlidingCollisionZ(x1, y1, w1, h1, d1, map, w2, h2)
 	return x1, y1
 end
 
--- animate characters
-function AnimateCharacter(i)
-	if game_data.levels[run.vars.level].actors[i].frame < #game_data.animations[game_data.levels[run.vars.level].actors[i].animation] then
-		game_data.levels[run.vars.level].actors[i].frame = game_data.levels[run.vars.level].actors[i].frame + 1
-	elseif game_data.levels[run.vars.level].actors[i].frame == #game_data.animations[game_data.levels[run.vars.level].actors[i].animation] then
-		game_data.levels[run.vars.level].actors[i].frame = 1
+-- animate characters, return true if animation just ended
+function AnimateCharacter(i, moving)
+	local actor_number = game_data.levels[run.vars.level].actors[i].number
+	local animation = game_data.levels[run.vars.level].actors[i].animation
+	
+	local loop = game_data.animations_loop[animation].loop
+	local v1  = game_data.animations_loop[animation].v1
+	local v2  = game_data.animations_loop[animation].v2
+	
+	-- animation just ended
+	if loop == false then
+		if game_data.levels[run.vars.level].actors[i].frame < #game_data.animations[animation] then
+			game_data.levels[run.vars.level].actors[i].frame = game_data.levels[run.vars.level].actors[i].frame + 1
+		elseif game_data.levels[run.vars.level].actors[i].frame == #game_data.animations[animation] then
+			return true
+		end
+	elseif loop == true then
+		-- loop animation
+		if animation == 1 or (animation > 1 and moving == true) then
+			if game_data.levels[run.vars.level].actors[i].frame < v2 then
+				game_data.levels[run.vars.level].actors[i].frame = game_data.levels[run.vars.level].actors[i].frame + 1
+			elseif game_data.levels[run.vars.level].actors[i].frame == v2 then
+				game_data.levels[run.vars.level].actors[i].frame = v1
+			end
+		end
 	end
+	
+	return false
 end
 
 return run
