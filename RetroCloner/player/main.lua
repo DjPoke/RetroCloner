@@ -30,6 +30,7 @@ LEVEL_AREA = 4
 
 -- arrays
 game_data = {
+	game_name = "",
 	editable_palette = false,
 	max_inks = 0,
 	inks_palette = {},
@@ -81,9 +82,12 @@ game_data = {
 		gravity = 0,
 		jump_power = 0
 	},
-	sounds = {},
-	musics = {},
-	images = {}
+	sounds = { player = {walk = "", run = "", jump = "", hit = "", fire1 = "", fire2 = ""},
+			   enemies = {},
+			   bonus = {}
+	},
+	musics = { intro = "", ingame = "", winner = "", game_over = "" },
+	images = { intro = "", interface = "", winner = "", game_over = "" }
 }
 
 img_blocks = {}

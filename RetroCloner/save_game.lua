@@ -14,6 +14,9 @@ function SaveGame(d, f, t)
 		
 		local ts = ""
 		
+		-- game name
+		ts = ts .. t.game_name .. "\r\n"
+
 		-- editable palette boolean
 		ts = ts .. tostring(t.editable_palette) .. "\r\n"
 		

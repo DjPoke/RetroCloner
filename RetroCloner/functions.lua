@@ -625,3 +625,15 @@ function GetParametersPage(page)
 	
 	return list
 end
+
+-- set default game data (parameters)
+function SetDefaultGameData()
+	for i = 1, #vars_values do
+		game_data.vars[vars_values[i].name] = vars_values[i].default_value
+	end
+end
+
+-- convert an imported image to the chosen preset
+function ConvertImageToPreset(img)
+	return img
+end

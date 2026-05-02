@@ -21,7 +21,11 @@ function LoadGame(d, f, t)
 	-- explode file string
 	local ts = split_string(file_string, "\r\n")
 	local cpt = 0
-	
+
+	-- game name
+	cpt = cpt + 1
+	t.game_name = ts[cpt]
+
 	-- editable palette ?
 	cpt = cpt + 1
 	

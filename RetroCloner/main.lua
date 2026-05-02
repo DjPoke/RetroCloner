@@ -88,6 +88,7 @@ preset_data = {}
 
 -- shared game's data
 game_data = {
+	game_name = "",
 	editable_palette = false,
 	max_inks = 0,
 	inks_palette = {},
@@ -139,9 +140,12 @@ game_data = {
 		gravity = 0,
 		jump_power = 0
 	},
-	sounds = {},
-	musics = {},
-	images = {}
+	sounds = { player = {walk = "", run = "", jump = "", hit = "", fire1 = "", fire2 = ""},
+			   enemies = {},
+			   bonus = {}
+	},
+	musics = { intro = "", ingame = "", winner = "", game_over = "" },
+	images = { intro = "", interface = "", winner = "", game_over = "" }
 }
 
 -- Game Data limits
@@ -605,7 +609,7 @@ function love.draw()
 		-- draw message
 		love.graphics.setFont(EDITOR_FONT)
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print(text_message, 100, 120)
+		love.graphics.print(text_message, 10, 120)
 	elseif mode == MODE_EXPORT_EXECUTABLE_GAME then
 	elseif mode == MODE_TEST_GAME then
 		run.draw()
@@ -1192,8 +1196,11 @@ function love.keypressed(key, scancode, isrepeat)
 			mode = MODE_LOAD_PROJECT
 		elseif key == "c" then
 			if project_name ~= "" then
+				game_data.game_name = project_name
+				
 				SaveGame(project_name, "game.txt", game_data)
-				text_message = "Project saved! Press [RETURN]"
+				
+				text_message = "Project ".. project_name .. " saved! Press [RETURN]"
 				mode = MODE_SAVE_PROJECT
 			else
 				beep:stop()

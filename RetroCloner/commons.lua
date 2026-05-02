@@ -78,6 +78,15 @@ game_goals = {"go to exit at right", "kill all enemies", "kill all enemies and e
 -- types of scrollings
 scrolling_types = {"no scrolling", "scroll from screen's middle", "auto-scroll", "scroll screen by screen"}
 
+-- types of images to import
+image_types = {"intro", "interface", "winner", "game_over"}
+
+-- types of musics to import
+music_types = {"intro", "in_game", "winner", "game_over"}
+
+-- types of sounds to import
+player_sound_types = {"walk", "run", "jump", "hit", "fire1", "fire2"}
+
 -- convert blocks to images
 function ConvertBlocksToImages()
 	-- convert blocks to images
@@ -194,10 +203,4 @@ function ToString2(n, z)
 	end
 	
 	return s
-end
-
-function SetDefaultGameData()
-	for i = 1, #vars_values do
-		game_data.vars[vars_values[i].name] = vars_values[i].default_value
-	end
 end
