@@ -18,7 +18,7 @@ This project is in Work In Progress state. For now, it is developped under Linux
 7) Create animations with "j" key, choosing a few sprites images.
 8) Create your actors with "k" key. You can choose what kind of game you'll play, by choosing it on actor 1. Other actors can be enemies or bonus/malus.
 9) Draw your levels with "l" key. You can draw blocks, or position actors instances.
-10) Edit game data with "m" key. [WIP]
+10) Edit game data with "m" key.
 11) Import wav sounds with "n" key. [WIP]
 12) Import ogg musics with "o" key. [WIP]
 13) Import images (intro, interface, etc.) with "p" key. They will be converted to the graphic preset choosen at step 1. [WIP]
