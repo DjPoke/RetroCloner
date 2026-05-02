@@ -80,7 +80,10 @@ game_data = {
 		scroll_backward = false,
 		gravity = 0,
 		jump_power = 0
-	}
+	},
+	sounds = {},
+	musics = {},
+	images = {}
 }
 
 img_blocks = {}

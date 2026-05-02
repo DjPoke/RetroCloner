@@ -13,15 +13,18 @@ TODO
 	- Ajouter la possibilité de scaler les acteurs en x1, x2 ou x3, pour obtenir des boss
 
 * Faire l'import d'images
+	- Lister les différents types d'images qui peuvent être importés: image d'intro, image de décoration d'écran, une image de gameover, une image de victoire
 	- Convertir à la foulée les images importées, en fonction du preset en cours
-	- Pouvoir importer une image d'intro, une image de décoration, une image de gameover, une image de victoire
+	- Aperçu et modifications à la foulée possibles
 
 * Faire l'import de musiques
+	- Lister les différents types de musiques qui peuvent être importés : intro, en jeu, game over et victoire
 	- Importer et pouvoir jouer des ogg en boucle
-	- Aperçu possible
+	- Aperçu sonore possible
 	
 * Faire l'import de sons
+	- Lister les différents types de sons qui peuvent être importés, en fonction du type de player des des monstres/bonus
 	- Importer et pouvoir jouer des wav
-	- Aperçu possible
+	- Aperçu sonore possible
 
 ETC.

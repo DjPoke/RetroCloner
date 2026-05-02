@@ -139,6 +139,9 @@ game_data = {
 		gravity = 0,
 		jump_power = 0
 	},
+	sounds = {},
+	musics = {},
+	images = {}
 }
 
 -- Game Data limits

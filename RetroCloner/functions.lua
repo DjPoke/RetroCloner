@@ -8,6 +8,9 @@ function ResetAll()
 	game_data.actors = {}
 	game_data.levels = {}
 	game_data.levels_data = {}
+	game_data.sounds = {}
+	game_data.musics = {}
+	game_data.images = {}
 	
 	img_blocks = {}
 	img_sprites = {}
