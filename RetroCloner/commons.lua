@@ -73,10 +73,10 @@ bonus_animations = {
 entity_types = {"player", "enemy", "bonus"}
 
 -- game goals
-game_goals = {"go to exit (right)", "kill all enemies", "kill all enemies and exit (right)", "take all bonus", "take a key and goto exit"}
+game_goals = {"go to exit at right", "kill all enemies", "kill all enemies and exit at right", "take all bonus", "take a key and goto exit"}
 
 -- types of scrollings
-scrolling_types = {"no scrolling", "middle of screen", "auto", "screens scrolling"}
+scrolling_types = {"no scrolling", "scroll from screen's middle", "auto-scroll", "scroll screen by screen"}
 
 -- convert blocks to images
 function ConvertBlocksToImages()
@@ -197,15 +197,7 @@ function ToString2(n, z)
 end
 
 function SetDefaultGameData()
-	game_data.vars.lives = 3
-	game_data.vars.game_speed = 0.02
-	game_data.vars.animations_speed = 0.30
-	game_data.vars.game_goal = 1
-	game_data.vars.scrolling_type = 1
-	game_data.vars.scrolling_speed = 1
-	game_data.vars.scrolling_horizontally = true
-	game_data.vars.scrolling_vertically = false
-	game_data.vars.scroll_backward = true
-	game_data.vars.gravity = 8
-	game_data.vars.jump_power = 10
+	for i = 1, #vars_values do
+		game_data.vars[vars_values[i].name] = vars_values[i].default_value
+	end
 end

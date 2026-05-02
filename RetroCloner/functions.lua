@@ -47,7 +47,9 @@ function ResetAll()
 	current_level_actors_edit_mode = false
 	current_level_scroll_x = 0
 	current_level_scroll_y = 0
-	
+	current_parameter = 0
+	current_page = 0
+
 	block_x = 0
 	block_y = 0
 	sprite_x = 0
@@ -586,8 +588,8 @@ function UpdateLevelsData()
 	end
 end
 
+-- scroll the screen to show edited actor instance
 function GetActorInstanceScrolling()
-	-- scroll the screen to show edited actor instance
 	current_level_scroll_x = math.floor(game_data.levels[current_level].actors[current_level_edited_actor_instance].start_x / game_data.block_width)
 		
 	if current_level_scroll_x >= game_data.levels_data.sw * (game_data.levels_data.w - 1) then
@@ -603,4 +605,20 @@ function GetActorInstanceScrolling()
 	end
 
 	current_level_scroll_y = -current_level_scroll_y
+end
+
+-- get the page list of all game data (parameters)
+function GetParametersPage(page)
+	local list = {}
+	
+	local page_start = 1 + ((page - 1) * PARAMETERS_BY_PAGE)
+	local page_end = page_start + PARAMETERS_BY_PAGE - 1
+	
+	for i = 1, #vars_values do
+		if i >= page_start and i <= page_end then
+			table.insert(list, vars_values[i])
+		end
+	end
+	
+	return list
 end

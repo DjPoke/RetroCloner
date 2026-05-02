@@ -67,12 +67,12 @@ function run.update(dt)
 	animations_tick = false
 	game_speed_tick = false
 	
-	if run.vars.game_speed_timer >= game_data.vars.game_speed then
+	if run.vars.game_speed_timer >= (game_data.vars.game_speed / 1000.0) then
 		run.vars.game_speed_timer = 0.0
 		game_speed_tick = true
 	end
 
-	if run.vars.animations_timer >= game_data.vars.animations_speed then
+	if run.vars.animations_timer >= (game_data.vars.animations_speed / 10.0) then
 		run.vars.animations_timer = 0.0
 		animations_tick = true
 	end

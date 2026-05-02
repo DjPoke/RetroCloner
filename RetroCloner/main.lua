@@ -80,6 +80,8 @@ MAX_FRAMES_BY_ANIMATION = 8
 MAX_BLINK_TIME = 0.5
 MID_BLINK_TIME = 0.25
 
+PARAMETERS_BY_PAGE = 16
+
 -- arrays
 presets = { "CPC-Mode0", "CPC-Mode1", "C64", "ZX-Spectrum" }
 preset_data = {}
@@ -123,7 +125,7 @@ game_data = {
 	fonts = "",
 	scrolling_start_x = {},
 	scrolling_start_y = {},
-	-- Edit Game Data
+	-- Game Data
 	vars = {
 		lives = 0,
 		game_speed = 0.0,
@@ -136,7 +138,22 @@ game_data = {
 		scroll_backward = false,
 		gravity = 0,
 		jump_power = 0
-	}
+	},
+}
+
+-- Game Data limits
+vars_values = {
+	{name = "lives", min_value = 1, max_value = 9, step_value = 1, default_value = 3},
+	{name = "game_speed", min_value = 1, max_value = 50, step_value = 1, default_value = 20},
+	{name = "animations_speed", min_value = 1, max_value = 5, step_value = 1, default_value = 3},
+	{name = "game_goal", min_value = 1, max_value = 5, step_value = 1, default_value = 1},
+	{name = "scrolling_type", min_value = 1, max_value = 4, step_value = 1, default_value = 1},
+	{name = "scrolling_speed", min_value = 1, max_value = 8, step_value = 1, default_value = 1},
+	{name = "scrolling_horizontally", min_value = false, max_value = true, step_value = 1, default_value = true},
+	{name = "scrolling_vertically", min_value = false, max_value = true, step_value = 1, default_value = false},
+	{name = "scroll_backward", min_value = false, max_value = true, step_value = 1, default_value = true},
+	{name = "gravity", min_value = 1, max_value = 20, step_value = 1, default_value = 8},
+	{name = "jump_power", min_value = 1, max_value = 20, step_value = 1, default_value = 10}
 }
 
 -- blocks & sprites, converted to images
@@ -185,6 +202,10 @@ current_level_edited_actor_instance = 0
 current_level_actors_edit_mode = false
 current_level_scroll_x = 0
 current_level_scroll_y = 0
+current_parameter = 0
+current_page = 0
+
+parameters_list = {}
 
 block_x = 0
 block_y = 0
@@ -721,7 +742,7 @@ function love.draw()
 		-- draw shortcuts
 		love.graphics.setColor(0, 1, 1)
 		love.graphics.print("[A]dd a block - [C]opy block - [P]aste block", 10, 460)
-		love.graphics.print("[D]elete block - [T]ype - [Tab] Change pen", 10, 480)
+		love.graphics.print("[Del]ete block - [T]ype - [Tab] Change pen", 10, 480)
 		love.graphics.print("[Mouse] Move - [LClick] Draw - [RClick] Clear", 10, 500)
 		love.graphics.print("[F]ill", 10, 520)
 		love.graphics.print("[PgDown] Previous block - [PgUp] Next block", 10, 540)
@@ -779,7 +800,7 @@ function love.draw()
 		-- draw shortcuts
 		love.graphics.setColor(0, 1, 1)
 		love.graphics.print("[A]dd a sprite - [C]opy sprite - [P]aste sprite", 10, 460)
-		love.graphics.print("[D]elete sprite", 10, 480)
+		love.graphics.print("[Del]ete sprite", 10, 480)
 		love.graphics.print("[Mouse] Move - [LClick] Draw - [RClick] Clear", 10, 500)
 		love.graphics.print("[F]ill", 10, 520)
 		love.graphics.print("[PgDown] Previous sprite - [PgUp] Next sprite", 10, 540)
@@ -858,7 +879,7 @@ function love.draw()
 		-- draw shortcuts
 		love.graphics.setColor(0, 1, 1)
 		love.graphics.print("[A]dd an animation - [C]opy animation", 10, 420)
-		love.graphics.print("[P]aste animation - [D]elete animation", 10, 440)
+		love.graphics.print("[P]aste animation - [Del]ete animation", 10, 440)
 		love.graphics.print("[F] Add a frame - [Backspace] Delete last frame", 10, 460)
 		love.graphics.print("[Arrows] Navigate between frames and sprites", 10, 480)
 		love.graphics.print("[PgDown] Previous anim. - [PgUp] Next anim.", 10, 500)
@@ -929,7 +950,7 @@ function love.draw()
 		
 		-- draw shortcuts
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("[A]dd actor - [D]elete actor", 10, 480)
+		love.graphics.print("[A]dd actor - [Del]ete actor", 10, 480)
 		love.graphics.print("[Tab] Change entity kind - [T] Select type", 10, 500)
 		love.graphics.print("[Arrows] Change animation", 10, 520)
 		love.graphics.print("[PgDown] Previous actor - [PgUp] Next actor", 10, 540)
@@ -1061,13 +1082,80 @@ function love.draw()
 
 		-- draw shortcuts
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("[A]dd a level - [D]elete level", 10, 460)
+		love.graphics.print("[A]dd a level - [Del]ete level", 10, 460)
 		love.graphics.print("[W]idth - [H]eight - [L][Shift] Set level", 10, 480)
 		love.graphics.print("[Tab] Set block/actor - [S]wap blocks/actors", 10, 500)
 		love.graphics.print("[M]emorize scrolling - [R]emember scrolling", 10, 520)
 		love.graphics.print("[F]ill blocks - [E]dit actor - [Del] actor", 10, 540)
 		love.graphics.print("[Esc] Back", 10, 560)
 	elseif mode == MODE_EDIT_GAMES_DATA then
+		-- draw title
+		love.graphics.setFont(EDITOR_TITLE_FONT)
+		love.graphics.setColor(0, 0, 0)
+		love.graphics.print("EDIT GAMES DATA", 160, 32)
+		love.graphics.setColor(1, 1, 1)
+		love.graphics.print("EDIT GAMES DATA", 161, 33)
+
+		-- draw games data
+		love.graphics.setFont(EDITOR_FONT)
+
+		for i = 1, #parameters_list do
+			if i == current_parameter then
+				love.graphics.setColor(1, 1, 0)
+			else
+				love.graphics.setColor(0, 1, 1)
+			end
+			
+			local special = ""
+			
+			if parameters_list[i].name == "game_goal" then
+				special = "[" .. game_goals[game_data.vars[parameters_list[i].name]] .. "]"
+			elseif parameters_list[i].name == "scrolling_type" then
+				special = "[" .. scrolling_types[game_data.vars[parameters_list[i].name]] .. "]"
+			end
+
+			love.graphics.print(parameters_list[i].name .. ": " .. tostring(game_data.vars[parameters_list[i].name]) .. " " .. special, 10, 100 + ((i - 1) * 20))
+		end
+
+		-- draw shortcuts
+		love.graphics.setColor(0, 1, 1)
+		love.graphics.print("[PgUp][PgDown] Change parameters page", 10, 500)
+		love.graphics.print("[Up][Down] Change selected parameter", 10, 520)
+		love.graphics.print("[Left][Right] Change value of the parameter", 10, 540)
+		love.graphics.print("[Esc] Back", 10, 560)
+	elseif mode == MODE_IMPORT_SOUNDS then
+		-- draw title
+		love.graphics.setFont(EDITOR_TITLE_FONT)
+		love.graphics.setColor(0, 0, 0)
+		love.graphics.print("IMPORT SOUNDS", 192, 32)
+		love.graphics.setColor(1, 1, 1)
+		love.graphics.print("IMPORT SOUNDS", 193, 33)
+
+		-- draw sounds
+		love.graphics.setFont(EDITOR_FONT)
+		love.graphics.setColor(0, 1, 1)		
+	elseif mode == MODE_IMPORT_MUSICS then
+		-- draw title
+		love.graphics.setFont(EDITOR_TITLE_FONT)
+		love.graphics.setColor(0, 0, 0)
+		love.graphics.print("IMPORT MUSICS", 192, 32)
+		love.graphics.setColor(1, 1, 1)
+		love.graphics.print("IMPORT MUSICS", 193, 33)
+
+		-- draw musics
+		love.graphics.setFont(EDITOR_FONT)
+		love.graphics.setColor(0, 1, 1)		
+	elseif mode == MODE_IMPORT_IMAGES then
+		-- draw title
+		love.graphics.setFont(EDITOR_TITLE_FONT)
+		love.graphics.setColor(0, 0, 0)
+		love.graphics.print("IMPORT IMAGES", 192, 32)
+		love.graphics.setColor(1, 1, 1)
+		love.graphics.print("IMPORT IMAGES", 193, 33)
+
+		-- draw images
+		love.graphics.setFont(EDITOR_FONT)
+		love.graphics.setColor(0, 1, 1)		
 	end
 end
 
@@ -1235,6 +1323,13 @@ function love.keypressed(key, scancode, isrepeat)
 			end			
 		elseif key == "m" then
 			if project_name ~= "" then
+				if current_parameter == 0 then
+					current_parameter = 1
+					current_page = 1
+					
+					parameters_list = GetParametersPage(current_page)
+				end
+
 				mode = MODE_EDIT_GAMES_DATA
 			else
 				beep:stop()
@@ -1486,7 +1581,7 @@ function love.keypressed(key, scancode, isrepeat)
 
 				game_data.blocks_data[current_block].type = block_data_copy.type
 			end
-		elseif key == "d" then
+		elseif key == "delete" then
 			-- delete current block
 			if current_block > 0 then
 				table.remove(game_data.blocks, current_block)
@@ -1596,7 +1691,7 @@ function love.keypressed(key, scancode, isrepeat)
 					end
 				end
 			end
-		elseif key == "d" then
+		elseif key == "delete" then
 			-- delete current sprite
 			if current_sprite > 0 then
 				table.remove(game_data.sprites, current_sprite)
@@ -1664,7 +1759,7 @@ function love.keypressed(key, scancode, isrepeat)
 			if current_animation > 0 then
 				game_data.animations[current_animation][current_frame] = frame_copy
 			end
-		elseif key == "d" then
+		elseif key == "delete" then
 			-- delete current animation
 			if current_animation > 0 then
 				table.remove(game_data.animations, current_animation)
@@ -1826,7 +1921,7 @@ function love.keypressed(key, scancode, isrepeat)
 				current_property = 1
 			end			
 
-		elseif key == "d" then
+		elseif key == "delete" then
 			-- delete selected actor
 			if current_actor > 0 then
 				table.remove(game_data.actors, current_actor)
@@ -2110,7 +2205,7 @@ function love.keypressed(key, scancode, isrepeat)
 				end
 			end
 			
-			if key == "d" then
+			if key == "delete" then
 				-- delete current level
 				if current_level > 0 then
 					-- disable edit mode
@@ -2358,6 +2453,75 @@ function love.keypressed(key, scancode, isrepeat)
 			end
 		end
 	elseif mode == MODE_EDIT_GAMES_DATA then
+		if key == "up" then
+			if current_parameter > 1 then
+				current_parameter = current_parameter - 1
+			elseif current_parameter == 1 then
+				current_parameter = #parameters_list
+			end
+		elseif key == "down" then
+			if current_parameter < #parameters_list then
+				current_parameter = current_parameter + 1
+			elseif current_parameter == #parameters_list then
+				current_parameter = 1
+			end
+		end
+
+		if key == "left" then
+			if game_data.vars[parameters_list[current_parameter].name] == false then
+				game_data.vars[parameters_list[current_parameter].name] = true
+			elseif game_data.vars[parameters_list[current_parameter].name] == true then
+				game_data.vars[parameters_list[current_parameter].name] = false
+			elseif game_data.vars[parameters_list[current_parameter].name] > vars_values[current_parameter + ((current_page - 1) * PARAMETERS_BY_PAGE)].min_value then
+				game_data.vars[parameters_list[current_parameter].name] = game_data.vars[parameters_list[current_parameter].name] - vars_values[current_parameter + ((current_page - 1) * PARAMETERS_BY_PAGE)].step_value
+			elseif game_data.vars[parameters_list[current_parameter].name] == vars_values[current_parameter + ((current_page - 1) * PARAMETERS_BY_PAGE)].min_value then
+				game_data.vars[parameters_list[current_parameter].name] = vars_values[current_parameter + ((current_page - 1) * PARAMETERS_BY_PAGE)].max_value
+			end
+		elseif key == "right" then
+			if game_data.vars[parameters_list[current_parameter].name] == false then
+				game_data.vars[parameters_list[current_parameter].name] = true
+			elseif game_data.vars[parameters_list[current_parameter].name] == true then
+				game_data.vars[parameters_list[current_parameter].name] = false
+			elseif game_data.vars[parameters_list[current_parameter].name] < vars_values[current_parameter + ((current_page - 1) * PARAMETERS_BY_PAGE)].max_value then
+				game_data.vars[parameters_list[current_parameter].name] = game_data.vars[parameters_list[current_parameter].name] + vars_values[current_parameter + ((current_page - 1) * PARAMETERS_BY_PAGE)].step_value
+			elseif game_data.vars[parameters_list[current_parameter].name] == vars_values[current_parameter + ((current_page - 1) * PARAMETERS_BY_PAGE)].max_value then
+				game_data.vars[parameters_list[current_parameter].name] = vars_values[current_parameter + ((current_page - 1) * PARAMETERS_BY_PAGE)].min_value
+			end
+		end
+		
+		if key == "pageup" then
+			if current_page > 1 then
+				current_page = current_page - 1
+			elseif current_page == 1 then
+				current_page = math.ceil(#vars_values / PARAMETERS_BY_PAGE)
+			end
+			
+			parameters_list = GetParametersPage(current_page)
+		elseif key == "pagedown" then
+			if current_page < math.ceil(#vars_values / PARAMETERS_BY_PAGE) then
+				current_page = current_page + 1
+			elseif current_page == math.ceil(#vars_values / PARAMETERS_BY_PAGE) then
+				current_page = 1
+			end
+
+			parameters_list = GetParametersPage(current_page)
+		end
+
+		if key == "escape" then
+			mode = MODE_MENU
+		end
+	elseif mode == MODE_IMPORT_SOUNDS then
+		if key == "escape" then
+			mode = MODE_MENU
+		end
+	elseif mode == MODE_IMPORT_MUSICS then
+		if key == "escape" then
+			mode = MODE_MENU
+		end
+	elseif mode == MODE_IMPORT_IMAGES then
+		if key == "escape" then
+			mode = MODE_MENU
+		end
 	end
 end
 
