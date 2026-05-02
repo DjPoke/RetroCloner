@@ -14,8 +14,8 @@
 ------------------------------
 
 -- constants
-EDITOR_WINDOW_WIDTH = 800
-EDITOR_WINDOW_HEIGHT = 600
+EDITOR_WINDOW_WIDTH = 1280
+EDITOR_WINDOW_HEIGHT = 800
 EDITOR_WINDOW_TITLE = "Retro Cloner"
 
 WINDOW_WIDTH = 0
@@ -347,7 +347,7 @@ function love.update(dt)
 			local mx = love.mouse.getX()
 			local my = love.mouse.getY()
 
-			local xc = 400 - (game_data.block_width * game_data.pixel_size * BLOCKS_ZOOM / 2)
+			local xc = (EDITOR_WINDOW_WIDTH / 2) - (game_data.block_width * game_data.pixel_size * BLOCKS_ZOOM / 2)
 			local yc = 160
 			
 			block_x = math.floor((mx - xc) / (game_data.pixel_size * BLOCKS_ZOOM))
@@ -377,7 +377,7 @@ function love.update(dt)
 			local mx = love.mouse.getX()
 			local my = love.mouse.getY()
 
-			local xc = 400 - (game_data.sprite_width * game_data.pixel_size * SPRITES_ZOOM / 2)
+			local xc = (EDITOR_WINDOW_WIDTH / 2) - (game_data.sprite_width * game_data.pixel_size * SPRITES_ZOOM / 2)
 			local yc = 160
 			
 			sprite_x = math.floor((mx - xc) / (game_data.pixel_size * SPRITES_ZOOM))
@@ -437,7 +437,7 @@ function love.update(dt)
 			-- draw blocks with the mouse
 			if current_level_actors_edit_mode == false then
 				if current_level_mode == LEVEL_MODE_BLOCKS then
-					local xc = 400 - (game_data.levels_data.sw * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM / 2)
+					local xc = (EDITOR_WINDOW_WIDTH / 2) - (game_data.levels_data.sw * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM / 2)
 					local yc = 160
 					
 					local bx = math.floor((mx - xc) / (game_data.block_width * game_data.pixel_size * LEVELS_ZOOM))
@@ -492,177 +492,151 @@ function love.draw()
 	
 	if mode == MODE_MENU then
 		-- draw title
-		love.graphics.setFont(EDITOR_TITLE_FONT)
-		love.graphics.setColor(0, 0, 0)
-		love.graphics.print("RETRO CLONER", 208, 32)
-		love.graphics.setColor(1, 1, 1)
-		love.graphics.print("RETRO CLONER", 209, 33)
+		DrawTitleCentered("RETRO CLONER", EDITOR_WINDOW_WIDTH, 32)
 
 		-- draw menu
 		love.graphics.setFont(EDITOR_FONT)
 		love.graphics.setColor(1, 1, 1)
-		love.graphics.print("a", 200, 120)
-		love.graphics.print("b", 200, 140)
-		love.graphics.print("c", 200, 160)
-		love.graphics.print("d", 200, 180)
-		love.graphics.print("e", 200, 200)
-		love.graphics.print("f", 200, 240)
-		love.graphics.print("g", 200, 260)
-		love.graphics.print("h", 200, 280)
-		love.graphics.print("i", 200, 300)
-		love.graphics.print("j", 200, 320)
-		love.graphics.print("k", 200, 340)
-		love.graphics.print("l", 200, 380)
-		love.graphics.print("m", 200, 400)
-		love.graphics.print("n", 200, 440)
-		love.graphics.print("o", 200, 460)
-		love.graphics.print("p", 200, 480)
-		love.graphics.print("q", 200, 520)
+		love.graphics.print("a", 440, 120)
+		love.graphics.print("b", 440, 140)
+		love.graphics.print("c", 440, 160)
+		love.graphics.print("d", 440, 180)
+		love.graphics.print("e", 440, 200)
+		love.graphics.print("f", 440, 240)
+		love.graphics.print("g", 440, 260)
+		love.graphics.print("h", 440, 280)
+		love.graphics.print("i", 440, 300)
+		love.graphics.print("j", 440, 320)
+		love.graphics.print("k", 440, 340)
+		love.graphics.print("l", 440, 380)
+		love.graphics.print("m", 440, 400)
+		love.graphics.print("n", 440, 440)
+		love.graphics.print("o", 440, 460)
+		love.graphics.print("p", 440, 480)
+		love.graphics.print("q", 440, 520)
 
 		love.graphics.setColor(0, 0, 1)
-		love.graphics.print(")", 216, 120)
-		love.graphics.print(")", 216, 140)
-		love.graphics.print(")", 216, 160)
-		love.graphics.print(")", 216, 180)
-		love.graphics.print(")", 216, 200)
-		love.graphics.print(")", 216, 240)
-		love.graphics.print(")", 216, 260)
-		love.graphics.print(")", 216, 280)
-		love.graphics.print(")", 216, 300)
-		love.graphics.print(")", 216, 320)
-		love.graphics.print(")", 216, 340)
-		love.graphics.print(")", 216, 380)
-		love.graphics.print(")", 216, 400)
-		love.graphics.print(")", 216, 440)
-		love.graphics.print(")", 216, 460)
-		love.graphics.print(")", 216, 480)
-		love.graphics.print(")", 216, 520)
+		love.graphics.print(")", 456, 120)
+		love.graphics.print(")", 456, 140)
+		love.graphics.print(")", 456, 160)
+		love.graphics.print(")", 456, 180)
+		love.graphics.print(")", 456, 200)
+		love.graphics.print(")", 456, 240)
+		love.graphics.print(")", 456, 260)
+		love.graphics.print(")", 456, 280)
+		love.graphics.print(")", 456, 300)
+		love.graphics.print(")", 456, 320)
+		love.graphics.print(")", 456, 340)
+		love.graphics.print(")", 456, 380)
+		love.graphics.print(")", 456, 400)
+		love.graphics.print(")", 456, 440)
+		love.graphics.print(")", 456, 460)
+		love.graphics.print(")", 456, 480)
+		love.graphics.print(")", 456, 520)
 
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("New Project", 250, 120)
-		love.graphics.print("Load Project", 250, 140)
+		love.graphics.print("New Project", 490, 120)
+		love.graphics.print("Load Project", 490, 140)
 		
 		if project_name == "" then love.graphics.setColor(1, 0, 0) end
 		
-		love.graphics.print("Save Project", 250, 160)
-		love.graphics.print("Export Executable Game", 250, 180)
-		love.graphics.print("Test Game", 250, 200)
-		love.graphics.print("Edit Palette", 250, 240)
-		love.graphics.print("Edit Screen", 250, 260)
-		love.graphics.print("Edit Blocks", 250, 280)
-		love.graphics.print("Edit Sprites", 250, 300)
-		love.graphics.print("Edit Animations", 250, 320)
-		love.graphics.print("Edit Actors", 250, 340)
-		love.graphics.print("Edit Levels", 250, 380)
-		love.graphics.print("Edit Game Data", 250, 400)
-		love.graphics.print("Import Sounds", 250, 440)
-		love.graphics.print("Import Musics", 250, 460)
-		love.graphics.print("Import Images", 250, 480)
+		love.graphics.print("Save Project", 490, 160)
+		love.graphics.print("Export Executable Game", 490, 180)
+		love.graphics.print("Test Game", 490, 200)
+		love.graphics.print("Edit Palette", 490, 240)
+		love.graphics.print("Edit Screen", 490, 260)
+		love.graphics.print("Edit Blocks", 490, 280)
+		love.graphics.print("Edit Sprites", 490, 300)
+		love.graphics.print("Edit Animations", 490, 320)
+		love.graphics.print("Edit Actors", 490, 340)
+		love.graphics.print("Edit Levels", 490, 380)
+		love.graphics.print("Edit Game Data", 490, 400)
+		love.graphics.print("Import Sounds", 490, 440)
+		love.graphics.print("Import Musics", 490, 460)
+		love.graphics.print("Import Images", 490, 480)
 
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("Quit", 250, 520)
+		love.graphics.print("Quit", 490, 520)
 		
 		love.graphics.setColor(0, 0, 0.5)
 		love.graphics.rectangle("line", 16, 16, EDITOR_WINDOW_WIDTH - 32, EDITOR_WINDOW_HEIGHT - 32)
 	elseif mode == MODE_NEW_PROJECT then
 		-- draw title
-		love.graphics.setFont(EDITOR_TITLE_FONT)
-		love.graphics.setColor(0, 0, 0)
-		love.graphics.print("NEW PROJECT", 224, 32)
-		love.graphics.setColor(1, 1, 1)
-		love.graphics.print("NEW PROJECT", 225, 33)
+		DrawTitleCentered("NEW PROJECT", EDITOR_WINDOW_WIDTH, 32)
 
 		if new_project_mode == NEW_PROJECT_MODE_INPUT then
 			-- show project name
 			love.graphics.setFont(EDITOR_FONT)
 			love.graphics.setColor(0, 1, 1)
-			love.graphics.print("Project name: " .. project_name, 200, 120)
+			love.graphics.print("Project name: " .. project_name, 440, 120)
 		elseif new_project_mode == NEW_PROJECT_MODE_CHOOSE_PRESET then
 			-- draw presets selection
 			love.graphics.setFont(EDITOR_FONT)
 			love.graphics.setColor(0, 1, 1)
-			love.graphics.print("Please choose a game preset:", 200, 120)
+			love.graphics.print("Please choose a game preset:", 440, 120)
 			
 			for i = 1, #presets do
 				love.graphics.setColor(1, 1, 1)
-				love.graphics.print(string.char(96 + i), 200, 160 + ((i - 1) * 20))
+				love.graphics.print(string.char(96 + i), 440, 160 + ((i - 1) * 20))
 				love.graphics.setColor(0, 0, 1)
-				love.graphics.print(")", 216, 160 + ((i - 1) * 20))
+				love.graphics.print(")", 456, 160 + ((i - 1) * 20))
 				love.graphics.setColor(0, 1, 1)
-				love.graphics.print(presets[i], 250, 160 + ((i - 1) * 20))
+				love.graphics.print(presets[i], 490, 160 + ((i - 1) * 20))
 			end
 		end
 	elseif mode == MODE_LOAD_PROJECT then
 		-- draw title
-		love.graphics.setFont(EDITOR_TITLE_FONT)
-		love.graphics.setColor(0, 0, 0)
-		love.graphics.print("LOAD PROJECT", 208, 32)
-		love.graphics.setColor(1, 1, 1)
-		love.graphics.print("LOAD PROJECT", 209, 33)
+		DrawTitleCentered("LOAD PROJECT", EDITOR_WINDOW_WIDTH, 32)
 		
 		-- draw filename
 		love.graphics.setFont(EDITOR_FONT)
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("Project name: " .. project_name, 200, 120)
-		love.graphics.print("[Tab] to change...", 200, 140)
+		love.graphics.print("Project name: " .. project_name, 440, 120)
+		love.graphics.print("[Tab] to change...", 440, 140)
 	elseif mode == MODE_SAVE_PROJECT then
 		-- draw title
-		love.graphics.setFont(EDITOR_TITLE_FONT)
-		love.graphics.setColor(0, 0, 0)
-		love.graphics.print("SAVE PROJECT", 208, 32)
-		love.graphics.setColor(1, 1, 1)
-		love.graphics.print("SAVE PROJECT", 209, 33)
+		DrawTitleCentered("SAVE PROJECT", EDITOR_WINDOW_WIDTH, 32)
 		
 		-- draw message
 		love.graphics.setFont(EDITOR_FONT)
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print(text_message, 10, 120)
+		love.graphics.print(text_message, 465, 120)
 	elseif mode == MODE_EXPORT_EXECUTABLE_GAME then
 		-- draw title
-		love.graphics.setFont(EDITOR_TITLE_FONT)
-		love.graphics.setColor(0, 0, 0)
-		love.graphics.print("EXPORT EXECUTABLE GAME", 48, 32)
-		love.graphics.setColor(1, 1, 1)
-		love.graphics.print("EXPORT EXECUTABLE GAME", 49, 33)
+		DrawTitleCentered("EXPORT EXECUTABLE GAME", EDITOR_WINDOW_WIDTH, 32)
 		
 		-- draw message
 		love.graphics.setFont(EDITOR_FONT)
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("As I don't know how to create a .love file in", 10, 100)
-		love.graphics.print("Love2d, this is the steps to create one :", 10, 120)
-		love.graphics.print("1) The player folder with your game's data", 10, 160)
-		love.graphics.print("inside have been copied to your save folder:", 10, 180)
-		love.graphics.print(love.filesystem.getSaveDirectory() .. "/games/", 10, 200)
-		love.graphics.print("2) Select all the files in this folder, and", 10, 240)
-		love.graphics.print("ZIP them. Next, rename the .zip file to .love", 10, 260)
-		love.graphics.print("3) To create executable files, you can use", 10, 300)
-		love.graphics.print("'love-release', or take a look at Love2d wiki.", 10, 320)
-		love.graphics.print("https://github.com/MisterDA/love-release", 10, 340)
+		love.graphics.print("As I don't know how to create a .love file in Love2d, this is the steps to", 50, 100)
+		love.graphics.print("create one :", 50, 120)
+		love.graphics.print("1) The player folder with your game's data inside has been copied to your", 50, 160)
+		love.graphics.print("save folder: " .. love.filesystem.getSaveDirectory() .. "/games/", 50, 180)
+		love.graphics.print("2) Select all the files in this folder, and ZIP them. Next, rename the", 50, 220)
+		love.graphics.print("'.zip' file to '.love'.", 50, 240)
+		love.graphics.print("3) To create executable files, you can use 'love-release', or take a look", 50, 280)
+		love.graphics.print("at Love2d wiki. https://github.com/MisterDA/love-release", 50, 300)
 	elseif mode == MODE_TEST_GAME then
 		run.draw()
 	elseif mode == MODE_EDIT_PALETTE then
 		-- draw title
-		love.graphics.setFont(EDITOR_TITLE_FONT)
-		love.graphics.setColor(0, 0, 0)
-		love.graphics.print("EDIT PALETTE", 208, 32)
-		love.graphics.setColor(1, 1, 1)
-		love.graphics.print("EDIT PALETTE", 209, 33)
+		DrawTitleCentered("EDIT PALETTE", EDITOR_WINDOW_WIDTH, 32)
 		
 		-- draw palette
 		love.graphics.setFont(EDITOR_FONT)
 		love.graphics.setColor(0, 0, 0)
-		love.graphics.rectangle("fill", 400 - (8 * 2 * PALETTE_ZOOM) - 2, 120 - 2, (2 * PALETTE_ZOOM * maxx) + 4, (PALETTE_ZOOM * maxy) + 4)
+		love.graphics.rectangle("fill", (EDITOR_WINDOW_WIDTH / 2) - (8 * 2 * PALETTE_ZOOM) - 2, 120 - 2, (2 * PALETTE_ZOOM * maxx) + 4, (PALETTE_ZOOM * maxy) + 4)
 
 		if maxx > 0 and maxy > 0 then
 			for y = 0, maxy - 1 do
 				for x = 0, maxx - 1 do
 					local r, g, b = GetPenRGB(x + (y * 16))
 					love.graphics.setColor(r, g, b)
-					love.graphics.rectangle("fill", 400 + (x * 2 * PALETTE_ZOOM) - (8 * 2 * PALETTE_ZOOM), 120 + (y * PALETTE_ZOOM), 2 * PALETTE_ZOOM, PALETTE_ZOOM)
+					love.graphics.rectangle("fill", (EDITOR_WINDOW_WIDTH / 2) + (x * 2 * PALETTE_ZOOM) - (8 * 2 * PALETTE_ZOOM), 120 + (y * PALETTE_ZOOM), 2 * PALETTE_ZOOM, PALETTE_ZOOM)
 					
 					-- draw a selection rectangle on top of the selected color
 					if selected_color == x + (y * 16) then
-						local xc = 400 + (x * 2 * PALETTE_ZOOM) - (8 * 2 * PALETTE_ZOOM)
+						local xc = (EDITOR_WINDOW_WIDTH / 2) + (x * 2 * PALETTE_ZOOM) - (8 * 2 * PALETTE_ZOOM)
 						local yc = 120 + (y * PALETTE_ZOOM)
 						local wc = 2 * PALETTE_ZOOM
 						local hc = PALETTE_ZOOM
@@ -674,26 +648,22 @@ function love.draw()
 			
 			-- draw informations
 			love.graphics.setColor(0, 1, 1)
-			love.graphics.print("Pen " .. tostring(selected_color) .. " Ink " .. tostring(game_data.pens_palette[selected_color + 1]), 300, 220)
+			love.graphics.print("Pen " .. tostring(selected_color) .. " Ink " .. tostring(game_data.pens_palette[selected_color + 1]), 540, 220)
 			
 		
 			-- draw shortcuts
-			love.graphics.print("[Left/Right] Change pen [Up/Down] Change ink", 10, 500)
-			love.graphics.print("[Esc] Back", 10, 520)
+			love.graphics.print("[Left][Right] Change the pen [Up][Down] Change ink color", 10, 740)
+			love.graphics.print("[Esc] Back", 10, 760)
 		end
 	elseif mode == MODE_EDIT_SCREEN then
 		-- draw title
-		love.graphics.setFont(EDITOR_TITLE_FONT)
-		love.graphics.setColor(0, 0, 0)
-		love.graphics.print("EDIT SCREEN", 224, 32)
-		love.graphics.setColor(1, 1, 1)
-		love.graphics.print("EDIT SCREEN", 225, 33)
+		DrawTitleCentered("EDIT SCREEN", EDITOR_WINDOW_WIDTH, 32)
 		
 		-- draw screen
 		local r, g, b = GetPenRGB(game_data.background_paper)
 		love.graphics.setColor(r, g, b)
 
-		local screen_x = math.floor((800 - game_data.screen_width * game_data.pixel_size * SCREEN_ZOOM) / 2)
+		local screen_x = math.floor((EDITOR_WINDOW_WIDTH - game_data.screen_width * game_data.pixel_size * SCREEN_ZOOM) / 2)
 		local screen_y = 75
 		
 		love.graphics.rectangle("fill", screen_x, screen_y, game_data.screen_width * game_data.pixel_size * SCREEN_ZOOM, game_data.screen_height * SCREEN_ZOOM)
@@ -719,50 +689,46 @@ function love.draw()
 		love.graphics.setFont(EDITOR_FONT)
 		love.graphics.setColor(0, 1, 1)
 		local infos = tostring(game_data.areas[area_selected].x) .. "," .. tostring(game_data.areas[area_selected].y) .. " - " .. tostring(game_data.areas[area_selected].width) .. "," .. tostring(game_data.areas[area_selected].height)
-		love.graphics.print(infos, 200, 480)
+		love.graphics.print(infos, 540, 480)
 		local r, g, b = GetPenRGB(game_data.border_paper)
 		love.graphics.setColor(r, g, b)
-		love.graphics.print("Border color: " .. tostring(game_data.border_paper), 500, 480)
+		love.graphics.print("Border color: " .. tostring(game_data.border_paper), 500, 500)
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("[Tab] Select area to edit - [Arrows] Position ", 10, 520)
-		love.graphics.print("[Arrows+Shift] Resize - [f1-f5] Change colors", 10, 540)
-		love.graphics.print("[Esc] Back", 10, 560)
+		love.graphics.print("[Tab] Select area to edit - [Arrows] Position - [Arrows][Shift] Resize", 10, 720)
+		love.graphics.print("[F1-F5] Change colors", 10, 740)
+		love.graphics.print("[Esc] Back", 10, 760)
 	elseif mode == MODE_EDIT_BLOCKS then
 		-- draw title
-		love.graphics.setFont(EDITOR_TITLE_FONT)
-		love.graphics.setColor(0, 0, 0)
-		love.graphics.print("EDIT BLOCKS", 224, 32)
-		love.graphics.setColor(1, 1, 1)
-		love.graphics.print("EDIT BLOCKS", 225, 33)
+		DrawTitleCentered("EDIT BLOCKS", EDITOR_WINDOW_WIDTH, 32)
 		
 		-- draw pen
 		love.graphics.setFont(EDITOR_FONT)
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("Pen " .. pen_color, 140, 100)
+		love.graphics.print("Pen " .. pen_color, 380, 100)
 		local r, g, b = GetPenRGB(pen_color)
 		love.graphics.setColor(r, g, b)
-		love.graphics.rectangle("fill", 260, 100, 32, 16)
+		love.graphics.rectangle("fill", 500, 100, 32, 16)
 		
 		-- draw current block number
 		love.graphics.setColor(0, 1, 1)
 
 		if current_block > 0 then
-			love.graphics.print("Block " .. tostring(current_block) .. " : " .. game_data.blocks_data[current_block].type, 320, 100)
+			love.graphics.print("Block " .. tostring(current_block) .. " : " .. game_data.blocks_data[current_block].type, 560, 100)
 		else
-			love.graphics.print("No blocks!", 320, 100)
+			love.graphics.print("No blocks!", 560, 100)
 		end
 
 		-- draw error message if too many colors
 		if block_too_many_color == true then
 			love.graphics.setColor(1, 0, 0)
-			love.graphics.print("Error: too many colors for this preset!", 80, 120)
+			love.graphics.print("Error: too many colors for this preset!", 320, 120)
 		end
 		
 		-- draw current block
 		if current_block > 0 then
 			for x = 0, game_data.block_width - 1 do				
 				for y = 0, game_data.block_height - 1 do
-					local xc = 400 + (x * game_data.pixel_size * BLOCKS_ZOOM) - (game_data.block_width * game_data.pixel_size * BLOCKS_ZOOM / 2)
+					local xc = (EDITOR_WINDOW_WIDTH / 2) + (x * game_data.pixel_size * BLOCKS_ZOOM) - (game_data.block_width * game_data.pixel_size * BLOCKS_ZOOM / 2)
 					local yc = 160 + (y * BLOCKS_ZOOM)
 					local wc = BLOCKS_ZOOM * game_data.pixel_size
 					local hc = BLOCKS_ZOOM
@@ -775,52 +741,46 @@ function love.draw()
 
 		-- draw shortcuts
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("[A]dd a block - [C]opy block - [P]aste block", 10, 460)
-		love.graphics.print("[Del]ete block - [T]ype - [Tab] Change pen", 10, 480)
-		love.graphics.print("[Mouse] Move - [LClick] Draw - [RClick] Clear", 10, 500)
-		love.graphics.print("[F]ill", 10, 520)
-		love.graphics.print("[PgDown] Previous block - [PgUp] Next block", 10, 540)
-		love.graphics.print("[Esc] Back", 10, 560)
+		love.graphics.print("[A]dd a block - [C]opy block - [P]aste block - [Del]ete block - [T]ype", 10, 700)
+		love.graphics.print("[Tab] Change pen - [Mouse] Move - [LClick] Draw - [RClick] Clear", 10, 720)
+		love.graphics.print("[F]ill - [PgDown] Previous block - [PgUp] Next block", 10, 740)
+		love.graphics.print("[Esc] Back", 10, 760)
 	elseif mode == MODE_EDIT_SPRITES then
 		-- draw title
-		love.graphics.setFont(EDITOR_TITLE_FONT)
-		love.graphics.setColor(0, 0, 0)
-		love.graphics.print("EDIT SPRITES", 208, 32)
-		love.graphics.setColor(1, 1, 1)
-		love.graphics.print("EDIT SPRITES", 209, 33)
+		DrawTitleCentered("EDIT SPRITES", EDITOR_WINDOW_WIDTH, 32)
 		
 		-- draw pen
 		love.graphics.setFont(EDITOR_FONT)
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("Pen " .. pen_color, 240, 100)
+		love.graphics.print("Pen " .. pen_color, 480, 100)
 		local r, g, b = GetPenRGB(pen_color)
 		love.graphics.setColor(r, g, b)
-		love.graphics.rectangle("fill", 360, 100, 32, 16)
+		love.graphics.rectangle("fill", 600, 100, 32, 16)
 		
 		-- draw current sprite number
 		love.graphics.setColor(0, 1, 1)
 
 		if current_sprite > 0 then
-			love.graphics.print("Sprite " .. tostring(current_sprite), 420, 100)
+			love.graphics.print("Sprite " .. tostring(current_sprite), 660, 100)
 		else
-			love.graphics.print("No sprites!", 420, 100)
+			love.graphics.print("No sprites!", 660, 100)
 		end
 		
 		if pen_color == 0 then
-			love.graphics.print("(Transparent) ", 240, 120)
+			love.graphics.print("(Transparent) ", 480, 120)
 		end
 
 		-- draw error message if too many colors
 		if sprite_too_many_color == true then
 			love.graphics.setColor(1, 0, 0)
-			love.graphics.print("Error: too many colors for this preset!", 80, 140)
+			love.graphics.print("Error: too many colors for this preset!", 320, 140)
 		end
 		
 		-- draw current sprite
 		if current_sprite > 0 then
 			for x = 0, game_data.sprite_width - 1 do
 				for y = 0, game_data.sprite_height - 1 do
-					local xc = 400 + (x * game_data.pixel_size * SPRITES_ZOOM) - (game_data.sprite_width * game_data.pixel_size * SPRITES_ZOOM / 2)
+					local xc = (EDITOR_WINDOW_WIDTH / 2) + (x * game_data.pixel_size * SPRITES_ZOOM) - (game_data.sprite_width * game_data.pixel_size * SPRITES_ZOOM / 2)
 					local yc = 160 + (y * SPRITES_ZOOM)
 					local wc = SPRITES_ZOOM * game_data.pixel_size
 					local hc = SPRITES_ZOOM
@@ -833,19 +793,13 @@ function love.draw()
 
 		-- draw shortcuts
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("[A]dd a sprite - [C]opy sprite - [P]aste sprite", 10, 460)
-		love.graphics.print("[Del]ete sprite", 10, 480)
-		love.graphics.print("[Mouse] Move - [LClick] Draw - [RClick] Clear", 10, 500)
-		love.graphics.print("[F]ill", 10, 520)
-		love.graphics.print("[PgDown] Previous sprite - [PgUp] Next sprite", 10, 540)
-		love.graphics.print("[Esc] Back", 10, 560)
+		love.graphics.print("[A]dd a sprite - [C]opy sprite - [P]aste sprite - [Del]ete sprite", 10, 700)
+		love.graphics.print("[Mouse] Move - [LClick] Draw - [RClick] Clear", 10, 720)
+		love.graphics.print("[F]ill - [PgDown] Previous sprite - [PgUp] Next sprite", 10, 740)
+		love.graphics.print("[Esc] Back", 10, 760)
 	elseif mode == MODE_EDIT_ANIMATIONS then
 		-- draw title
-		love.graphics.setFont(EDITOR_TITLE_FONT)
-		love.graphics.setColor(0, 0, 0)
-		love.graphics.print("EDIT ANIMATIONS", 192, 32)
-		love.graphics.setColor(1, 1, 1)
-		love.graphics.print("EDIT ANIMATIONS", 193, 33)
+		DrawTitleCentered("EDIT ANIMATIONS", EDITOR_WINDOW_WIDTH, 32)
 		
 		-- draw current animation
 		love.graphics.setFont(EDITOR_FONT)
@@ -853,7 +807,7 @@ function love.draw()
 		
 		if current_animation > 0 then
 			-- draw texts
-			love.graphics.print("Animation " .. tostring(current_animation), 300, 80)
+			love.graphics.print("Animation " .. tostring(current_animation), 540, 80)
 
 			local ani_list = ""
 			local sel_list = ""
@@ -873,11 +827,11 @@ function love.draw()
 				end
 			end
 			
-			love.graphics.print(ani_list, 10, 120)
+			love.graphics.print(ani_list, 250, 120)
 
 			-- show selected frame
 			love.graphics.setColor(1, 1, 1)
-			love.graphics.print(sel_list, 10, 140)
+			love.graphics.print(sel_list, 250, 140)
 			
 			-- draw current image
 			local image = game_data.animations[current_animation][current_frame]
@@ -886,47 +840,41 @@ function love.draw()
 				love.graphics.setColor(1, 1, 1)
 				
 				if image > 0 and image <= #img_sprites then
-					love.graphics.draw(img_sprites[image], 288, 180, 0, ANIMATION_ZOOM * game_data.pixel_size, ANIMATION_ZOOM)
+					love.graphics.draw(img_sprites[image], 528, 180, 0, ANIMATION_ZOOM * game_data.pixel_size, ANIMATION_ZOOM)
 				end
 
 				-- draw current animated animation
 				if animation_playing == true then
 					if image > 0 and image <= #img_sprites then
-						love.graphics.draw(img_sprites[game_data.animations[current_animation][animation_frame]], 496, 180, 0, ANIMATION_ZOOM * game_data.pixel_size, ANIMATION_ZOOM)
+						love.graphics.draw(img_sprites[game_data.animations[current_animation][animation_frame]], 716, 180, 0, ANIMATION_ZOOM * game_data.pixel_size, ANIMATION_ZOOM)
 					end
 				end
 			else
 				love.graphics.setColor(0, 1, 1)
-				love.graphics.print("No sprite!", 320, 180)
+				love.graphics.print("No sprite!", 560, 180)
 			end
 
 			-- show loop mode
 			love.graphics.setColor(0, 1, 1)
 			local loop = "off"
 			if game_data.animations_loop[current_animation].loop == true then loop = "on" end
-			love.graphics.print("Loop mode " .. tostring(loop) .. " v1 " .. tostring(game_data.animations_loop[current_animation].v1) .. " v2 " .. tostring(game_data.animations_loop[current_animation].v2), 200, 280)
+			love.graphics.print("Loop mode " .. tostring(loop) .. " v1 " .. tostring(game_data.animations_loop[current_animation].v1) .. " v2 " .. tostring(game_data.animations_loop[current_animation].v2), 440, 280)
 			
 		else
-			love.graphics.print("No animations!", 300, 80)
+			love.graphics.print("No animations!", 540, 80)
 		end
 
 		-- draw shortcuts
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("[A]dd an animation - [C]opy animation", 10, 420)
-		love.graphics.print("[P]aste animation - [Del]ete animation", 10, 440)
-		love.graphics.print("[F] Add a frame - [Backspace] Delete last frame", 10, 460)
-		love.graphics.print("[Arrows] Navigate between frames and sprites", 10, 480)
-		love.graphics.print("[PgDown] Previous anim. - [PgUp] Next anim.", 10, 500)
-		love.graphics.print("[L]oop On/Off - [F1-F2] Set loop limits", 10, 520)
-		love.graphics.print("[Space] Play current animation", 10, 540)
-		love.graphics.print("[Esc] Back", 10, 560)
+		love.graphics.print("[A]dd an animation - [C]opy animation - [P]aste animation - [Del]ete animation", 10, 660)
+		love.graphics.print("[F] Add a frame - [Backspace] Delete last frame", 10, 680)
+		love.graphics.print("[Arrows] Navigate between frames and sprites", 10, 700)
+		love.graphics.print("[PgDown] Previous animation - [PgUp] Next animation", 10, 720)
+		love.graphics.print("[L]oop On/Off - [F1-F2] Set loop limits - [Space] Play current animation", 10, 740)
+		love.graphics.print("[Esc] Back", 10, 760)
 	elseif mode == MODE_EDIT_ACTORS then
 		-- draw title
-		love.graphics.setFont(EDITOR_TITLE_FONT)
-		love.graphics.setColor(0, 0, 0)
-		love.graphics.print("EDIT ACTORS", 224, 32)
-		love.graphics.setColor(1, 1, 1)
-		love.graphics.print("EDIT ACTORS", 225, 33)
+		DrawTitleCentered("EDIT ACTORS", EDITOR_WINDOW_WIDTH, 32)
 
 		-- draw actor's parameters
 		love.graphics.setFont(EDITOR_FONT)
@@ -934,11 +882,11 @@ function love.draw()
 		
 		if #game_data.actors > 0 then
 			-- show actor's entity type
-			love.graphics.print("Actor " .. tostring(current_actor) .. " as " .. entity_types[game_data.actors[current_actor].entity], 200, 80)
+			love.graphics.print("Actor " .. tostring(current_actor) .. " as " .. entity_types[game_data.actors[current_actor].entity], 440, 80)
 
 			-- show entity type
 			if game_data.actors[current_actor].entity == ENTITY_TYPE_PLAYER then
-				love.graphics.print("Player type " .. game_data.actors[current_actor].type.name, 200, 120)				
+				love.graphics.print("Player type " .. game_data.actors[current_actor].type.name, 440, 120)
 
 				-- show animation's names list
 				for i = 1, #player_animations[current_player_type] do
@@ -948,10 +896,10 @@ function love.draw()
 					local k = player_animations[current_player_type][i]
 					local v = game_data.actors[current_actor].type[player_animations[current_player_type][i]]
 
-					love.graphics.print(k .. ": " .. tostring(v), 200, 160 + ((i - 1) * 20))
+					love.graphics.print(k .. ": " .. tostring(v), 440, 160 + ((i - 1) * 20))
 				end
 			elseif game_data.actors[current_actor].entity == ENTITY_TYPE_ENEMY then
-				love.graphics.print("Enemy type " .. game_data.actors[current_actor].type.name, 200, 120)
+				love.graphics.print("Enemy type " .. game_data.actors[current_actor].type.name, 440, 120)
 				
 				-- show animation's names list
 				for i = 1, #enemy_animations[current_enemy_type] do
@@ -961,10 +909,10 @@ function love.draw()
 					local k = enemy_animations[current_enemy_type][i]
 					local v = game_data.actors[current_actor].type[enemy_animations[current_enemy_type][i]]
 
-					love.graphics.print(k .. ": " .. tostring(v), 200, 160 + ((i - 1) * 20))
+					love.graphics.print(k .. ": " .. tostring(v), 440, 160 + ((i - 1) * 20))
 				end
 			elseif game_data.actors[current_actor].entity == ENTITY_TYPE_BONUS then
-				love.graphics.print("Bonus type " .. game_data.actors[current_actor].type.name, 200, 120)
+				love.graphics.print("Bonus type " .. game_data.actors[current_actor].type.name, 440, 120)
 				
 				-- show animation's names list
 				for i = 1, #bonus_animations[current_bonus_type] do
@@ -974,28 +922,22 @@ function love.draw()
 					local k = enemy_animations[current_bonus_type][i]
 					local v = game_data.actors[current_actor].type[bonus_animations[current_bonus_type][i]]
 
-					love.graphics.print(k .. ": " .. tostring(v), 200, 160 + ((i - 1) * 20))
+					love.graphics.print(k .. ": " .. tostring(v), 440, 160 + ((i - 1) * 20))
 				end
 			end
 
 		else
-			love.graphics.print("No actors!", 260, 80)
+			love.graphics.print("No actors!", 500, 80)
 		end
 		
 		-- draw shortcuts
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("[A]dd actor - [Del]ete actor", 10, 480)
-		love.graphics.print("[Tab] Change entity kind - [T] Select type", 10, 500)
-		love.graphics.print("[Arrows] Change animation", 10, 520)
-		love.graphics.print("[PgDown] Previous actor - [PgUp] Next actor", 10, 540)
-		love.graphics.print("[Esc] Back", 10, 560)
+		love.graphics.print("[A]dd actor - [Del]ete actor - [Tab] Change entity kind - [T] Select type", 10, 720)
+		love.graphics.print("[Arrows] Change animation - [PgDown] Previous actor - [PgUp] Next actor", 10, 740)
+		love.graphics.print("[Esc] Back", 10, 760)
 	elseif mode == MODE_EDIT_LEVELS then
 		-- draw title
-		love.graphics.setFont(EDITOR_TITLE_FONT)
-		love.graphics.setColor(0, 0, 0)
-		love.graphics.print("EDIT LEVELS", 224, 32)
-		love.graphics.setColor(1, 1, 1)
-		love.graphics.print("EDIT LEVELS", 225, 33)
+		DrawTitleCentered("EDIT LEVELS", EDITOR_WINDOW_WIDTH, 32)
 
 		-- draw level's parameters
 		love.graphics.setFont(EDITOR_FONT)
@@ -1003,16 +945,16 @@ function love.draw()
 		
 		if current_level > 0 then
 			-- print level number
-			love.graphics.print("Level " .. tostring(current_level), 320, 80)
+			love.graphics.print("Level " .. tostring(current_level), 560, 80)
 
 			-- print level size
-			love.graphics.print("Level size (in screens): width " .. tostring(game_data.levels_data.w) .. " height " .. tostring(game_data.levels_data.h), 80, 120)
+			love.graphics.print("Level size (in screens): width " .. tostring(game_data.levels_data.w) .. " height " .. tostring(game_data.levels_data.h), 320, 120)
 			
 			-- draw the game area
 			local r, g, b = GetPenRGB(game_data.game_paper)
 			love.graphics.setColor(r, g, b)
 
-			local area_x = 400 - math.floor((game_data.areas[GAME_AREA].width * game_data.pixel_size * SCREEN_ZOOM) / 2)
+			local area_x = (EDITOR_WINDOW_WIDTH / 2) - math.floor((game_data.areas[GAME_AREA].width * game_data.pixel_size * SCREEN_ZOOM) / 2)
 			local area_y = 160
 		
 			love.graphics.rectangle("fill", area_x, area_y, game_data.areas[GAME_AREA].width * game_data.pixel_size * SCREEN_ZOOM, game_data.areas[GAME_AREA].height * SCREEN_ZOOM)
@@ -1084,51 +1026,45 @@ function love.draw()
 			
 			-- print the scroll values
 			love.graphics.setColor(0, 1, 1)
-			love.graphics.print("ScrollX = " .. tostring(math.abs(current_level_scroll_x)) .. " ScrollY = " .. tostring(math.abs(current_level_scroll_y)), 210, 420)
+			love.graphics.print("ScrollX = " .. tostring(math.abs(current_level_scroll_x)) .. " ScrollY = " .. tostring(math.abs(current_level_scroll_y)), 450, 640)
 
 			-- print current block or current actor
 			if current_level_mode == LEVEL_MODE_BLOCKS then
-				love.graphics.print("Block " .. tostring(current_level_selected_block), 620, 240)
+				love.graphics.print("Block " .. tostring(current_level_selected_block), 860, 240)
 				
 				if #img_blocks > 0 then
 					love.graphics.setColor(1, 1, 1)
-					love.graphics.draw(img_blocks[current_level_selected_block], 680, 280, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
+					love.graphics.draw(img_blocks[current_level_selected_block], 920, 280, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
 
-					ShowCursor(680, 280, game_data.block_width * game_data.pixel_size * SCREEN_ZOOM, game_data.block_height * SCREEN_ZOOM, 1, 1, 1)
+					ShowCursor(920, 280, game_data.block_width * game_data.pixel_size * SCREEN_ZOOM, game_data.block_height * SCREEN_ZOOM, 1, 1, 1)
 				end
 			elseif current_level_mode == LEVEL_MODE_ACTORS then
-				love.graphics.print("Actor " .. tostring(current_level_selected_actor), 620, 240)
+				love.graphics.print("Actor " .. tostring(current_level_selected_actor), 860, 240)
 				
 				if #img_sprites > 0 then
 					local sprite = GetActorSprite(current_level_selected_actor, "idle", 1)
 					
 					if sprite > 0 then
 						love.graphics.setColor(1, 1, 1)
-						love.graphics.draw(img_sprites[sprite], 660, 280, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
+						love.graphics.draw(img_sprites[sprite], 900, 280, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
 
-						ShowCursor(660, 280, game_data.sprite_width * game_data.pixel_size * SCREEN_ZOOM, game_data.sprite_height * SCREEN_ZOOM, 1, 1, 1)
+						ShowCursor(900, 280, game_data.sprite_width * game_data.pixel_size * SCREEN_ZOOM, game_data.sprite_height * SCREEN_ZOOM, 1, 1, 1)
 					end
 				end
 			end
 		else
-			love.graphics.print("No levels!", 320, 80)
+			love.graphics.print("No levels!", 560, 80)
 		end
 
 		-- draw shortcuts
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("[A]dd a level - [Del]ete level", 10, 460)
-		love.graphics.print("[W]idth - [H]eight - [L][Shift] Set level", 10, 480)
-		love.graphics.print("[Tab] Set block/actor - [S]wap blocks/actors", 10, 500)
-		love.graphics.print("[M]emorize scrolling - [R]emember scrolling", 10, 520)
-		love.graphics.print("[F]ill blocks - [E]dit actor - [Del] actor", 10, 540)
-		love.graphics.print("[Esc] Back", 10, 560)
+		love.graphics.print("[A]dd a level - [Del]ete level - [W]idth - [H]eight - [L][Shift] Set level", 10, 700)
+		love.graphics.print("[Tab] Set block/actor - [S]wap blocks/actors - [M]emorize scrolling", 10, 720)
+		love.graphics.print("[R]emember scrolling - [F]ill blocks - [E]dit actor - [Del] actor", 10, 740)
+		love.graphics.print("[Esc] Back", 10, 760)
 	elseif mode == MODE_EDIT_GAMES_DATA then
 		-- draw title
-		love.graphics.setFont(EDITOR_TITLE_FONT)
-		love.graphics.setColor(0, 0, 0)
-		love.graphics.print("EDIT GAMES DATA", 160, 32)
-		love.graphics.setColor(1, 1, 1)
-		love.graphics.print("EDIT GAMES DATA", 161, 33)
+		DrawTitleCentered("EDIT GAMES DATA", EDITOR_WINDOW_WIDTH, 32)
 
 		-- draw games data
 		love.graphics.setFont(EDITOR_FONT)
@@ -1153,17 +1089,12 @@ function love.draw()
 
 		-- draw shortcuts
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("[PgUp][PgDown] Change parameters page", 10, 500)
-		love.graphics.print("[Up][Down] Change selected parameter", 10, 520)
-		love.graphics.print("[Left][Right] Change value of the parameter", 10, 540)
-		love.graphics.print("[Esc] Back", 10, 560)
+		love.graphics.print("[PgUp][PgDown] Change parameters page - [Up][Down] Change selected parameter", 10, 720)
+		love.graphics.print("[Left][Right] Change value of the parameter", 10, 740)
+		love.graphics.print("[Esc] Back", 10, 760)
 	elseif mode == MODE_IMPORT_SOUNDS then
 		-- draw title
-		love.graphics.setFont(EDITOR_TITLE_FONT)
-		love.graphics.setColor(0, 0, 0)
-		love.graphics.print("IMPORT SOUNDS", 192, 32)
-		love.graphics.setColor(1, 1, 1)
-		love.graphics.print("IMPORT SOUNDS", 193, 33)
+		DrawTitleCentered("IMPORT SOUNDS", EDITOR_WINDOW_WIDTH, 32)
 
 		-- draw sounds
 		love.graphics.setFont(EDITOR_FONT)
@@ -1171,20 +1102,16 @@ function love.draw()
 
 		-- draw shortcuts
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("[Up][Down] Change selected menu item", 10, 520)
-		love.graphics.print("[Esc] Back", 10, 560)
+		love.graphics.print("[Up][Down] Change selected menu item", 10, 740)
+		love.graphics.print("[Esc] Back", 10, 760)
 	elseif mode == MODE_IMPORT_MUSICS then
 		-- draw title
-		love.graphics.setFont(EDITOR_TITLE_FONT)
-		love.graphics.setColor(0, 0, 0)
-		love.graphics.print("IMPORT MUSICS", 192, 32)
-		love.graphics.setColor(1, 1, 1)
-		love.graphics.print("IMPORT MUSICS", 193, 33)
+		DrawTitleCentered("IMPORT MUSICS", EDITOR_WINDOW_WIDTH, 32)
 
 		-- draw musics
 		love.graphics.setFont(EDITOR_FONT)
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("Select a menu item and drag'n'drop an ogg music", 80, 100)
+		love.graphics.print("Select a menu item and drag'n'drop an ogg music", 320, 100)
 		
 		for i = 1, #music_types do
 			if current_music == i then
@@ -1196,28 +1123,24 @@ function love.draw()
 			local value = game_data.musics[music_types[i]]
 			
 			if value ~= nil and value ~= "" then
-				love.graphics.print(music_types[i] .. ": " .. value, 200, 140 + ((i - 1) * 20))
+				love.graphics.print(music_types[i] .. ": " .. value, 440, 140 + ((i - 1) * 20))
 			else
-				love.graphics.print(music_types[i] .. ": ", 200, 140 + ((i - 1) * 20))
+				love.graphics.print(music_types[i] .. ": ", 440, 140 + ((i - 1) * 20))
 			end
 		end
 
 		-- draw shortcuts
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("[Up][Down] Change selected menu item", 10, 520)
-		love.graphics.print("[Esc] Back", 10, 560)
+		love.graphics.print("[Up][Down] Change selected menu item", 10, 740)
+		love.graphics.print("[Esc] Back", 10, 760)
 	elseif mode == MODE_IMPORT_IMAGES then
 		-- draw title
-		love.graphics.setFont(EDITOR_TITLE_FONT)
-		love.graphics.setColor(0, 0, 0)
-		love.graphics.print("IMPORT IMAGES", 192, 32)
-		love.graphics.setColor(1, 1, 1)
-		love.graphics.print("IMPORT IMAGES", 193, 33)
+		DrawTitleCentered("IMPORT IMAGES", EDITOR_WINDOW_WIDTH, 32)
 
 		-- draw images
 		love.graphics.setFont(EDITOR_FONT)
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("Select a menu item and drag'n'drop a png image", 80, 100)
+		love.graphics.print("Select a menu item and drag'n'drop a png image", 320, 100)
 		
 		for i = 1, #image_types do
 			if current_image == i then
@@ -1229,16 +1152,16 @@ function love.draw()
 			local value = game_data.images[image_types[i]]
 			
 			if value ~= nil and value ~= "" then
-				love.graphics.print(image_types[i] .. ": " .. value, 200, 140 + ((i - 1) * 20))
+				love.graphics.print(image_types[i] .. ": " .. value, 440, 140 + ((i - 1) * 20))
 			else
-				love.graphics.print(image_types[i] .. ": ", 200, 140 + ((i - 1) * 20))
+				love.graphics.print(image_types[i] .. ": ", 440, 140 + ((i - 1) * 20))
 			end
 		end
 
 		-- draw shortcuts
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("[Up][Down] Change selected menu item", 10, 520)
-		love.graphics.print("[Esc] Back", 10, 560)
+		love.graphics.print("[Up][Down] Change selected menu item", 10, 740)
+		love.graphics.print("[Esc] Back", 10, 760)
 	end
 end
 
@@ -2525,7 +2448,7 @@ function love.keypressed(key, scancode, isrepeat)
 				local mx = love.mouse.getX()
 				local my = love.mouse.getY()
 
-				local xc = 400 - (game_data.levels_data.sw * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM / 2)
+				local xc = (EDITOR_WINDOW_WIDTH / 2) - (game_data.levels_data.sw * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM / 2)
 				local yc = 160
 				
 				local bx = math.floor((mx - xc) / (game_data.block_width * game_data.pixel_size * LEVELS_ZOOM))
@@ -2670,7 +2593,7 @@ function love.mousepressed(x, y, button, istouch, presses)
 						beep:play()
 					else
 						-- top left corner
-						local xc = 400 - (game_data.levels_data.sw * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM / 2)
+						local xc = (EDITOR_WINDOW_WIDTH / 2) - (game_data.levels_data.sw * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM / 2)
 						local yc = 160
 						
 						-- position = mouse - top-left corner - scrolling
@@ -2685,7 +2608,7 @@ function love.mousepressed(x, y, button, istouch, presses)
 				end
 			elseif current_level_actors_edit_mode == true then
 				-- top left corner
-				local xc = 400 - (game_data.levels_data.sw * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM / 2)
+				local xc = (EDITOR_WINDOW_WIDTH / 2) - (game_data.levels_data.sw * game_data.block_width * game_data.pixel_size * LEVELS_ZOOM / 2)
 				local yc = 160
 					
 				-- position = mouse - top-left corner - scrolling

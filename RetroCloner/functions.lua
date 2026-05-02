@@ -783,3 +783,11 @@ function CopyPlayerToSaveFolder()
         copyDirectory(sourceSaveDir, targetSaveDir)
     end
 end
+
+function DrawTitleCentered(text, w, y)		
+	love.graphics.setFont(EDITOR_TITLE_FONT)
+	love.graphics.setColor(0, 0, 0)
+	love.graphics.printf(text, 0, y, w, "center")
+	love.graphics.setColor(1, 1, 1)
+	love.graphics.printf(text, 1, y + 1, w, "center")
+end
