@@ -23,7 +23,7 @@ This project is in Work In Progress state. For now, it is developped under Linux
 12) Import ogg musics with "o" key.
 13) Import images (intro, interface, etc.) with "p" key. They will be converted to the graphic preset choosen at step 1.
 14) You can test your game with "e" key. [WIP]
-15) You can export your game with "d" [WIP]
+15) You can export your game with "d" key.
 
 ![screenshot2](screenshot2.jpg)
 
