@@ -21,7 +21,7 @@ This project is in Work In Progress state. For now, it is developped under Linux
 10) Edit game data with "m" key.
 11) Import wav sounds with "n" key. [WIP]
 12) Import ogg musics with "o" key. [WIP]
-13) Import images (intro, interface, etc.) with "p" key. They will be converted to the graphic preset choosen at step 1. [WIP]
+13) Import images (intro, interface, etc.) with "p" key. They will be converted to the graphic preset choosen at step 1.
 14) You can test your game with "e" key. [WIP]
 15) You can export your game with "d" [WIP]
 
