@@ -214,6 +214,17 @@ function SaveGame(d, f, t)
 		ts = ts .. tostring(t.vars.gravity) .. "\r\n"					-- gravity
 		ts = ts .. tostring(t.vars.jump_power) .. "\r\n"				-- jump power
 
+		-- save image names
+		for i = 1, #image_types do
+			local value = game_data.images[image_types[i]]
+			
+			if value ~= nil and value ~= "" then
+				ts = ts .. value .. "\r\n"
+			else
+				ts = ts .. "\r\n"
+			end
+		end
+		
 		-- write data
 		file:write(ts)
 	

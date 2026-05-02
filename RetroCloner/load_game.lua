@@ -518,5 +518,11 @@ function LoadGame(d, f, t)
 	cpt = cpt + 1
 	t.vars.jump_power = tonumber(ts[cpt])
 	
+	-- image names
+	for i = 1, #image_types do
+		cpt = cpt + 1
+		game_data.images[image_types[i]] = ts[cpt]
+	end
+	
 	return t
 end

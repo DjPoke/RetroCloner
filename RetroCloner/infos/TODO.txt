@@ -13,7 +13,6 @@ TODO
 	- Ajouter la possibilité de scaler les acteurs en x1, x2 ou x3, pour obtenir des boss
 
 * Faire l'import d'images
-	- Lister les différents types d'images qui peuvent être importés: image d'intro, image de décoration d'écran, une image de gameover, une image de victoire
 	- Convertir à la foulée les images importées, en fonction du preset en cours
 	- Aperçu et modifications à la foulée possibles
 

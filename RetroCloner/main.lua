@@ -211,6 +211,9 @@ current_level_scroll_x = 0
 current_level_scroll_y = 0
 current_parameter = 0
 current_page = 0
+current_sound = 0
+current_music = 0
+current_image = 0
 
 parameters_list = {}
 
@@ -1140,7 +1143,7 @@ function love.draw()
 
 		-- draw sounds
 		love.graphics.setFont(EDITOR_FONT)
-		love.graphics.setColor(0, 1, 1)		
+		love.graphics.setColor(0, 1, 1)
 	elseif mode == MODE_IMPORT_MUSICS then
 		-- draw title
 		love.graphics.setFont(EDITOR_TITLE_FONT)
@@ -1151,7 +1154,7 @@ function love.draw()
 
 		-- draw musics
 		love.graphics.setFont(EDITOR_FONT)
-		love.graphics.setColor(0, 1, 1)		
+		love.graphics.setColor(0, 1, 1)
 	elseif mode == MODE_IMPORT_IMAGES then
 		-- draw title
 		love.graphics.setFont(EDITOR_TITLE_FONT)
@@ -1162,7 +1165,24 @@ function love.draw()
 
 		-- draw images
 		love.graphics.setFont(EDITOR_FONT)
-		love.graphics.setColor(0, 1, 1)		
+		love.graphics.setColor(0, 1, 1)
+		love.graphics.print("Select a menu and drag'n'drop a png image", 80, 100)
+		
+		for i = 1, #image_types do
+			if current_image == i then
+				love.graphics.setColor(1, 1, 0)
+			else
+				love.graphics.setColor(0, 1, 1)
+			end
+			
+			local value = game_data.images[image_types[i]]
+			
+			if value ~= nil and value ~= "" then
+				love.graphics.print(image_types[i] .. ": " .. value, 200, 140 + ((i - 1) * 20))
+			else
+				love.graphics.print(image_types[i] .. ": ", 200, 140 + ((i - 1) * 20))
+			end
+		end
 	end
 end
 
@@ -1347,6 +1367,8 @@ function love.keypressed(key, scancode, isrepeat)
 			end			
 		elseif key == "n" then
 			if project_name ~= "" then
+				current_sound = 1
+
 				mode = MODE_IMPORT_SOUNDS
 			else
 				beep:stop()
@@ -1354,6 +1376,8 @@ function love.keypressed(key, scancode, isrepeat)
 			end			
 		elseif key == "o" then
 			if project_name ~= "" then
+				current_music = 1
+
 				mode = MODE_IMPORT_MUSICS
 			else
 				beep:stop()
@@ -1361,6 +1385,8 @@ function love.keypressed(key, scancode, isrepeat)
 			end			
 		elseif key == "p" then
 			if project_name ~= "" then
+				current_image = 1
+
 				mode = MODE_IMPORT_IMAGES
 			else
 				beep:stop()
@@ -2529,6 +2555,20 @@ function love.keypressed(key, scancode, isrepeat)
 			mode = MODE_MENU
 		end
 	elseif mode == MODE_IMPORT_IMAGES then
+		if key == "up" then
+			if current_image > 1 then
+				current_image = current_image - 1
+			elseif current_image == 1 then
+				current_image = #image_types
+			end
+		elseif key == "down" then
+			if current_image < #image_types then
+				current_image = current_image + 1
+			elseif current_image == #image_types then
+				current_image = 1
+			end
+		end
+	
 		if key == "escape" then
 			mode = MODE_MENU
 		end
@@ -2578,5 +2618,16 @@ function love.mousepressed(x, y, button, istouch, presses)
 				game_data.levels[current_level].actors[current_level_edited_actor_instance].start_y = y_pos
 			end
 		end
+	end
+end
+
+function love.filedropped(file)
+	if mode == MODE_IMPORT_IMAGES then
+		local data = file:read()
+		local name = image_types[current_image] .. ".png"
+
+		love.filesystem.write("saves/" .. project_name .. "/" .. name, data)
+		
+		game_data.images[image_types[current_image]] = name
 	end
 end

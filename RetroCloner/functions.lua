@@ -52,6 +52,9 @@ function ResetAll()
 	current_level_scroll_y = 0
 	current_parameter = 0
 	current_page = 0
+	current_sound = 0
+	current_music = 0
+	current_image = 0
 
 	block_x = 0
 	block_y = 0
