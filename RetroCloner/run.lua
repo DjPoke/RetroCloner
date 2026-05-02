@@ -634,14 +634,16 @@ end
 
 -- keyboard buttons
 function run.keypressed(key, scancode, isrepeat)
-	local actor_number = game_data.levels[run.vars.level].actors[1].number
-
 	-- fire with keyboard
 	if key == "x" then
+		local actor_number = game_data.levels[run.vars.level].actors[1].number
+		
 		-- fire 1: "a"
 		Fire1(actor_number)
 		
 	elseif key == "c" then
+		local actor_number = game_data.levels[run.vars.level].actors[1].number
+		
 		-- fire 2: "b"
 		Fire2(actor_number)
 	end
@@ -649,15 +651,16 @@ end
 
 -- gamepad buttons
 function love.gamepadpressed(joystick, button)
-	local actor_number = game_data.levels[run.vars.level].actors[1].number
-
 	if joy == joystick then
 		-- fire with keyboard
 		if button == "a" then
+			local actor_number = game_data.levels[run.vars.level].actors[1].number
+
 			-- fire 1: "a"
 			Fire1(actor_number)
-			
 		elseif button == "b" then
+			local actor_number = game_data.levels[run.vars.level].actors[1].number
+
 			-- fire 2: "b"
 			Fire2(actor_number)
 		end

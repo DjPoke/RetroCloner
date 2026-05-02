@@ -3,7 +3,7 @@ TODO
 ====
 
 * Bugs:
-	- ...
+	- Bug quand on charge un preset CPC et qu'ensuite on crée un jeu ZX Spectrum: la position des textes est fausse.
 
 * Terminer les déplacements du jouer
 	- Déplacer le joueur en fonction de son type (WIP)

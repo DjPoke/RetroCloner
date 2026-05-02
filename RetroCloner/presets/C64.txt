@@ -34,4 +34,4 @@ LevelAreaX:104
 LevelAreaY:40
 LevelAreaWidth:72
 LevelAreaHeight:8
-Fonts:CPCMode0.ttf
+Fonts:C64_Pro_Mono-STYLE.ttf

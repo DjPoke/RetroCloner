@@ -6709,7 +6709,7 @@ true
 40
 72
 8
-CPCMode0.ttf
+C64_Pro_Mono-STYLE.ttf
 background
 wall
 0
