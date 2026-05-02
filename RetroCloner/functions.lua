@@ -718,3 +718,68 @@ function FilterImage(image_data, w, h)
 
 	return image_data
 end
+
+-- copy the player folder with all the files inside
+-- and copy all the files from save_folder/saves/my_game/*.*
+-- to the folder player/saves/game/*.*
+function CopyPlayerToSaveFolder()
+    local sourcePlayerDir = "player"
+    local targetPlayerDir = "games/" .. project_name
+
+    local sourceSaveDir = "saves/" .. project_name
+    local targetSaveDir = "games/" .. project_name .. "/saves/game"
+
+    -- delete recursively a folder
+    local function removeDirectory(path)
+        if not love.filesystem.getInfo(path) then return end
+
+        for _, item in ipairs(love.filesystem.getDirectoryItems(path)) do
+            local fullPath = path .. "/" .. item
+            local info = love.filesystem.getInfo(fullPath)
+
+            if info then
+                if info.type == "file" then
+                    love.filesystem.remove(fullPath)
+                elseif info.type == "directory" then
+                    removeDirectory(fullPath)
+                    love.filesystem.remove(fullPath)
+                end
+            end
+        end
+    end
+
+    -- recursively copy
+    local function copyDirectory(src, dst)
+        love.filesystem.createDirectory(dst)
+
+        for _, item in ipairs(love.filesystem.getDirectoryItems(src)) do
+            local srcPath = src .. "/" .. item
+            local dstPath = dst .. "/" .. item
+
+            local info = love.filesystem.getInfo(srcPath)
+
+            if info then
+                if info.type == "file" then
+                    local data = love.filesystem.read(srcPath)
+                    love.filesystem.write(dstPath, data)
+
+                elseif info.type == "directory" then
+                    copyDirectory(srcPath, dstPath)
+                end
+            end
+        end
+    end
+
+	-- clear the target folder
+    if love.filesystem.getInfo(targetSaveDir) then
+        removeDirectory(targetSaveDir)
+    end
+
+	-- copy the player folder from the .love
+    copyDirectory(sourcePlayerDir, targetPlayerDir)
+
+	-- copy the selected game
+    if love.filesystem.getInfo(sourceSaveDir) then
+        copyDirectory(sourceSaveDir, targetSaveDir)
+    end
+end

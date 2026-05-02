@@ -614,6 +614,26 @@ function love.draw()
 		love.graphics.setColor(0, 1, 1)
 		love.graphics.print(text_message, 10, 120)
 	elseif mode == MODE_EXPORT_EXECUTABLE_GAME then
+		-- draw title
+		love.graphics.setFont(EDITOR_TITLE_FONT)
+		love.graphics.setColor(0, 0, 0)
+		love.graphics.print("EXPORT EXECUTABLE GAME", 48, 32)
+		love.graphics.setColor(1, 1, 1)
+		love.graphics.print("EXPORT EXECUTABLE GAME", 49, 33)
+		
+		-- draw message
+		love.graphics.setFont(EDITOR_FONT)
+		love.graphics.setColor(0, 1, 1)
+		love.graphics.print("As I don't know how to create a .love file in", 10, 100)
+		love.graphics.print("Love2d, this is the steps to create one :", 10, 120)
+		love.graphics.print("1) The player folder with your game's data", 10, 160)
+		love.graphics.print("inside have been copied to your save folder:", 10, 180)
+		love.graphics.print(love.filesystem.getSaveDirectory() .. "/games/", 10, 200)
+		love.graphics.print("2) Select all the files in this folder, and", 10, 240)
+		love.graphics.print("ZIP them. Next, rename the .zip file to .love", 10, 260)
+		love.graphics.print("3) To create executable files, you can use", 10, 300)
+		love.graphics.print("'love-release', or take a look at Love2d wiki.", 10, 320)
+		love.graphics.print("https://github.com/MisterDA/love-release", 10, 340)
 	elseif mode == MODE_TEST_GAME then
 		run.draw()
 	elseif mode == MODE_EDIT_PALETTE then
@@ -1249,10 +1269,11 @@ function love.keypressed(key, scancode, isrepeat)
 		elseif key == "c" then
 			if project_name ~= "" then
 				game_data.game_name = project_name
-				
+
 				SaveGame(project_name, "game.txt", game_data)
-				
-				text_message = "Project ".. project_name .. " saved! Press [RETURN]"
+
+				text_message = "Project ".. project_name .. " saved!"
+
 				mode = MODE_SAVE_PROJECT
 			else
 				beep:stop()
@@ -1260,6 +1281,8 @@ function love.keypressed(key, scancode, isrepeat)
 			end
 		elseif key == "d" then
 			if project_name ~= "" then
+				CopyPlayerToSaveFolder()
+				
 				mode = MODE_EXPORT_EXECUTABLE_GAME
 			else
 				beep:stop()
@@ -1500,10 +1523,13 @@ function love.keypressed(key, scancode, isrepeat)
 			mode = MODE_MENU
 		end
 	elseif mode == MODE_SAVE_PROJECT then
-		if key == "return" then
+		if key == "return" or key == "escape" then
 			mode = MODE_MENU
 		end
 	elseif mode == MODE_EXPORT_EXECUTABLE_GAME then
+		if key == "escape" then
+			mode = MODE_MENU
+		end
 	elseif mode == MODE_TEST_GAME then
 		-- execute run keys
 		run.keypressed(key, scancode, isrepeat)
