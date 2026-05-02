@@ -1,0 +1,1491 @@
+local run = {}
+
+
+local MODE_INTRO = 1
+local MODE_IN_GAME = 2
+local MODE_WINNER = 3
+local MODE_GAME_OVER = 4
+
+-- run arrays
+run.vars = {
+	game_mode = 0,
+	score = 0,
+	level = 0,
+	scrolling_x = 0,
+	scrolling_y = 0,
+	game_speed_timer = 0.0,
+	animations_timer = 0.0,
+	direction = 0,
+	jump_power = 0,
+	fall_power = 0,
+	on_the_ground = false,
+	on_stairs = false,
+	sounds = { player = {walk = "", run = "", jump = "", hit = "", fire1 = "", fire2 = ""},
+			   enemies = {},
+			   bonus = {}
+	},
+	musics = { intro = "", ingame = "", winner = "", game_over = "" },
+	images = { intro = "", interface = "", winner = "", game_over = "" }
+}
+
+-- run vars
+local animations_tick = false
+local game_speed_tick = false
+
+local moving = false
+local moving_down = false
+
+local joysticks = nil
+local joy = nil
+
+-- run functions
+function run.load()
+	-- initialize game mode
+	run.vars.game_mode = MODE_INTRO
+	
+	-- initialize player's data
+	run.vars.score = 0
+	run.vars.level = 1
+
+	run.vars.direction = 0
+	run.vars.jump_power = 0
+	run.vars.fall_power = 0
+	run.vars.on_the_ground = false
+	run.vars.on_stairs = false
+	
+	-- scrolling values
+	run.vars.scrolling_x = game_data.scrolling_start_x[run.vars.level]
+	run.vars.scrolling_y = game_data.scrolling_start_y[run.vars.level]
+	
+	-- game speed and animation timer
+	run.vars.game_speed_timer = 0.0
+	run.vars.animation_timer = 0.0
+	
+	-- reset actors positions and animations
+	for i = 1, #game_data.levels do
+		for j = 1, #game_data.levels[i].actors do
+			game_data.levels[i].actors[j].x = game_data.levels[i].actors[j].start_x
+			game_data.levels[i].actors[j].y = game_data.levels[i].actors[j].start_y
+			game_data.levels[i].actors[j].animation = GetActorAnimationNumber(game_data.levels[i].actors[j].number, "idle")
+			game_data.levels[i].actors[j].frame = 1
+		end
+	end
+	
+	-- load musics
+	for i = 1, #music_types do
+		local filename = game_data.musics[music_types[i]]
+		
+		if filename ~= "-" then
+			if project_name ~= nil then
+				run.vars.musics[music_types[i]] = love.audio.newSource("saves/" .. project_name .. "/" .. filename, "stream")
+			else
+				run.vars.musics[music_types[i]] = love.audio.newSource("saves/game/" .. filename, "stream")
+			end
+		else
+			run.vars.musics[music_types[i]] = nil
+		end
+	end
+	
+	-- load images
+	for i = 1, #image_types do
+		local filename = game_data.images[image_types[i]]
+		
+		if filename ~= "-" then
+			if project_name ~= nil then
+				run.vars.images[image_types[i]] = love.graphics.newImage("saves/" .. project_name .. "/" .. filename)
+			else
+				run.vars.images[image_types[i]] = love.graphics.newImage("saves/game/" .. filename)
+			end
+		else
+			run.vars.images[image_types[i]] = nil
+		end
+	end
+	
+	-- get joystick
+	joysticks = love.joystick.getJoysticks()
+    joy = joysticks[1]
+end
+
+function run.update(dt)
+	if run.vars.game_mode == MODE_INTRO then
+		-- stop all musics and start intro music, if needed
+		if run.vars.musics.intro ~= nil then
+			if not run.vars.musics.intro:isPlaying() then
+				run.vars.musics.intro:play()
+				run.vars.musics.intro:setLooping(true)
+			end
+		end
+
+		if run.vars.musics.in_game ~= nil then
+			if run.vars.musics.in_game:isPlaying() then
+				run.vars.musics.in_game:stop()
+			end
+		end
+
+		if run.vars.musics.winner ~= nil then
+			if run.vars.musics.winner:isPlaying() then
+				run.vars.musics.winner:stop()
+			end
+		end
+
+		if run.vars.musics.game_over ~= nil then
+			if run.vars.musics.game_over:isPlaying() then
+				run.vars.musics.game_over:stop()
+			end
+		end
+	elseif run.vars.game_mode == MODE_IN_GAME then
+		-- stop all musics and start in_game music, if needed
+		if run.vars.musics.intro ~= nil then
+			if run.vars.musics.intro:isPlaying() then
+				run.vars.musics.intro:stop()
+			end
+		end
+
+		if run.vars.musics.in_game ~= nil then
+			if not run.vars.musics.in_game:isPlaying() then
+				run.vars.musics.in_game:play()
+				run.vars.musics.in_game:setLooping(true)
+			end
+		end
+
+		if run.vars.musics.winner ~= nil then
+			if run.vars.musics.winner:isPlaying() then
+				run.vars.musics.winner:stop()
+			end
+		end
+
+		if run.vars.musics.game_over ~= nil then
+			if run.vars.musics.game_over:isPlaying() then
+				run.vars.musics.game_over:stop()
+			end
+		end
+
+		-- update timers
+		run.vars.game_speed_timer = run.vars.game_speed_timer + dt
+		run.vars.animations_timer = run.vars.animations_timer + dt
+		animations_tick = false
+		game_speed_tick = false
+		
+		if run.vars.game_speed_timer >= (0.05 / game_data.vars.game_speed) then
+			run.vars.game_speed_timer = 0.0
+			game_speed_tick = true
+		end
+
+		if run.vars.animations_timer >= (0.5 / game_data.vars.animations_speed) then
+			run.vars.animations_timer = 0.0
+			animations_tick = true
+		end
+			
+		if #game_data.levels > 0 then
+			local old_x = game_data.levels[run.vars.level].actors[1].x
+			local old_y = game_data.levels[run.vars.level].actors[1].y
+			local new_x = old_x
+			local new_y = old_y
+			
+			local joy_up = false
+			local joy_down = false
+			local joy_left = false
+			local joy_right = false
+		
+			if game_speed_tick == true then	
+				-- move the player
+				local actor_number = game_data.levels[run.vars.level].actors[1].number
+
+				-- get keyboard fist
+				joy_up = love.keyboard.isDown("up")
+				joy_down = love.keyboard.isDown("down")
+				joy_left = love.keyboard.isDown("left")
+				joy_right = love.keyboard.isDown("right")
+				
+				-- get joystick after, is keyboard is not used
+				if joy ~= nil then
+					-- using dpad
+					if joy_up == false then joy_up = joy:isGamepadDown("dpup") end
+					if joy_down == false then joy_down = joy:isGamepadDown("dpdown") end
+					if joy_left == false then joy_left = joy:isGamepadDown("dpleft") end
+					if joy_right == false then joy_right = joy:isGamepadDown("dpright") end
+					
+					-- using left joystick
+					if joy_up == false then
+						if joy:getGamepadAxis("lefty") < 0 then
+							joy_up = true
+						end
+					end
+
+					if joy_down == false then
+						if joy:getGamepadAxis("lefty") > 0 then
+							joy_down = true
+						end
+					end
+
+					if joy_left == false then
+						if joy:getGamepadAxis("leftx") < 0 then
+							joy_left = true
+						end
+					end
+
+					if joy_right == false then
+						if joy:getGamepadAxis("leftx") > 0 then
+							joy_right = true
+						end
+					end
+				end
+				
+				-- (TODO! set all player's type gameplay)
+				if game_data.actors[actor_number].type.name == "platformer" then
+					moving = false
+					moving_down = false
+					
+					if CanClimb(old_x, old_y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height) == true then
+						run.vars.on_stairs = true
+					else
+						run.vars.on_stairs = false
+					end
+				
+					if joy_left == true then
+						if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") or 
+														game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "walk") or 
+														game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "jump") or 
+														game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "climb") then						
+							game_data.levels[run.vars.level].actors[1].hflip = true
+							run.vars.direction = 180
+							moving = true
+							
+							-- change animation if needed
+							if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
+								game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "walk")
+								game_data.levels[run.vars.level].actors[1].frame = 1
+							end
+
+							-- walk left
+							new_x = new_x - 1
+						end
+					elseif joy_right == true then
+						if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") or 
+														game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "walk") or 
+														game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "jump") or 
+														game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "climb") then						
+							game_data.levels[run.vars.level].actors[1].hflip = false
+							run.vars.direction = 0
+							moving = true
+							
+							-- change animation if needed
+							if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
+								game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "walk")
+								game_data.levels[run.vars.level].actors[1].frame = 1
+							end
+							
+							-- walk right
+							new_x = new_x + 1
+						end
+					elseif joy_up == true then
+						-- climb up
+						run.vars.direction = 270
+						moving = true
+
+						if run.vars.on_stairs == true then
+							if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") or 
+															game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "walk") then
+								game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "climb")
+								game_data.levels[run.vars.level].actors[1].frame = 1
+							end
+							
+							new_y = new_y - 1
+						end
+					elseif joy_down == true then
+						-- climb down
+						run.vars.direction = 90
+						moving = true
+						moving_down = true
+
+						if run.vars.on_stairs == true then
+							if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") or 
+															game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "walk") then
+								game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "climb")
+								game_data.levels[run.vars.level].actors[1].frame = 1
+							end
+							
+							new_y = new_y + 1
+						end
+					end
+					
+					if run.vars.on_the_ground == true then
+						if moving == false then
+							if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "walk") then
+								-- on the ground ? not moving ?
+								game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "idle")
+								game_data.levels[run.vars.level].actors[1].frame = 1
+							end
+						end
+					end
+					
+					-- jumping ?
+					if run.vars.jump_power < 0 then
+						run.vars.jump_power = run.vars.jump_power + 1
+					end
+
+					-- increase gravity force
+					if run.vars.on_the_ground == false then
+						if run.vars.jump_power == 0 then
+							if run.vars.fall_power < game_data.vars.gravity then
+								run.vars.fall_power = run.vars.fall_power + 1
+							end
+						end
+					elseif run.vars.on_the_ground == true then
+						run.vars.fall_power = 1
+					end
+
+					-- on stairs ? no more fall
+					if run.vars.on_stairs == true then
+						run.vars.fall_power = 0
+					end
+
+					-- apply gravity
+					new_y = new_y + run.vars.fall_power + run.vars.jump_power
+					
+					-- check for player's collisions with blocks, because may be he has moved
+					new_y, run.vars.on_the_ground = GroundCollision(old_x, new_y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height, run.vars.on_stairs, moving_down)
+					new_y = CeilingCollision(old_x, new_y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+					new_x = LeftCollision(new_x, old_y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+					new_x = RightCollision(new_x, old_y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+					new_x, run.vars.on_the_ground = CornerCollision(new_x, new_y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height, run.vars.on_the_ground)
+
+					-- restore idle animation
+					if run.vars.on_the_ground == true then
+						local actor_number = game_data.levels[run.vars.level].actors[1].number
+
+						if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "jump") then
+							game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "idle")
+							game_data.levels[run.vars.level].actors[1].frame = 1
+						end
+					end
+
+					-- restore idle animation
+					if run.vars.on_stairs == false then
+						if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "climb") then
+							game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "idle")
+							game_data.levels[run.vars.level].actors[1].frame = 1
+						end
+					end
+				elseif game_data.actors[actor_number].type.name == "beat'em up" then
+				
+				elseif game_data.actors[actor_number].type.name == "run & gun (edge view)" then
+				
+				elseif game_data.actors[actor_number].type.name == "run & gun (top view)" then
+					local dir = run.vars.direction
+					local dir_x = 0
+					local dir_y = 0
+					
+					if joy_up == true then
+						if joy_left == true then
+							dir = 225
+							dir_x = -1
+							dir_y = -1
+						elseif joy_right == true then
+							dir = 315
+							dir_x = 1
+							dir_y = -1
+						else
+							dir = 270
+							dir_x = 0
+							dir_y = -1
+						end
+					elseif joy_down == true then
+						if joy_left == true then
+							dir = 135
+							dir_x = -1
+							dir_y = 1
+						elseif joy_right == true then
+							dir = 45
+							dir_x = 1
+							dir_y = 1
+						else
+							dir = 90
+							dir_x = 0
+							dir_y = 1
+						end
+					elseif joy_left == true then
+						if joy_up == true then
+							dir = 225						
+							dir_x = -1
+							dir_y = -1
+						elseif joy_down == true then
+							dir = 135
+							dir_x = -1
+							dir_y = 1
+						else
+							dir = 180
+							dir_x = -1
+							dir_y = 0
+						end
+					elseif joy_right == true then
+						if joy_up == true then
+							dir = 315
+							dir_x = 1
+							dir_y = -1
+						elseif joy_down == true then
+							dir = 45
+							dir_x = 1
+							dir_y = 1
+						else
+							dir = 0
+							dir_x = 1
+							dir_y = 0
+						end
+					end
+					
+					-- update real direction
+					run.vars.direction = dir
+
+					if dir_x == -1 then
+						moving = true
+						
+						-- change animation if needed
+						if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
+							game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "run")
+							game_data.levels[run.vars.level].actors[1].frame = 1
+							
+						end
+
+						-- walk left
+						new_x = new_x - 1
+					elseif dir_x == 1 then
+						moving = true
+						
+						-- change animation if needed
+						if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
+							game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "run")
+							game_data.levels[run.vars.level].actors[1].frame = 1
+						end
+						
+						-- walk right
+						new_x = new_x + 1
+					end
+						
+					if dir_y == -1 then
+						moving = true
+						
+						-- change animation if needed
+						if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
+							game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "run")
+							game_data.levels[run.vars.level].actors[1].frame = 1
+							
+						end
+
+						-- walk left
+						new_y = new_y - 1
+					elseif dir_y == 1 then
+						moving = true
+						
+						-- change animation if needed
+						if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
+							game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "run")
+							game_data.levels[run.vars.level].actors[1].frame = 1
+						end
+						
+						-- walk right
+						new_y = new_y + 1
+					end
+					
+					-- check for player's collisions with blocks, because may be he has moved
+					new_x = SlidingCollisionX(new_x, old_y, game_data.sprite_width, game_data.sprite_height, run.vars.direction, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+					new_y = SlidingCollisionY(old_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.direction, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+					new_x, new_y = SlidingCollisionZ(new_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.direction, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+				elseif game_data.actors[actor_number].type.name == "maze & chase" then
+					local dir = run.vars.direction
+					local dir_x = 0
+					local dir_y = 0
+					
+					if joy_up == true then
+						dir = 270
+						dir_x = 0
+						dir_y = -1
+					end
+					
+					if joy_down == true then
+						dir = 90
+						dir_x = 0
+						dir_y = 1
+					end
+					
+					if joy_left == true then
+						dir = 180
+						dir_x = -1
+						dir_y = 0
+					end
+					
+					if joy_right == true then
+						dir = 0
+						dir_x = 1
+						dir_y = 0
+					end
+					
+					-- update real direction
+					run.vars.direction = dir
+
+					if dir_x == -1 then
+						moving = true
+						
+						-- change animation if needed
+						if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
+							game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "move")
+							game_data.levels[run.vars.level].actors[1].frame = 1
+							
+						end
+
+						-- walk left
+						new_x = new_x - 1
+					elseif dir_x == 1 then
+						moving = true
+						
+						-- change animation if needed
+						if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
+							game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "move")
+							game_data.levels[run.vars.level].actors[1].frame = 1
+						end
+						
+						-- walk right
+						new_x = new_x + 1
+					end
+						
+					if dir_y == -1 then
+						moving = true
+						
+						-- change animation if needed
+						if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
+							game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "move")
+							game_data.levels[run.vars.level].actors[1].frame = 1
+							
+						end
+
+						-- walk left
+						new_y = new_y - 1
+					elseif dir_y == 1 then
+						moving = true
+						
+						-- change animation if needed
+						if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
+							game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "move")
+							game_data.levels[run.vars.level].actors[1].frame = 1
+						end
+						
+						-- walk right
+						new_y = new_y + 1
+					end
+					
+					-- check for player's collisions with blocks, because may be he has moved
+					if dir == 0 or dir == 180 then
+						new_x = SlidingCollisionX(new_x, old_y, game_data.sprite_width, game_data.sprite_height, run.vars.direction, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+					elseif dir == 90 or dir == 270 then
+						new_y = SlidingCollisionY(old_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.direction, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+					end
+				elseif game_data.actors[actor_number].type.name == "fixed shooter" then
+				
+				elseif game_data.actors[actor_number].type.name == "horizontal shooter" then
+				
+				elseif game_data.actors[actor_number].type.name == "vertical shooter" then
+				
+				end
+				
+				-- limit left and up movements
+				if game_data.vars.scroll_backward == false then
+					if new_x + run.vars.scrolling_x < 0 then
+						new_x = -run.vars.scrolling_x
+					end
+
+					if new_y + run.vars.scrolling_y < 0 then
+						new_y = -run.vars.scrolling_y
+					end
+				end
+				
+				-- update coordinates of the player
+				game_data.levels[run.vars.level].actors[1].x = new_x
+				game_data.levels[run.vars.level].actors[1].y = new_y
+			end
+
+			-- it is time to animate characters
+			if animations_tick == true then
+				for i = 1, #game_data.levels[run.vars.level].actors do
+					-- animation not looping and ended ?
+					if AnimateCharacter(i, moving) == true then
+						game_data.levels[run.vars.level].actors[1].animation = 1
+						game_data.levels[run.vars.level].actors[1].frame = 1
+					end
+				end
+			end
+		end
+			
+		-- move enemies
+		-- TODO!
+		
+		-- check for enemies collisions with blocks
+		-- TODO!
+
+		-- check for player collisions with enemies
+		-- TODO!
+		
+		-- check for player collisions with bonus
+		-- TODO!
+
+		-- perform scrolling
+		if game_data.vars.scrolling_type == 2 then
+			-- scroll when the player is in the middle of the screen
+			if game_data.vars.scrolling_horizontally == true and game_data.vars.scrolling_vertically == false then
+				-- scroll forward x
+				if game_data.levels[run.vars.level].actors[1].x + run.vars.scrolling_x > (game_data.levels_data.sw * game_data.block_width / 2) then
+					if -run.vars.scrolling_x < ((game_data.levels_data.w - 1) * game_data.levels_data.sw * game_data.block_width) then
+						local scroll_value = game_data.levels[run.vars.level].actors[1].x - (game_data.levels_data.sw * game_data.block_width / 2) + run.vars.scrolling_x
+						
+						run.vars.scrolling_x = run.vars.scrolling_x - game_data.vars.scrolling_speed
+						game_data.levels[run.vars.level].actors[1].x = game_data.levels[run.vars.level].actors[1].x - scroll_value + game_data.vars.scrolling_speed
+					end
+				end
+
+				-- scroll backward x
+				if game_data.vars.scroll_backward == true then
+					if game_data.levels[run.vars.level].actors[1].x + run.vars.scrolling_x < (game_data.levels_data.sw * game_data.block_width / 2) then
+						if -run.vars.scrolling_x > 0 then
+							local scroll_value = game_data.levels[run.vars.level].actors[1].x - (game_data.levels_data.sw * game_data.block_width / 2) + run.vars.scrolling_x
+							
+							run.vars.scrolling_x = run.vars.scrolling_x + game_data.vars.scrolling_speed
+							game_data.levels[run.vars.level].actors[1].x = game_data.levels[run.vars.level].actors[1].x + scroll_value + game_data.vars.scrolling_speed
+						end
+					end
+				end
+			elseif game_data.vars.scrolling_horizontally == false and game_data.vars.scrolling_vertically == true then
+				-- scroll forward y
+				if game_data.levels[run.vars.level].actors[1].y + run.vars.scrolling_y > (game_data.levels_data.sh * game_data.block_height / 2) then
+					if -run.vars.scrolling_y < ((game_data.levels_data.h - 1) * game_data.levels_data.sh * game_data.block_height) then
+						local scroll_value = game_data.levels[run.vars.level].actors[1].y - (game_data.levels_data.sh * game_data.block_height / 2) + run.vars.scrolling_y
+						
+						run.vars.scrolling_y = run.vars.scrolling_y - game_data.vars.scrolling_speed
+						game_data.levels[run.vars.level].actors[1].y = game_data.levels[run.vars.level].actors[1].y - scroll_value + game_data.vars.scrolling_speed
+					end
+				end
+
+				-- scroll backward y
+				if game_data.vars.scroll_backward == true then
+					if game_data.levels[run.vars.level].actors[1].y + run.vars.scrolling_y < (game_data.levels_data.sh * game_data.block_height / 2) then
+						if -run.vars.scrolling_y > 0 then
+							local scroll_value = game_data.levels[run.vars.level].actors[1].y - (game_data.levels_data.sh * game_data.block_height / 2) + run.vars.scrolling_y
+							
+							run.vars.scrolling_y = run.vars.scrolling_y + game_data.vars.scrolling_speed
+							game_data.levels[run.vars.level].actors[1].y = game_data.levels[run.vars.level].actors[1].y + scroll_value + game_data.vars.scrolling_speed
+						end
+					end
+				end
+			elseif game_data.vars.scrolling_horizontally == true and game_data.vars.scrolling_vertically == true then
+				-- scroll forward x
+				if game_data.levels[run.vars.level].actors[1].x + run.vars.scrolling_x > (game_data.levels_data.sw * game_data.block_width / 2) then
+					if -run.vars.scrolling_x < ((game_data.levels_data.w - 1) * game_data.levels_data.sw * game_data.block_width) then
+						local scroll_value = game_data.levels[run.vars.level].actors[1].x - (game_data.levels_data.sw * game_data.block_width / 2) + run.vars.scrolling_x
+						
+						run.vars.scrolling_x = run.vars.scrolling_x - game_data.vars.scrolling_speed
+						game_data.levels[run.vars.level].actors[1].x = game_data.levels[run.vars.level].actors[1].x - scroll_value + game_data.vars.scrolling_speed
+					end
+				end
+				
+				-- scroll backward x
+				if game_data.vars.scroll_backward == true then
+					if game_data.levels[run.vars.level].actors[1].x + run.vars.scrolling_x < (game_data.levels_data.sw * game_data.block_width / 2) then
+						if -run.vars.scrolling_x > 0 then
+							local scroll_value = game_data.levels[run.vars.level].actors[1].x - (game_data.levels_data.sw * game_data.block_width / 2) + run.vars.scrolling_x
+							
+							run.vars.scrolling_x = run.vars.scrolling_x + game_data.vars.scrolling_speed
+							game_data.levels[run.vars.level].actors[1].x = game_data.levels[run.vars.level].actors[1].x + scroll_value + game_data.vars.scrolling_speed
+						end
+					end
+				end
+
+				-- scroll forward y
+				if game_data.levels[run.vars.level].actors[1].y + run.vars.scrolling_y > (game_data.levels_data.sh * game_data.block_height / 2) then
+					if -run.vars.scrolling_y < ((game_data.levels_data.h - 1) * game_data.levels_data.sh * game_data.block_height) then
+						local scroll_value = game_data.levels[run.vars.level].actors[1].y - (game_data.levels_data.sh * game_data.block_height / 2) + run.vars.scrolling_y
+						
+						run.vars.scrolling_y = run.vars.scrolling_y - game_data.vars.scrolling_speed
+						game_data.levels[run.vars.level].actors[1].y = game_data.levels[run.vars.level].actors[1].y - scroll_value + game_data.vars.scrolling_speed
+					end
+				end
+
+				-- scroll backward y
+				if game_data.vars.scroll_backward == true then
+					if game_data.levels[run.vars.level].actors[1].y + run.vars.scrolling_y < (game_data.levels_data.sh * game_data.block_height / 2) then
+						if -run.vars.scrolling_y > 0 then
+							local scroll_value = game_data.levels[run.vars.level].actors[1].y - (game_data.levels_data.sh * game_data.block_height / 2) + run.vars.scrolling_y
+							
+							run.vars.scrolling_y = run.vars.scrolling_y + game_data.vars.scrolling_speed
+							game_data.levels[run.vars.level].actors[1].y = game_data.levels[run.vars.level].actors[1].y + scroll_value + game_data.vars.scrolling_speed
+						end
+					end
+				end
+			end
+		elseif game_data.vars.scrolling_type == 3 then
+			-- auto scroll
+			if anim_tick == true then
+				if game_data.vars.scrolling_horizontally == true and game_data.vars.scrolling_vertically == false then
+					if game_data.levels[run.vars.level].actors[1].x > math.abs(run.vars.scrolling_x) then
+						if -run.vars.scrolling_x < ((game_data.levels_data.w - 1) * game_data.levels_data.sw * game_data.block_width) then
+							run.vars.scrolling_x = run.vars.scrolling_x - game_data.vars.scrolling_speed
+						end
+					end
+				elseif game_data.vars.scrolling_horizontally == false and game_data.vars.scrolling_vertically == true then
+					if game_data.levels[run.vars.level].actors[1].y > math.abs(run.vars.scrolling_y) then
+						if -run.vars.scrolling_y < ((game_data.levels_data.h - 1) * game_data.levels_data.sh * game_data.block_height) then
+							run.vars.scrolling_y = run.vars.scrolling_y - game_data.vars.scrolling_speed
+						end
+					end
+				elseif game_data.vars.scrolling_horizontally == true and game_data.vars.scrolling_vertically == true then
+					if game_data.levels[run.vars.level].actors[1].x > math.abs(run.vars.scrolling_x) then
+						if -run.vars.scrolling_x < ((game_data.levels_data.w - 1) * game_data.levels_data.sw * game_data.block_width) then
+							run.vars.scrolling_x = run.vars.scrolling_x - game_data.vars.scrolling_speed
+						end
+					end
+
+					if game_data.levels[run.vars.level].actors[1].y > math.abs(run.vars.scrolling_y) then
+						if -run.vars.scrolling_y < ((game_data.levels_data.h - 1) * game_data.levels_data.sh * game_data.block_height) then
+							run.vars.scrolling_y = run.vars.scrolling_y - game_data.vars.scrolling_speed
+						end
+					end
+				end
+			end
+		elseif game_data.vars.scrolling_type == 4 then
+			-- scroll when the player go out of a screen
+			if game_data.vars.scrolling_horizontally == true and game_data.vars.scrolling_vertically == false then
+				run.vars.scrolling_x = -math.floor(game_data.levels[run.vars.level].actors[1].x / (game_data.levels_data.sw * game_data.block_width)) * (game_data.levels_data.sw * game_data.block_width)
+
+				if -run.vars.scrolling_x > ((game_data.levels_data.w - 1) * game_data.levels_data.sw * game_data.block_width) then
+					run.vars.scrolling_x = -((game_data.levels_data.w - 1) * game_data.levels_data.sw * game_data.block_width)
+				end			
+			elseif game_data.vars.scrolling_horizontally == false and game_data.vars.scrolling_vertically == true then
+				run.vars.scrolling_y = -math.floor(game_data.levels[run.vars.level].actors[1].y / (game_data.levels_data.sh * game_data.block_height)) * (game_data.levels_data.sh * game_data.block_height)
+
+				if -run.vars.scrolling_y > ((game_data.levels_data.h - 1) * game_data.levels_data.sh * game_data.block_height) then
+					run.vars.scrolling_y = -((game_data.levels_data.h - 1) * game_data.levels_data.sh * game_data.block_height)
+				end
+			elseif game_data.vars.scrolling_horizontally == true and game_data.vars.scrolling_vertically == true then
+				run.vars.scrolling_x = -math.floor(game_data.levels[run.vars.level].actors[1].x / (game_data.levels_data.sw * game_data.block_width)) * (game_data.levels_data.sw * game_data.block_width)
+
+				if -run.vars.scrolling_x > ((game_data.levels_data.w - 1) * game_data.levels_data.sw * game_data.block_width) then
+					run.vars.scrolling_x = -((game_data.levels_data.w - 1) * game_data.levels_data.sw * game_data.block_width)
+				end
+				
+				run.vars.scrolling_y = -math.floor(game_data.levels[run.vars.level].actors[1].y / (game_data.levels_data.sh * game_data.block_height)) * (game_data.levels_data.sh * game_data.block_height)
+
+				if -run.vars.scrolling_y > ((game_data.levels_data.h - 1) * game_data.levels_data.sh * game_data.block_height) then
+					run.vars.scrolling_y = -((game_data.levels_data.h - 1) * game_data.levels_data.sh * game_data.block_height)
+				end
+			end
+		end
+	end
+end
+
+function run.draw()
+	-- adapt resolution to window (or fullscreen)
+	love.graphics.scale(love.graphics.getWidth() / (WINDOW_WIDTH + (WINDOW_BORDER * 2)), love.graphics.getHeight() / (WINDOW_HEIGHT + (WINDOW_BORDER * 2)))
+	
+	-- show what should be shown
+	if run.vars.game_mode == MODE_INTRO then
+		-- disable scissor
+		love.graphics.setScissor()
+
+		-- clear the background with game paper
+		r, g, b = GetPenRGB(game_data.game_paper)
+		love.graphics.clear(r, g, b)
+		
+		-- show intro image if it exists else show game title
+		if run.vars.images.intro ~= nil and run.vars.images.intro ~= "" then
+			-- show intro image
+			love.graphics.setColor(1, 1, 1)
+			love.graphics.draw(run.vars.images.intro, WINDOW_BORDER, WINDOW_BORDER, 0, game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM)
+		else
+			-- show game title
+			love.graphics.setFont(GAME_TITLE_FONT)
+			r, g, b = GetPenRGB(1)
+			love.graphics.setColor(r, g, b)
+			
+			local scale = 1.0 / 16
+
+			love.graphics.printf(game_data.game_name, 0, love.graphics.getHeight() / 4, love.graphics.getWidth() / scale, "center", 0, scale, scale)
+		end
+	elseif run.vars.game_mode == MODE_IN_GAME then
+		-- ===========================================================================================================================================================================
+
+		-- disable scissor
+		love.graphics.setScissor()
+
+		-- clear with border color
+		r, g, b = GetPenRGB(game_data.border_paper)
+		love.graphics.clear(r, g, b)
+
+		-- ===========================================================================================================================================================================
+		
+		-- set scissor without the border
+		love.graphics.setScissor(WINDOW_BORDER, WINDOW_BORDER, WINDOW_WIDTH, WINDOW_HEIGHT)
+
+		-- clear the background with background paper color
+		r, g, b = GetPenRGB(game_data.background_paper)
+		love.graphics.clear(r, g, b)
+
+		-- draw game area
+		r, g, b = GetPenRGB(game_data.game_paper)
+		love.graphics.setColor(r, g, b)
+		love.graphics.rectangle("fill", ScaleX(game_data.areas[GAME_AREA].x, WINDOW_ZOOM), ScaleY(game_data.areas[GAME_AREA].y, WINDOW_ZOOM), ScaleWidth(game_data.areas[GAME_AREA].width, WINDOW_ZOOM), ScaleHeight(game_data.areas[GAME_AREA].height, WINDOW_ZOOM))
+
+		-- ===========================================================================================================================================================================
+
+		-- set scissor to game area
+		love.graphics.setScissor(ScaleX(game_data.areas[GAME_AREA].x, WINDOW_ZOOM), ScaleY(game_data.areas[GAME_AREA].y, WINDOW_ZOOM), ScaleWidth(game_data.areas[GAME_AREA].width, WINDOW_ZOOM), ScaleHeight(game_data.areas[GAME_AREA].height, WINDOW_ZOOM))
+
+		-- draw the game
+		DrawGame()
+
+		-- ===========================================================================================================================================================================
+		
+		-- disable scissor
+		love.graphics.setScissor()
+
+		-- draw score area
+		
+		FontsPrint("SCORE " .. ToString2(run.vars.score, 7), ScaleX(game_data.areas[SCORE_AREA].x, WINDOW_ZOOM), ScaleY(game_data.areas[SCORE_AREA].y, WINDOW_ZOOM), game_data.areas[SCORE_AREA].width * WINDOW_ZOOM, game_data.areas[SCORE_AREA].height * WINDOW_ZOOM, GAME_FONT, FONT_DOWN_SCALE / WINDOW_ZOOM, game_data.text_paper, game_data.text_pen)
+
+		-- draw lives area
+		FontsPrint("LIVES " .. ToString2(game_data.vars.lives, 2), ScaleX(game_data.areas[LIVES_AREA].x, WINDOW_ZOOM), ScaleY(game_data.areas[LIVES_AREA].y, WINDOW_ZOOM), game_data.areas[LIVES_AREA].width * WINDOW_ZOOM, game_data.areas[LIVES_AREA].height * WINDOW_ZOOM, GAME_FONT, FONT_DOWN_SCALE / WINDOW_ZOOM, game_data.text_paper, game_data.text_pen)
+
+		-- draw level area
+		FontsPrint("LEVEL " .. ToString2(run.vars.level, 3), ScaleX(game_data.areas[LEVEL_AREA].x, WINDOW_ZOOM), ScaleY(game_data.areas[LEVEL_AREA].y, WINDOW_ZOOM), game_data.areas[LEVEL_AREA].width * WINDOW_ZOOM, game_data.areas[LEVEL_AREA].height * WINDOW_ZOOM, GAME_FONT, FONT_DOWN_SCALE / WINDOW_ZOOM, game_data.text_paper, game_data.text_pen)
+	end
+end
+
+-- keyboard buttons
+function run.keypressed(key, scancode, isrepeat)
+	if run.vars.game_mode == MODE_INTRO then
+		-- space to enter the game
+		if key == "space" then
+			run.vars.game_mode = MODE_IN_GAME
+		end
+	elseif run.vars.game_mode == MODE_IN_GAME then
+		-- fire with keyboard
+		if key == "x" then
+			local actor_number = game_data.levels[run.vars.level].actors[1].number
+			
+			-- fire 1: "a"
+			Fire1(actor_number)
+		elseif key == "c" then
+			local actor_number = game_data.levels[run.vars.level].actors[1].number
+			
+			-- fire 2: "b"
+			Fire2(actor_number)
+		end
+	end
+end
+
+-- gamepad buttons
+function run.gamepadpressed(joystick, button)
+	if run.vars.game_mode == MODE_INTRO then
+		if joy == joystick then
+			-- start to enter the game
+			if button == "start" then
+				run.vars.game_mode = MODE_IN_GAME
+			end
+		end
+	elseif run.vars.game_mode == MODE_IN_GAME then
+		if joy == joystick then
+			-- fire with keyboard
+			if button == "a" then
+				local actor_number = game_data.levels[run.vars.level].actors[1].number
+			
+				-- fire 1: "a"
+				Fire1(actor_number)
+			elseif button == "b" then
+				local actor_number = game_data.levels[run.vars.level].actors[1].number
+			
+				-- fire 2: "b"
+				Fire2(actor_number)
+			end
+		end
+	end
+end
+
+function run.quit()
+	for i = 1, #music_types do
+		if run.vars.musics[music_types[i]] ~= nil then
+			run.vars.musics[music_types[i]]:stop()
+		end
+	end
+end
+
+-- fire 1 button (TODO! add other kinds of players)
+function Fire1(a)
+	if game_data.actors[a].type.name == "platformer" then
+		-- the player is on the ground ?
+		if run.vars.on_the_ground == true or run.vars.on_stairs == true then
+			-- the player is idle or walking or climbing ?
+			if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(a, "idle") or
+										game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(a, "walk") or
+										game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(a, "climb") then
+				-- jump
+				game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(a, "jump")
+				game_data.levels[run.vars.level].actors[1].frame = 1
+				run.vars.jump_power = -game_data.vars.jump_power
+			end
+		end
+	end
+end
+
+-- fire 2 button (TODO! add other kinds of players)
+function Fire2(a)
+	if game_data.actors[a].type.name == "platformer" then
+		-- the player is on the ground ?
+		if run.vars.on_the_ground == true then
+			-- the player is idle or walking ?
+			if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(a, "idle") or
+										game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(a, "walk") then
+				-- hit
+				game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(a, "hit")
+				game_data.levels[run.vars.level].actors[1].frame = 1
+			end
+		end
+	end
+end
+
+-- draw the game
+function DrawGame()
+	love.graphics.setColor(1, 1, 1)
+	
+	-- game area position
+	local px = ScaleX(game_data.areas[GAME_AREA].x, WINDOW_ZOOM)
+	local py = ScaleY(game_data.areas[GAME_AREA].y, WINDOW_ZOOM)
+	
+	local offset_x = math.floor((game_data.areas[GAME_AREA].width - (game_data.levels_data.sw * game_data.block_width)) / 2)
+	local offset_y = math.floor((game_data.areas[GAME_AREA].height - (game_data.levels_data.sh * game_data.block_height)) / 2)
+
+	px = px + ScaleWidth(offset_x, game_data.pixel_size, WINDOW_ZOOM)
+	py = py + ScaleHeight(offset_y, WINDOW_ZOOM)
+	
+	if #game_data.levels > 0 then
+		-- draw blocks
+		for x = 0, (game_data.levels_data.sw * game_data.levels_data.w) - 1 do
+			for y = 0, (game_data.levels_data.sh * game_data.levels_data.h) - 1 do
+				local block = game_data.levels[run.vars.level].blocks[x][y]
+				local xc = ScaleWidth(x * game_data.block_width, WINDOW_ZOOM)
+				local yc = ScaleHeight(y * game_data.block_height, WINDOW_ZOOM)
+
+				-- scrolling
+				xc = xc + ScaleWidth(run.vars.scrolling_x, WINDOW_ZOOM)
+				yc = yc + ScaleHeight(run.vars.scrolling_y, WINDOW_ZOOM)
+				
+				if block > 0 then
+					love.graphics.draw(img_blocks[block], px + xc, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM)
+				end
+			end
+		end
+	
+		-- draw actors
+		for i = 1, #game_data.levels[run.vars.level].actors do
+			local actor_number = game_data.levels[run.vars.level].actors[i].number
+			local animation = game_data.levels[run.vars.level].actors[i].animation
+			local frame = game_data.levels[run.vars.level].actors[i].frame
+			
+			if animation > 0 and frame > 0 then
+				local sprite = game_data.animations[animation][frame]
+				local xc = ScaleWidth(game_data.levels[run.vars.level].actors[i].x, WINDOW_ZOOM)
+				local yc = ScaleHeight(game_data.levels[run.vars.level].actors[i].y, WINDOW_ZOOM)
+
+				-- scrolling
+				xc = xc + ScaleWidth(run.vars.scrolling_x, WINDOW_ZOOM)
+				yc = yc + ScaleHeight(run.vars.scrolling_y, WINDOW_ZOOM)
+
+				-- flipped ?
+				local hflip = 1
+				local vflip = 1
+				
+				if game_data.levels[run.vars.level].actors[i].hflip == true then hflip = -1 end
+				if game_data.levels[run.vars.level].actors[i].vflip == true then vflip = -1 end
+
+				local flip_offset_x = 0
+				local flip_offset_y = 0
+				
+				-- what kind of player ? (TODO!)
+				if game_data.actors[actor_number].type.name == "platformer" then
+					if hflip == -1 then flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) end
+					
+					love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM * hflip, WINDOW_ZOOM)
+				elseif game_data.actors[actor_number].type.name == "run & gun (top view)" then
+					flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) / 2
+					flip_offset_y = ScaleHeight(game_data.sprite_height, WINDOW_ZOOM) / 2
+					
+					love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.direction), game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM, game_data.sprite_width / 2, game_data.sprite_height / 2)
+				elseif game_data.actors[actor_number].type.name == "maze & chase" then
+					flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) / 2
+					flip_offset_y = ScaleHeight(game_data.sprite_height, WINDOW_ZOOM) / 2
+					
+					love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.direction), game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM, game_data.sprite_width / 2, game_data.sprite_height / 2)
+				else
+					--draw monsters and bonus
+					love.graphics.draw(img_sprites[sprite], px + xc, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM)
+				end
+			end
+		end
+	end
+end
+
+-- check collision
+function Collision(x1, y1, w1, h1, x2, y2, w2, h2)
+   return x1 < x2 + w2 and x2 < x1 + w1 and y1 < y2 + h2 and y2 < y1 + h1
+end
+
+-- check block collision
+function BlockCollision(x, y, map)
+	-- collisions with game limits
+	if x < 0 or x > (game_data.levels_data.sw * game_data.levels_data.w) - 1 then return true end
+	if y < 0 or y > (game_data.levels_data.sh * game_data.levels_data.h) - 1 then return true end
+	
+	-- is there a block ?
+	if map.blocks[x][y] > 0 then
+		local block_number = map.blocks[x][y]
+		
+		-- collision with a wall
+		if game_data.blocks_data[block_number].type == "wall" then
+			return true
+		end
+	end
+	
+	return false
+end
+
+-- check platform collision
+function PlatformCollision(x, y, map)
+	-- collisions with game limits
+	if x < 0 or x > (game_data.levels_data.sw * game_data.levels_data.w) - 1 then return true end
+	if y < 0 or y > (game_data.levels_data.sh * game_data.levels_data.h) - 1 then return true end
+	
+	-- is there a block ?
+	if map.blocks[x][y] > 0 then
+		local block_number = map.blocks[x][y]
+		
+		-- collision with a platform
+		if game_data.blocks_data[block_number].type == "platform" then
+			return true
+		end
+	end
+	
+	return false
+end
+
+-- check stairway collision
+function StairsCollision(x, y, map)
+	-- collisions with game limits
+	if x < 0 or x > (game_data.levels_data.sw * game_data.levels_data.w) - 1 then return true end
+	if y < 0 or y > (game_data.levels_data.sh * game_data.levels_data.h) - 1 then return true end
+	
+	-- is there a block ?
+	if map.blocks[x][y] > 0 then
+		local block_number = map.blocks[x][y]
+		
+		-- collision with a stairway
+		if game_data.blocks_data[block_number].type == "stairs" then
+			return true
+		end
+	end
+	
+	return false
+end
+
+-- checking if the player is on the ground
+function GroundCollision(x1, y1, w1, h1, map, w2, h2, on_stairs, moving_down)
+	-- offset with hotspot
+	local actor_number = game_data.levels[run.vars.level].actors[1].number
+	
+	-- player's position, in blocks
+	local x3 = math.floor(x1 / w2)
+	local y3 = math.floor(y1 / h2)
+
+	-- how many blocks in the player's sprite ?
+	local w3 = math.floor(w1 / w2)
+	local h3 = math.floor(h1 / h2)
+	
+	if x3 * w2 ~= x1 then w3 = w3 + 1 end
+	if y3 * h2 ~= y1 then h3 = h3 + 1 end
+	
+	-- check if on the ground
+	for x = x3, x3 + w3 - 1 do
+		y = y3 + h3 - 1
+		
+		if BlockCollision(x, y, map) == true or PlatformCollision(x, y, map) == true or (StairsCollision(x, y, map) == true and on_stairs == false and moving_down == false) then
+			y1 = (y * h2) - h1
+
+			return y1, true
+		end
+	end
+	
+	return y1, false
+end
+
+-- checking if the player collision with the ceiling
+function CeilingCollision(x1, y1, w1, h1, map, w2, h2)
+	-- offset with hotspot
+	local actor_number = game_data.levels[run.vars.level].actors[1].number
+	
+	-- player's position, in blocks
+	local x3 = math.floor(x1 / w2)
+	local y3 = math.floor(y1 / h2)
+
+	-- how many blocks in the player's sprite ?
+	local w3 = math.floor(w1 / w2)
+	local h3 = math.floor(h1 / h2)
+	
+	if x3 * w2 ~= x1 then w3 = w3 + 1 end
+	if y3 * h2 ~= y1 then h3 = h3 + 1 end
+	
+	-- check if on the ground
+	for x = x3, x3 + w3 - 1 do
+		y = y3
+		
+		if BlockCollision(x, y, map) == true then
+			y1 = (y + 1) * h2
+
+			return y1
+		end
+	end
+	
+	return y1
+end
+
+-- checking if the player collision on left walls
+function LeftCollision(x1, y1, w1, h1, map, w2, h2)
+	-- offset with hotspot
+	local actor_number = game_data.levels[run.vars.level].actors[1].number
+	
+	-- player's position, in blocks
+	local x3 = math.floor(x1 / w2)
+	local y3 = math.floor(y1 / h2)
+
+	-- how many blocks in the player's sprite ?
+	local w3 = math.floor(w1 / w2)
+	local h3 = math.floor(h1 / h2)
+	
+	if x3 * w2 ~= x1 then w3 = w3 + 1 end
+	if y3 * h2 ~= y1 then h3 = h3 + 1 end
+	
+	-- left
+	for y = y3, y3 + h3 - 1 do
+		x = x3
+			
+		if BlockCollision(x, y, map) == true then
+			x1 = ((x + 1) * w2)
+					
+			return x1
+		end
+	end
+	
+	return x1
+end
+
+-- checking if the player collision on right walls
+function RightCollision(x1, y1, w1, h1, map, w2, h2)
+	-- offset with hotspot
+	local actor_number = game_data.levels[run.vars.level].actors[1].number
+	
+	-- player's position, in blocks
+	local x3 = math.floor(x1 / w2)
+	local y3 = math.floor(y1 / h2)
+
+	-- how many blocks in the player's sprite ?
+	local w3 = math.floor(w1 / w2)
+	local h3 = math.floor(h1 / h2)
+	
+	if x3 * w2 ~= x1 then w3 = w3 + 1 end
+	if y3 * h2 ~= y1 then h3 = h3 + 1 end
+	
+	-- right
+	for y = y3, y3 + h3 - 1 do
+		x = x3 + w3 - 1
+			
+		if BlockCollision(x, y, map) == true then
+			x1 = (x * w2) - w1
+					
+			return x1
+		end
+	end
+	
+	return x1
+end
+
+-- sliding collision between player's sprite and corners
+function CornerCollision(x1, y1, w1, h1, map, w2, h2, on_the_ground)
+	-- offset with hotspot
+	local actor_number = game_data.levels[run.vars.level].actors[1].number
+	
+	-- player's position, in blocks
+	local x3 = math.floor(x1 / w2)
+	local y3 = math.floor(y1 / h2)
+
+	-- how many blocks in the player's sprite ?
+	local w3 = math.floor(w1 / w2)
+	local h3 = math.floor(h1 / h2)
+	
+	if x3 * w2 ~= x1 then w3 = w3 + 1 end
+	if y3 * h2 ~= y1 then h3 = h3 + 1 end
+	
+	-- right-down
+	x = x3 + w3 - 1
+	y = y3 + h3 - 1
+		
+	if BlockCollision(x, y, map) == true then
+		x1 = (x * w2) - w1
+		y1 = (y * h2) - h1
+				
+		return x1, false
+	end
+
+	-- left-down
+	x = x3
+	y = y3 + h3 - 1
+		
+	if BlockCollision(x, y, map) == true then
+		x1 = ((x + 1) * w2)
+		y1 = (y * h2) - h1
+				
+		return x1, false
+	end
+
+	-- left-up
+	x = x3
+	y = y3
+		
+	if BlockCollision(x, y, map) == true then
+		x1 = ((x + 1) * w2)
+		y1 = ((y + 1) * h2)
+				
+		return x1, false
+	end
+
+	-- right-up
+	x = x3 + w3 - 1
+	y = y3
+		
+	if BlockCollision(x, y, map) == true then
+		x1 = (x * w2) - w1
+		y1 = ((y + 1) * h2)
+				
+		return x1, false
+	end
+	
+	return x1, on_the_ground
+end
+
+-- check if the player can climb
+function CanClimb(x1, y1, w1, h1, map, w2, h2)
+	-- offset with hotspot
+	local actor_number = game_data.levels[run.vars.level].actors[1].number
+	
+	-- player's position, in blocks
+	local x3 = math.floor(x1 / w2)
+	local y3 = math.floor(y1 / h2)
+
+	-- how many blocks in the player's sprite ?
+	local w3 = math.floor(w1 / w2)
+	local h3 = math.floor(h1 / h2)
+	
+	if x3 * w2 ~= x1 then w3 = w3 + 1 end
+	if y3 * h2 ~= y1 then h3 = h3 + 1 end
+
+	for x = x3, x3 + w3 - 1 do
+		for y = y3, y3 + h3 - 1 do
+			if StairsCollision(x, y, map) == true then
+				return true
+			end
+		end
+	end
+	
+	return false
+end
+
+-- sliding collision between player's sprite and max 6 blocks inside the player
+function SlidingCollisionX(x1, y1, w1, h1, d1, map, w2, h2)
+	-- offset with hotspot
+	local actor_number = game_data.levels[run.vars.level].actors[1].number
+	
+	-- player's position, in blocks
+	local x3 = math.floor(x1 / w2)
+	local y3 = math.floor(y1 / h2)
+
+	-- how many blocks in the player's sprite ?
+	local w3 = math.floor(w1 / w2)
+	local h3 = math.floor(h1 / h2)
+	
+	if x3 * w2 ~= x1 then w3 = w3 + 1 end
+	if y3 * h2 ~= y1 then h3 = h3 + 1 end
+	
+	-- check for collisions on x axis
+	if d1 == 0 or d1 == 45 or d1 == 315 then
+		-- right
+		for y = y3, y3 + h3 - 1 do
+			x = x3 + w3 - 1
+			
+			if BlockCollision(x, y, map) == true then
+				x1 = (x * w2) - w1
+					
+				return x1
+			end
+		end
+	elseif d1 == 180 or d1 == 135 or d1 == 225 then
+		-- left
+		for y = y3, y3 + h3 - 1 do
+			x = x3
+			
+			if BlockCollision(x, y, map) == true then
+				x1 = ((x + 1) * w2)
+					
+				return x1
+			end
+		end
+	end
+	
+	return x1
+end
+
+-- sliding collision between player's sprite and max 6 blocks inside the player
+function SlidingCollisionY(x1, y1, w1, h1, d1, map, w2, h2)
+	-- offset with hotspot
+	local actor_number = game_data.levels[run.vars.level].actors[1].number
+	
+	-- player's position, in blocks
+	local x3 = math.floor(x1 / w2)
+	local y3 = math.floor(y1 / h2)
+
+	-- how many blocks in the player's sprite ?
+	local w3 = math.floor(w1 / w2)
+	local h3 = math.floor(h1 / h2)
+	
+	if x3 * w2 ~= x1 then w3 = w3 + 1 end
+	if y3 * h2 ~= y1 then h3 = h3 + 1 end
+	
+	-- check for collisions on y axis
+	if d1 == 90 or d1 == 45 or d1 == 135 then
+		-- down
+		for x = x3, x3 + w3 - 1 do
+			y = y3 + h3 - 1
+			
+			if BlockCollision(x, y, map) == true or PlatformCollision(x, y, map) == true then
+				y1 = (y * h2) - h1
+				
+				return y1
+			end
+		end
+	elseif d1 == 270 or d1 == 225 or d1 == 315 then
+		-- up
+		for x = x3, x3 + w3 - 1 do
+			y = y3
+			
+			if BlockCollision(x, y, map) == true then
+				y1 = ((y + 1) * h2)
+					
+				return y1
+			end
+		end
+	end
+	
+	return y1
+end
+
+-- sliding collision between player's sprite and corners
+function SlidingCollisionZ(x1, y1, w1, h1, d1, map, w2, h2)
+	-- offset with hotspot
+	local actor_number = game_data.levels[run.vars.level].actors[1].number
+	
+	-- player's position, in blocks
+	local x3 = math.floor(x1 / w2)
+	local y3 = math.floor(y1 / h2)
+
+	-- how many blocks in the player's sprite ?
+	local w3 = math.floor(w1 / w2)
+	local h3 = math.floor(h1 / h2)
+	
+	if x3 * w2 ~= x1 then w3 = w3 + 1 end
+	if y3 * h2 ~= y1 then h3 = h3 + 1 end
+	
+	-- check for collisions within corners
+	if d1 == 45 then
+		-- right-down
+		x = x3 + w3 - 1
+		y = y3 + h3 - 1
+		
+		if BlockCollision(x, y, map) == true or PlatformCollision(x, y, map) == true then
+			x1 = (x * w2) - w1
+			y1 = (y * h2) - h1
+				
+			return x1, y1
+		end
+	elseif d1 == 135 then
+		-- left-down
+		x = x3
+		y = y3 + h3 - 1
+		
+		if BlockCollision(x, y, map) == true or PlatformCollision(x, y, map) == true then
+			x1 = ((x + 1) * w2)
+			y1 = (y * h2) - h1
+				
+			return x1, y1
+		end
+	elseif d1 == 225 then
+		-- left-up
+		x = x3
+		y = y3
+		
+		if BlockCollision(x, y, map) == true then
+			x1 = ((x + 1) * w2)
+			y1 = ((y + 1) * h2)
+				
+			return x1, y1
+		end
+	elseif d1 == 315 then
+		-- right-up
+		x = x3 + w3 - 1
+		y = y3
+		
+		if BlockCollision(x, y, map) == true then
+			x1 = (x * w2) - w1
+			y1 = ((y + 1) * h2)
+				
+			return x1, y1
+		end
+	end
+	
+	return x1, y1
+end
+
+-- animate characters, return true if animation just ended
+function AnimateCharacter(i, moving)
+	local actor_number = game_data.levels[run.vars.level].actors[i].number
+	local animation = game_data.levels[run.vars.level].actors[i].animation
+	
+	-- animation not configured ? exit
+	if animation == 0 then return false end
+	
+	local loop = game_data.animations_loop[animation].loop
+	local v1  = game_data.animations_loop[animation].v1
+	local v2  = game_data.animations_loop[animation].v2
+	
+	-- animation just ended
+	if loop == false then
+		if game_data.levels[run.vars.level].actors[i].frame < #game_data.animations[animation] then
+			game_data.levels[run.vars.level].actors[i].frame = game_data.levels[run.vars.level].actors[i].frame + 1
+		elseif game_data.levels[run.vars.level].actors[i].frame == #game_data.animations[animation] then
+			return true
+		end
+	elseif loop == true then
+		-- loop animation
+		if animation == 1 or (animation > 1 and moving == true) then
+			if game_data.levels[run.vars.level].actors[i].frame < v2 then
+				game_data.levels[run.vars.level].actors[i].frame = game_data.levels[run.vars.level].actors[i].frame + 1
+			elseif game_data.levels[run.vars.level].actors[i].frame == v2 then
+				game_data.levels[run.vars.level].actors[i].frame = v1
+			end
+		end
+	end
+	
+	return false
+end
+
+return run
