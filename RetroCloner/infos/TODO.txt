@@ -12,10 +12,6 @@ TODO
 * Faire les acteurs:
 	- Ajouter la possibilité de scaler les acteurs en x1, x2 ou x3, pour obtenir des boss
 
-* Faire l'import d'images
-	- Convertir à la foulée les images importées, en fonction du preset en cours
-	- Aperçu et modifications à la foulée possibles
-
 * Faire l'import de musiques
 	- Lister les différents types de musiques qui peuvent être importés : intro, en jeu, game over et victoire
 	- Importer et pouvoir jouer des ogg en boucle

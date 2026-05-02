@@ -637,6 +637,76 @@ function SetDefaultGameData()
 end
 
 -- convert an imported image to the chosen preset
-function ConvertImageToPreset(img)
-	return img
+function ConvertImageToPresetVersion(image_name)
+	-- load the image
+	local image = love.graphics.newImage("saves/" .. project_name .. "/" .. image_name)
+	
+	image:setFilter("linear", "linear")
+	
+	-- resize image to preset values
+	local new_width, new_height = game_data.pixel_size * game_data.screen_width, game_data.screen_height
+	local canvas = love.graphics.newCanvas(new_width, new_height)
+
+	love.graphics.setCanvas(canvas)
+	love.graphics.clear()
+	
+	love.graphics.setColor(1, 1, 1, 1)
+
+	-- calculate the scale
+	local sx = new_width / image:getWidth()
+	local sy = new_height / image:getHeight()
+
+	love.graphics.draw(image, 0, 0, 0, sx, sy)
+
+	love.graphics.setCanvas()
+	
+	-- convert the canvas to image data
+	local image_data = canvas:newImageData()
+	
+	-- apply double pixel if needed
+	if game_data.pixel_doubled == true then
+		for x = 0, new_width - 1, game_data.pixel_size do
+			for y = 0, new_height - 1 do
+				local r, g, b = image_data:getPixel(x, y)
+				image_data:setPixel(x, y, r, g, b, 1)
+			end
+		end
+	end
+	
+	-- filter the image
+	image_data = FilterImage(image_data, new_width, new_height)
+	
+	-- save the filtered resized image
+	image_data:encode("png", "saves/" .. project_name .. "/" .. image_name)
+end
+
+function FilterImage(image_data, w, h)
+	for x = 0, w - 1 do
+		for y = 0, h - 1 do
+			local r2, g2, b2, a2 = image_data:getPixel(x, y)
+
+			local bestIndex = 0
+			local bestDist = math.huge
+
+			for p = 0, game_data.max_pens - 1 do
+				local r1, g1, b1 = GetPenRGB(p)
+
+				-- euclidian distance (squared)
+				local dr = r1 - r2
+				local dg = g1 - g2
+				local db = b1 - b2
+				local dist = dr*dr + dg*dg + db*db
+
+				if dist < bestDist then
+					bestDist = dist
+					bestIndex = p
+				end
+			end
+
+			local r, g, b = GetPenRGB(bestIndex)
+			image_data:setPixel(x, y, r, g, b, a2)
+		end
+	end
+
+	return image_data
 end

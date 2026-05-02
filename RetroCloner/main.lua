@@ -2626,8 +2626,13 @@ function love.filedropped(file)
 		local data = file:read()
 		local name = image_types[current_image] .. ".png"
 
+		-- save the image
 		love.filesystem.write("saves/" .. project_name .. "/" .. name, data)
 		
+		-- memorize the image new name
 		game_data.images[image_types[current_image]] = name
+		
+		-- resize the image and adapt the palette to preset one
+		ConvertImageToPresetVersion(name)
 	end
 end
