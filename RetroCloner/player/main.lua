@@ -156,3 +156,7 @@ end
 function love.keypressed(key, scancode, isrepeat)
 	run.keypressed(key, scancode, isrepeat)
 end
+
+function love.gamepadpressed(joystick, button)
+	run.gamepadpressed(joystick, button)
+end

@@ -63,6 +63,14 @@ function ResetAll()
 	
 	block_too_many_color = false
 	sprite_too_many_color = false
+	
+	game_data.sounds = {
+		player = {walk = "-", run = "-", jump = "-", hit = "-", fire1 = "-", fire2 = "-"},
+		enemies = {},
+		bonus = {}
+	}
+	game_data.musics = { intro = "-", ingame = "-", winner = "-", game_over = "-" }
+	game_data.images = { intro = "-", interface = "-", winner = "-", game_over = "-" }
 end
 
 -- load a preset
@@ -644,7 +652,7 @@ function ConvertImageToPresetVersion(image_name)
 	image:setFilter("linear", "linear")
 	
 	-- resize image to preset values
-	local new_width, new_height = game_data.pixel_size * game_data.screen_width, game_data.screen_height
+	local new_width, new_height = game_data.screen_width, game_data.screen_height
 	local canvas = love.graphics.newCanvas(new_width, new_height)
 
 	love.graphics.setCanvas(canvas)

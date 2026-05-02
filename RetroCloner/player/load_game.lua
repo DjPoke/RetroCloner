@@ -518,11 +518,17 @@ function LoadGame(d, f, t)
 	cpt = cpt + 1
 	t.vars.jump_power = tonumber(ts[cpt])
 	
+	-- music names
+	for i = 1, #music_types do
+		cpt = cpt + 1
+		game_data.musics[music_types[i]] = ts[cpt]
+	end
+	
 	-- image names
 	for i = 1, #image_types do
 		cpt = cpt + 1
 		game_data.images[image_types[i]] = ts[cpt]
 	end
-	
+
 	return t
 end

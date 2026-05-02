@@ -1144,6 +1144,11 @@ function love.draw()
 		-- draw sounds
 		love.graphics.setFont(EDITOR_FONT)
 		love.graphics.setColor(0, 1, 1)
+
+		-- draw shortcuts
+		love.graphics.setColor(0, 1, 1)
+		love.graphics.print("[Up][Down] Change selected menu item", 10, 520)
+		love.graphics.print("[Esc] Back", 10, 560)
 	elseif mode == MODE_IMPORT_MUSICS then
 		-- draw title
 		love.graphics.setFont(EDITOR_TITLE_FONT)
@@ -1155,6 +1160,28 @@ function love.draw()
 		-- draw musics
 		love.graphics.setFont(EDITOR_FONT)
 		love.graphics.setColor(0, 1, 1)
+		love.graphics.print("Select a menu item and drag'n'drop an ogg music", 80, 100)
+		
+		for i = 1, #music_types do
+			if current_music == i then
+				love.graphics.setColor(1, 1, 0)
+			else
+				love.graphics.setColor(0, 1, 1)
+			end
+			
+			local value = game_data.musics[music_types[i]]
+			
+			if value ~= nil and value ~= "" then
+				love.graphics.print(music_types[i] .. ": " .. value, 200, 140 + ((i - 1) * 20))
+			else
+				love.graphics.print(music_types[i] .. ": ", 200, 140 + ((i - 1) * 20))
+			end
+		end
+
+		-- draw shortcuts
+		love.graphics.setColor(0, 1, 1)
+		love.graphics.print("[Up][Down] Change selected menu item", 10, 520)
+		love.graphics.print("[Esc] Back", 10, 560)
 	elseif mode == MODE_IMPORT_IMAGES then
 		-- draw title
 		love.graphics.setFont(EDITOR_TITLE_FONT)
@@ -1166,7 +1193,7 @@ function love.draw()
 		-- draw images
 		love.graphics.setFont(EDITOR_FONT)
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("Select a menu and drag'n'drop a png image", 80, 100)
+		love.graphics.print("Select a menu item and drag'n'drop a png image", 80, 100)
 		
 		for i = 1, #image_types do
 			if current_image == i then
@@ -1183,6 +1210,11 @@ function love.draw()
 				love.graphics.print(image_types[i] .. ": ", 200, 140 + ((i - 1) * 20))
 			end
 		end
+
+		-- draw shortcuts
+		love.graphics.setColor(0, 1, 1)
+		love.graphics.print("[Up][Down] Change selected menu item", 10, 520)
+		love.graphics.print("[Esc] Back", 10, 560)
 	end
 end
 
@@ -1477,6 +1509,9 @@ function love.keypressed(key, scancode, isrepeat)
 		run.keypressed(key, scancode, isrepeat)
 
 		if key == "escape" then
+			-- quit the game
+			run.quit()
+			
 			-- set editor window size
 			love.window.setMode(EDITOR_WINDOW_WIDTH, EDITOR_WINDOW_HEIGHT, {fullscreen = false, resizable = false, vsync = 1})
 			
@@ -2551,6 +2586,20 @@ function love.keypressed(key, scancode, isrepeat)
 			mode = MODE_MENU
 		end
 	elseif mode == MODE_IMPORT_MUSICS then
+		if key == "up" then
+			if current_music > 1 then
+				current_music = current_music - 1
+			elseif current_music == 1 then
+				current_music = #music_types
+			end
+		elseif key == "down" then
+			if current_music < #music_types then
+				current_music = current_music + 1
+			elseif current_music == #music_types then
+				current_music = 1
+			end
+		end
+	
 		if key == "escape" then
 			mode = MODE_MENU
 		end
@@ -2573,6 +2622,10 @@ function love.keypressed(key, scancode, isrepeat)
 			mode = MODE_MENU
 		end
 	end
+end
+
+function love.gamepadpressed(joystick, button)
+	run.gamepadpressed(joystick, button)
 end
 
 function love.mousepressed(x, y, button, istouch, presses)
@@ -2622,14 +2675,24 @@ function love.mousepressed(x, y, button, istouch, presses)
 end
 
 function love.filedropped(file)
-	if mode == MODE_IMPORT_IMAGES then
+	if mode == MODE_IMPORT_SOUNDS then
+	elseif mode == MODE_IMPORT_MUSICS then
+		local data = file:read()
+		local name = music_types[current_music] .. ".ogg"
+
+		-- save the music
+		love.filesystem.write("saves/" .. project_name .. "/" .. name, data)
+		
+		-- memorize the music's new name
+		game_data.musics[music_types[current_music]] = name
+	elseif mode == MODE_IMPORT_IMAGES then
 		local data = file:read()
 		local name = image_types[current_image] .. ".png"
 
 		-- save the image
 		love.filesystem.write("saves/" .. project_name .. "/" .. name, data)
 		
-		-- memorize the image new name
+		-- memorize the image's new name
 		game_data.images[image_types[current_image]] = name
 		
 		-- resize the image and adapt the palette to preset one
