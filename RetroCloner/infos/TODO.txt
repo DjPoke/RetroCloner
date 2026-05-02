@@ -5,11 +5,9 @@ TODO
 * Bugs:
 	- Bug quand on charge un preset CPC et qu'ensuite on crée un jeu ZX Spectrum: la position des textes est fausse, et il affiche l'image d'intro précédente
 	- En mode ZX Spectrum, pas de titre si je teste le jeu (résolu ?)
-	- Corriger les collisions pour MicroPac (?)
+	- Son l'écran jeu est redimensionné, les textes overlappent la zone
 	
 * Terminer les déplacements du jouer
-	- Prendre en compte la variable player_speed, qui accélère les mouvements du joueur, en pixels
-	- Gérer l'automove pour MicroPac
 	- Déplacer le joueur en fonction de son type (WIP)
 	- Traiter le cas où les animations des acteurs sont à 0 dans run.lua
 

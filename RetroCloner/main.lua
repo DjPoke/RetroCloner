@@ -155,7 +155,7 @@ vars_values = {
 	{name = "lives", min_value = 1, max_value = 9, step_value = 1, default_value = 3},
 	{name = "game_speed", min_value = 1, max_value = 10, step_value = 1, default_value = 3},
 	{name = "animations_speed", min_value = 1, max_value = 10, step_value = 1, default_value = 2},
-	{name = "player_speed", min_value = 1, max_value = 8, step_value = 1, default_value = 1},
+	{name = "player_speed", min_value = 1, max_value = 4, step_value = 1, default_value = 1},
 	{name = "game_goal", min_value = 1, max_value = 5, step_value = 1, default_value = 1},
 	{name = "scrolling_type", min_value = 1, max_value = 4, step_value = 1, default_value = 1},
 	{name = "scrolling_speed", min_value = 1, max_value = 8, step_value = 1, default_value = 1},
@@ -310,37 +310,37 @@ function love.update(dt)
 		if love.keyboard.isDown("up") then
 			if love.keyboard.isDown("lshift") then
 				game_data.areas[area_selected].height = game_data.areas[area_selected].height - 1
-				
-				if area_selected == GAME_AREA then UpdateLevelsData() end
 			else
 				game_data.areas[area_selected].y = game_data.areas[area_selected].y - 1
 			end
+				
+			if area_selected == GAME_AREA then UpdateLevelsData() end
 		elseif love.keyboard.isDown("down") then
 			if love.keyboard.isDown("lshift") then
 				game_data.areas[area_selected].height = game_data.areas[area_selected].height + 1
-				
-				if area_selected == GAME_AREA then UpdateLevelsData() end
 			else
 				game_data.areas[area_selected].y = game_data.areas[area_selected].y + 1
 			end
+				
+			if area_selected == GAME_AREA then UpdateLevelsData() end
 		end
 		
 		if love.keyboard.isDown("left") then
 			if love.keyboard.isDown("lshift") then
 				game_data.areas[area_selected].width = game_data.areas[area_selected].width - 1
-				
-				if area_selected == GAME_AREA then UpdateLevelsData() end
 			else
 				game_data.areas[area_selected].x = game_data.areas[area_selected].x - 1
 			end		
+				
+			if area_selected == GAME_AREA then UpdateLevelsData() end
 		elseif love.keyboard.isDown("right") then
 			if love.keyboard.isDown("lshift") then
 				game_data.areas[area_selected].width = game_data.areas[area_selected].width + 1
-				
-				if area_selected == GAME_AREA then UpdateLevelsData() end
 			else
 				game_data.areas[area_selected].x = game_data.areas[area_selected].x + 1
 			end
+				
+			if area_selected == GAME_AREA then UpdateLevelsData() end
 		end
 	elseif mode == MODE_EDIT_BLOCKS then
 		if current_block > 0 then
@@ -2317,7 +2317,6 @@ function love.keypressed(key, scancode, isrepeat)
 					table.remove(game_data.levels, current_level)
 					
 					current_level = #game_data.levels
-					
 				end
 			end
 			

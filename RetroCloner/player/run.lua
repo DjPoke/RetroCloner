@@ -15,9 +15,12 @@ run.vars = {
 	scrolling_y = 0,
 	game_speed_timer = 0.0,
 	animations_timer = 0.0,
-	direction = 0,
 	jump_power = 0,
 	fall_power = 0,
+	dir = 0,
+	dir_x = 0,
+	dir_y = 0,
+	requested_dir = 0,
 	on_the_ground = false,
 	on_stairs = false,
 	sounds = { player = {walk = "", run = "", jump = "", hit = "", fire1 = "", fire2 = ""},
@@ -47,7 +50,9 @@ function run.load()
 	run.vars.score = 0
 	run.vars.level = 1
 
-	run.vars.direction = 0
+	run.vars.dir = 0
+	run.vars.dir_x = 1
+	run.vars.dir_y = 0
 	run.vars.jump_power = 0
 	run.vars.fall_power = 0
 	run.vars.on_the_ground = false
@@ -248,7 +253,7 @@ function run.update(dt)
 														game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "jump") or 
 														game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "climb") then						
 							game_data.levels[run.vars.level].actors[1].hflip = true
-							run.vars.direction = 180
+							run.vars.dir = 180
 							moving = true
 							
 							-- change animation if needed
@@ -258,7 +263,7 @@ function run.update(dt)
 							end
 
 							-- walk left
-							new_x = new_x - 1
+							new_x = new_x - game_data.vars.player_speed
 						end
 					elseif joy_right == true then
 						if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") or 
@@ -266,7 +271,7 @@ function run.update(dt)
 														game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "jump") or 
 														game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "climb") then						
 							game_data.levels[run.vars.level].actors[1].hflip = false
-							run.vars.direction = 0
+							run.vars.dir = 0
 							moving = true
 							
 							-- change animation if needed
@@ -276,11 +281,11 @@ function run.update(dt)
 							end
 							
 							-- walk right
-							new_x = new_x + 1
+							new_x = new_x + game_data.vars.player_speed
 						end
 					elseif joy_up == true then
 						-- climb up
-						run.vars.direction = 270
+						run.vars.dir = 270
 						moving = true
 
 						if run.vars.on_stairs == true then
@@ -290,11 +295,11 @@ function run.update(dt)
 								game_data.levels[run.vars.level].actors[1].frame = 1
 							end
 							
-							new_y = new_y - 1
+							new_y = new_y - game_data.vars.player_speed
 						end
 					elseif joy_down == true then
 						-- climb down
-						run.vars.direction = 90
+						run.vars.dir = 90
 						moving = true
 						moving_down = true
 
@@ -305,7 +310,7 @@ function run.update(dt)
 								game_data.levels[run.vars.level].actors[1].frame = 1
 							end
 							
-							new_y = new_y + 1
+							new_y = new_y + game_data.vars.player_speed
 						end
 					end
 					
@@ -372,72 +377,73 @@ function run.update(dt)
 				elseif game_data.actors[actor_number].type.name == "run & gun (edge view)" then
 				
 				elseif game_data.actors[actor_number].type.name == "run & gun (top view)" then
-					local dir = run.vars.direction
-					local dir_x = 0
-					local dir_y = 0
+					-- automove
+					if game_data.vars.automove == false then
+						if joy_up == false and joy_down == false and joy_left == false and joy_right == false then
+							run.vars.dir_x = 0
+							run.vars.dir_y = 0
+						end
+					end
 					
 					if joy_up == true then
 						if joy_left == true then
-							dir = 225
-							dir_x = -1
-							dir_y = -1
+							run.vars.dir = 225
+							run.vars.dir_x = -1
+							run.vars.dir_y = -1
 						elseif joy_right == true then
-							dir = 315
-							dir_x = 1
-							dir_y = -1
+							run.vars.dir = 315
+							run.vars.dir_x = 1
+							run.vars.dir_y = -1
 						else
-							dir = 270
-							dir_x = 0
-							dir_y = -1
+							run.vars.dir = 270
+							run.vars.dir_x = 0
+							run.vars.dir_y = -1
 						end
 					elseif joy_down == true then
 						if joy_left == true then
-							dir = 135
-							dir_x = -1
-							dir_y = 1
+							run.vars.dir = 135
+							run.vars.dir_x = -1
+							run.vars.dir_y = 1
 						elseif joy_right == true then
-							dir = 45
-							dir_x = 1
-							dir_y = 1
+							run.vars.dir = 45
+							run.vars.dir_x = 1
+							run.vars.dir_y = 1
 						else
-							dir = 90
-							dir_x = 0
-							dir_y = 1
+							run.vars.dir = 90
+							run.vars.dir_x = 0
+							run.vars.dir_y = 1
 						end
 					elseif joy_left == true then
 						if joy_up == true then
-							dir = 225						
-							dir_x = -1
-							dir_y = -1
+							run.vars.dir = 225						
+							run.vars.dir_x = -1
+							run.vars.dir_y = -1
 						elseif joy_down == true then
-							dir = 135
-							dir_x = -1
-							dir_y = 1
+							run.vars.dir = 135
+							run.vars.dir_x = -1
+							run.vars.dir_y = 1
 						else
-							dir = 180
-							dir_x = -1
-							dir_y = 0
+							run.vars.dir = 180
+							run.vars.dir_x = -1
+							run.vars.dir_y = 0
 						end
 					elseif joy_right == true then
 						if joy_up == true then
-							dir = 315
-							dir_x = 1
-							dir_y = -1
+							run.vars.dir = 315
+							run.vars.dir_x = 1
+							run.vars.dir_y = -1
 						elseif joy_down == true then
-							dir = 45
-							dir_x = 1
-							dir_y = 1
+							run.vars.dir = 45
+							run.vars.dir_x = 1
+							run.vars.dir_y = 1
 						else
-							dir = 0
-							dir_x = 1
-							dir_y = 0
+							run.vars.dir = 0
+							run.vars.dir_x = 1
+							run.vars.dir_y = 0
 						end
 					end
 					
-					-- update real direction
-					run.vars.direction = dir
-
-					if dir_x == -1 then
+					if run.vars.dir_x == -1 then
 						moving = true
 						
 						-- change animation if needed
@@ -448,8 +454,8 @@ function run.update(dt)
 						end
 
 						-- walk left
-						new_x = new_x - 1
-					elseif dir_x == 1 then
+						new_x = new_x - game_data.vars.player_speed
+					elseif run.vars.dir_x == 1 then
 						moving = true
 						
 						-- change animation if needed
@@ -459,10 +465,10 @@ function run.update(dt)
 						end
 						
 						-- walk right
-						new_x = new_x + 1
+						new_x = new_x + game_data.vars.player_speed
 					end
 						
-					if dir_y == -1 then
+					if run.vars.dir_y == -1 then
 						moving = true
 						
 						-- change animation if needed
@@ -473,8 +479,8 @@ function run.update(dt)
 						end
 
 						-- walk left
-						new_y = new_y - 1
-					elseif dir_y == 1 then
+						new_y = new_y - game_data.vars.player_speed
+					elseif run.vars.dir_y == 1 then
 						moving = true
 						
 						-- change animation if needed
@@ -484,100 +490,143 @@ function run.update(dt)
 						end
 						
 						-- walk right
-						new_y = new_y + 1
+						new_y = new_y + game_data.vars.player_speed
 					end
 					
 					-- check for player's collisions with blocks, because may be he has moved
-					new_x = SlidingCollisionX(new_x, old_y, game_data.sprite_width, game_data.sprite_height, run.vars.direction, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
-					new_y = SlidingCollisionY(old_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.direction, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
-					new_x, new_y = SlidingCollisionZ(new_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.direction, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+					new_x = SlidingCollisionX(new_x, old_y, game_data.sprite_width, game_data.sprite_height, run.vars.dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+					new_y = SlidingCollisionY(old_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+					new_x, new_y = SlidingCollisionZ(new_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
 				elseif game_data.actors[actor_number].type.name == "maze & chase" then
-					local dir = run.vars.direction
-					local dir_x = 0
-					local dir_y = 0
-					
+					-- get inputs
 					if joy_up == true then
-						dir = 270
-						dir_x = 0
-						dir_y = -1
+						run.vars.requested_dir = 270
 					end
 					
 					if joy_down == true then
-						dir = 90
-						dir_x = 0
-						dir_y = 1
+						run.vars.requested_dir = 90
 					end
 					
 					if joy_left == true then
-						dir = 180
-						dir_x = -1
-						dir_y = 0
+						run.vars.requested_dir = 180
 					end
 					
 					if joy_right == true then
-						dir = 0
-						dir_x = 1
-						dir_y = 0
+						run.vars.requested_dir = 0
 					end
-					
-					-- update real direction
-					run.vars.direction = dir
 
-					if dir_x == -1 then
-						moving = true
-						
-						-- change animation if needed
-						if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
-							game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "move")
-							game_data.levels[run.vars.level].actors[1].frame = 1
-							
-						end
+					-- can we turn ?
+					local can_turn = false
 
-						-- walk left
-						new_x = new_x - 1
-					elseif dir_x == 1 then
-						moving = true
-						
-						-- change animation if needed
-						if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
-							game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "move")
-							game_data.levels[run.vars.level].actors[1].frame = 1
-						end
-						
-						-- walk right
-						new_x = new_x + 1
-					end
-						
-					if dir_y == -1 then
-						moving = true
-						
-						-- change animation if needed
-						if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
-							game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "move")
-							game_data.levels[run.vars.level].actors[1].frame = 1
-							
+					if run.vars.requested_dir == 0 or run.vars.requested_dir == 180 then
+						local dir_sign = (run.vars.requested_dir == 0) and 1 or -1
+						local test_x = old_x + dir_sign * game_data.vars.player_speed
+
+						local _, collision = SlidingCollisionX(
+							test_x,
+							old_y,
+							game_data.sprite_width,
+							game_data.sprite_height,
+							run.vars.requested_dir,
+							game_data.levels[run.vars.level],
+							game_data.block_width,
+							game_data.block_height
+						)
+
+						if collision == false then
+							can_turn = true
 						end
 
-						-- walk left
-						new_y = new_y - 1
-					elseif dir_y == 1 then
-						moving = true
-						
-						-- change animation if needed
+					elseif run.vars.requested_dir == 90 or run.vars.requested_dir == 270 then
+						local dir_sign = (run.vars.requested_dir == 90) and 1 or -1
+						local test_y = old_y + dir_sign * game_data.vars.player_speed
+
+						local _, collision = SlidingCollisionY(
+							old_x,
+							test_y,
+							game_data.sprite_width,
+							game_data.sprite_height,
+							run.vars.requested_dir,
+							game_data.levels[run.vars.level],
+							game_data.block_width,
+							game_data.block_height
+						)
+
+						if collision == false then
+							can_turn = true
+						end
+					end
+
+					-- appliquer le turn si possible
+					if can_turn == true then
+						run.vars.dir = run.vars.requested_dir
+					end
+
+					-- calculate movements
+					local target_x = old_x
+					local target_y = old_y
+
+					if run.vars.dir == 180 then
+						if joy_left == true or game_data.vars.automove == true then
+							moving = true
+							target_x = target_x - game_data.vars.player_speed
+						end
+
+					elseif run.vars.dir == 0 then
+						if joy_right == true or game_data.vars.automove == true then
+							moving = true
+							target_x = target_x + game_data.vars.player_speed
+						end
+
+					elseif run.vars.dir == 270 then
+						if joy_up == true or game_data.vars.automove == true then
+							moving = true
+							target_y = target_y - game_data.vars.player_speed
+						end
+
+					elseif run.vars.dir == 90 then
+						if joy_down == true or game_data.vars.automove == true then
+							moving = true
+							target_y = target_y + game_data.vars.player_speed
+						end
+					end
+
+					-- animating
+					if moving == true then
 						if game_data.levels[run.vars.level].actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
 							game_data.levels[run.vars.level].actors[1].animation = GetActorAnimationNumber(actor_number, "move")
 							game_data.levels[run.vars.level].actors[1].frame = 1
 						end
-						
-						-- walk right
-						new_y = new_y + 1
 					end
-					
-					-- check for player's collisions with blocks, because may be he has moved
-					if dir == 0 or dir == 180 then
-						new_x = SlidingCollisionX(new_x, old_y, game_data.sprite_width, game_data.sprite_height, run.vars.direction, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
-					elseif dir == 90 or dir == 270 then
-						new_y = SlidingCollisionY(old_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.direction, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+
+					-- collision after movements
+					local collision = false
+
+					if run.vars.dir == 0 or run.vars.dir == 180 then
+						new_x, collision = SlidingCollisionX(
+							target_x,
+							old_y,
+							game_data.sprite_width,
+							game_data.sprite_height,
+							run.vars.dir,
+							game_data.levels[run.vars.level],
+							game_data.block_width,
+							game_data.block_height
+						)
+						new_y = old_y
+
+					elseif run.vars.dir == 90 or run.vars.dir == 270 then
+						new_y, collision = SlidingCollisionY(
+							old_x,
+							target_y,
+							game_data.sprite_width,
+							game_data.sprite_height,
+							run.vars.dir,
+							game_data.levels[run.vars.level],
+							game_data.block_width,
+							game_data.block_height
+						)
+						new_x = old_x
 					end
 				elseif game_data.actors[actor_number].type.name == "fixed shooter" then
 				
@@ -1014,12 +1063,12 @@ function DrawGame()
 					flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) / 2
 					flip_offset_y = ScaleHeight(game_data.sprite_height, WINDOW_ZOOM) / 2
 					
-					love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.direction), game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM, game_data.sprite_width / 2, game_data.sprite_height / 2)
+					love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.dir), game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM, game_data.sprite_width / 2, game_data.sprite_height / 2)
 				elseif game_data.actors[actor_number].type.name == "maze & chase" then
 					flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) / 2
 					flip_offset_y = ScaleHeight(game_data.sprite_height, WINDOW_ZOOM) / 2
 					
-					love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.direction), game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM, game_data.sprite_width / 2, game_data.sprite_height / 2)
+					love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.dir), game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM, game_data.sprite_width / 2, game_data.sprite_height / 2)
 				else
 					--draw monsters and bonus
 					love.graphics.draw(img_sprites[sprite], px + xc, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM)
@@ -1326,7 +1375,7 @@ function SlidingCollisionX(x1, y1, w1, h1, d1, map, w2, h2)
 			if BlockCollision(x, y, map) == true then
 				x1 = (x * w2) - w1
 					
-				return x1
+				return x1, true
 			end
 		end
 	elseif d1 == 180 or d1 == 135 or d1 == 225 then
@@ -1337,12 +1386,12 @@ function SlidingCollisionX(x1, y1, w1, h1, d1, map, w2, h2)
 			if BlockCollision(x, y, map) == true then
 				x1 = ((x + 1) * w2)
 					
-				return x1
+				return x1, true
 			end
 		end
 	end
 	
-	return x1
+	return x1,false
 end
 
 -- sliding collision between player's sprite and max 6 blocks inside the player
@@ -1370,7 +1419,7 @@ function SlidingCollisionY(x1, y1, w1, h1, d1, map, w2, h2)
 			if BlockCollision(x, y, map) == true or PlatformCollision(x, y, map) == true then
 				y1 = (y * h2) - h1
 				
-				return y1
+				return y1, true
 			end
 		end
 	elseif d1 == 270 or d1 == 225 or d1 == 315 then
@@ -1381,12 +1430,12 @@ function SlidingCollisionY(x1, y1, w1, h1, d1, map, w2, h2)
 			if BlockCollision(x, y, map) == true then
 				y1 = ((y + 1) * h2)
 					
-				return y1
+				return y1, true
 			end
 		end
 	end
 	
-	return y1
+	return y1, false
 end
 
 -- sliding collision between player's sprite and corners
