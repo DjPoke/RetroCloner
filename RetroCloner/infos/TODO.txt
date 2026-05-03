@@ -9,6 +9,7 @@ TODO
 	- Le mode pacman, si on désactive l'automove, ne tourne pas bien à cause de l'ordre des inputs
 
 * Terminer la partie jeu:
+	- Durant l'intro, s'il y a un titre, afficher "Press start to play" qui clignotte, et afficher les contrôles au dessus
 	- L'éditeur d'écran doit permettre d'ajouter ou non une barre de vie
 	- Déplacer le joueur en fonction de son type (WIP)
 	- Traiter le cas où les animations des acteurs sont à 0 dans run.lua
