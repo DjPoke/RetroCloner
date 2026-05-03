@@ -124,7 +124,7 @@ function love.load()
 	WINDOW_BORDER = math.floor(WINDOW_WIDTH / 8)
 	if not game_data.border then WINDOW_BORDER = 0 end
 	
-	if not love.window.setMode(WINDOW_WIDTH + (WINDOW_BORDER * 2), WINDOW_HEIGHT + (WINDOW_BORDER * 2), {fullscreen = false, resizable = true, vsync = 1}) then
+	if not love.window.setMode(WINDOW_WIDTH + (WINDOW_BORDER * 2), WINDOW_HEIGHT + (WINDOW_BORDER * 2), {fullscreen = true, resizable = false, vsync = 1}) then
 		print("Can't activate game window !")
 		
 		love.event.quit(1)

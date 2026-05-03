@@ -4,15 +4,21 @@ TODO
 
 * Bugs:
 	- Bug quand on charge un preset CPC et qu'ensuite on crée un jeu ZX Spectrum: la position des textes est fausse, et il affiche l'image d'intro précédente
-	- En mode ZX Spectrum, pas de titre si je teste le jeu (résolu ?)
-	- Son l'écran jeu est redimensionné, les textes overlappent la zone
+	- En mode ZX Spectrum, pas de titre si je teste le jeu (seulement quand je n'ai pas sauvegardé le titre du jeu ?)
+	- Probleme d'affichage dans le player en fullscreen
 	
-* Terminer les déplacements du jouer
+* Terminer la partie jeu:
 	- Déplacer le joueur en fonction de son type (WIP)
 	- Traiter le cas où les animations des acteurs sont à 0 dans run.lua
+	- Créer une variable pour activer le z-order sur le joueur/ennemis/bonus
+	- Si z-order non actif, Afficher les bonus en 1er, puis les monstres, puis le joueur
+	- Animer les bonus
+	- Ajouter un random bonus (1 bonus sur 3 au hasard) si on tue un ennemi
 
 * Faire les acteurs:
 	- Ajouter la possibilité de scaler les acteurs en x1, x2 ou x3, pour obtenir des boss
+	- Animer et déplacer les ennemis
+	- Gérer les collisions et la mort du heros/des ennemis
 
 * Faire l'import de sons
 	- Lister les différents types de sons qui peuvent être importés, en fonction du type de player des des monstres/bonus
