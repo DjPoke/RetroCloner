@@ -6,6 +6,7 @@ TODO
 	- Bug quand on charge un preset CPC et qu'ensuite on crée un jeu ZX Spectrum: la position des textes est fausse, et il affiche l'image d'intro précédente
 	- En mode ZX Spectrum, pas de titre si je teste le jeu (seulement quand je n'ai pas sauvegardé le titre du jeu ?)
 	- Probleme d'affichage dans le player en fullscreen
+	- Le mode pacman, si on désactive l'automove, ne tourne pas bien à cause de l'ordre des inputs
 
 * Terminer la partie jeu:
 	- Déplacer le joueur en fonction de son type (WIP)
