@@ -6,7 +6,7 @@ TODO
 	- Bug quand on charge un preset CPC et qu'ensuite on crée un jeu ZX Spectrum: la position des textes est fausse, et il affiche l'image d'intro précédente
 	- En mode ZX Spectrum, pas de titre si je teste le jeu (seulement quand je n'ai pas sauvegardé le titre du jeu ?)
 	- Probleme d'affichage dans le player en fullscreen
-	
+
 * Terminer la partie jeu:
 	- Déplacer le joueur en fonction de son type (WIP)
 	- Traiter le cas où les animations des acteurs sont à 0 dans run.lua
@@ -23,5 +23,9 @@ TODO
 * Faire l'import de sons
 	- Lister les différents types de sons qui peuvent être importés, en fonction du type de player des des monstres/bonus
 	- Importer et pouvoir jouer des wav
+
+* Tests:
+	- Tester les menus dans différents ordres, en ajoutant, modifiant, supprimant des choses, pour voir s'il y a des bugs
+	- Tester les moteurs de jeu dans un maximum de situations
 
 ETC.
