@@ -2,7 +2,7 @@
 
 ## What is RetroCloner ?
 
-RetroCloner is a tool made with lua/löve2d to create retro games for Windows, Linux and Mac easily, faking Amstrad CPC, C64 or ZX Spectrum graphics.
+RetroCloner is a tool made with lua/löve2d to create retro games for Windows, Linux and Mac easily, imitating Amstrad CPC, C64 or ZX Spectrum graphics.
 This project is in Work In Progress state. For now, it is developped under Linux Mint, but It should works both on Windows or MacOS.
 
 ![screenshot1](screenshot1.jpg)
