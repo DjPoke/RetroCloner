@@ -1246,6 +1246,9 @@ function love.keypressed(key, scancode, isrepeat)
 				
 				-- initialize the game
 				run.load()
+				
+				-- hide mouse
+				love.mouse.setVisible(false)
 
 				mode = MODE_TEST_GAME
 			else
@@ -1462,6 +1465,9 @@ function love.keypressed(key, scancode, isrepeat)
 		run.keypressed(key, scancode, isrepeat)
 
 		if key == "escape" then
+			-- show mouse
+			love.mouse.setVisible(true)
+
 			-- quit the game
 			run.quit()
 			

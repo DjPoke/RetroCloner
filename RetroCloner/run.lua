@@ -112,6 +112,9 @@ function run.load()
 	-- get joystick
 	joysticks = love.joystick.getJoysticks()
     joy = joysticks[1]
+	
+	-- hide mouse
+	love.mouse.setVisible(false)
 end
 
 function run.update(dt)
