@@ -158,7 +158,7 @@ vars_values = {
 	{name = "player_speed", min_value = 1, max_value = 4, step_value = 1, default_value = 1},
 	{name = "game_goal", min_value = 1, max_value = 5, step_value = 1, default_value = 1},
 	{name = "scrolling_type", min_value = 1, max_value = 4, step_value = 1, default_value = 1},
-	{name = "scrolling_speed", min_value = 1, max_value = 8, step_value = 1, default_value = 1},
+	{name = "scrolling_speed", min_value = 1, max_value = 8, step_value = 1, default_value = 4},
 	{name = "scrolling_horizontally", min_value = false, max_value = true, step_value = 1, default_value = true},
 	{name = "scrolling_vertically", min_value = false, max_value = true, step_value = 1, default_value = false},
 	{name = "scroll_backward", min_value = false, max_value = true, step_value = 1, default_value = true},

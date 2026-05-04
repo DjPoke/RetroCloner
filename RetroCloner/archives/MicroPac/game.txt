@@ -2181,14 +2181,14 @@ false
 256
 1
 1
-move
-2
 idle
 1
-name
-maze & chase
+move
+2
 die
 3
+name
+maze & chase
 END
 256
 1
@@ -2551,8 +2551,8 @@ wall
 2
 1
 1
-1
-true
+4
+false
 false
 true
 8
