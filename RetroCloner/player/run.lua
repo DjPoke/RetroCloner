@@ -1088,51 +1088,72 @@ function DrawGame()
 			end
 		end
 	
-		-- draw actors
-		for i = 1, #game_data.levels[run.vars.level].actors do
+		-- draw bonus first
+		for i = 2, #game_data.levels[run.vars.level].actors do
 			local actor_number = game_data.levels[run.vars.level].actors[i].number
-			local animation = game_data.levels[run.vars.level].actors[i].animation
-			local frame = game_data.levels[run.vars.level].actors[i].frame
 			
-			if animation > 0 and frame > 0 then
-				local sprite = game_data.animations[animation][frame]
-				local xc = ScaleWidth(game_data.levels[run.vars.level].actors[i].x, WINDOW_ZOOM)
-				local yc = ScaleHeight(game_data.levels[run.vars.level].actors[i].y, WINDOW_ZOOM)
-
-				-- scrolling
-				xc = xc + ScaleWidth(run.vars.scrolling_x, WINDOW_ZOOM)
-				yc = yc + ScaleHeight(run.vars.scrolling_y, WINDOW_ZOOM)
-
-				-- flipped ?
-				local hflip = 1
-				local vflip = 1
-				
-				if game_data.levels[run.vars.level].actors[i].hflip == true then hflip = -1 end
-				if game_data.levels[run.vars.level].actors[i].vflip == true then vflip = -1 end
-
-				local flip_offset_x = 0
-				local flip_offset_y = 0
-				
-				-- what kind of player ? (TODO!)
-				if game_data.actors[actor_number].type.name == "platformer" then
-					if hflip == -1 then flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) end
-					
-					love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM * hflip, WINDOW_ZOOM)
-				elseif game_data.actors[actor_number].type.name == "run & gun (top view)" then
-					flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) / 2
-					flip_offset_y = ScaleHeight(game_data.sprite_height, WINDOW_ZOOM) / 2
-					
-					love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.dir), game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM, game_data.sprite_width / 2, game_data.sprite_height / 2)
-				elseif game_data.actors[actor_number].type.name == "maze & chase" then
-					flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) / 2
-					flip_offset_y = ScaleHeight(game_data.sprite_height, WINDOW_ZOOM) / 2
-					
-					love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.dir), game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM, game_data.sprite_width / 2, game_data.sprite_height / 2)
-				else
-					--draw monsters and bonus
-					love.graphics.draw(img_sprites[sprite], px + xc, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM)
-				end
+			if game_data.actors[actor_number].entity == ENTITY_TYPE_BONUS then
+				DrawActors(i, actor_number, px, py)
 			end
+		end
+
+		-- draw enemies
+		for i = 2, #game_data.levels[run.vars.level].actors do
+			local actor_number = game_data.levels[run.vars.level].actors[i].number
+			
+			if game_data.actors[actor_number].entity == ENTITY_TYPE_ENEMY then
+				DrawActors(i, actor_number, px, py)
+			end
+		end
+
+		-- draw player last
+		local actor_number = game_data.levels[run.vars.level].actors[1].number
+			
+		DrawActors(1, actor_number, px, py)
+	end
+end
+
+function DrawActors(i, actor_number, px, py)
+	local animation = game_data.levels[run.vars.level].actors[i].animation
+	local frame = game_data.levels[run.vars.level].actors[i].frame
+	
+	if animation > 0 and frame > 0 then
+		local sprite = game_data.animations[animation][frame]
+		local xc = ScaleWidth(game_data.levels[run.vars.level].actors[i].x, WINDOW_ZOOM)
+		local yc = ScaleHeight(game_data.levels[run.vars.level].actors[i].y, WINDOW_ZOOM)
+
+		-- scrolling
+		xc = xc + ScaleWidth(run.vars.scrolling_x, WINDOW_ZOOM)
+		yc = yc + ScaleHeight(run.vars.scrolling_y, WINDOW_ZOOM)
+
+		-- flipped ?
+		local hflip = 1
+		local vflip = 1
+		
+		if game_data.levels[run.vars.level].actors[i].hflip == true then hflip = -1 end
+		if game_data.levels[run.vars.level].actors[i].vflip == true then vflip = -1 end
+
+		local flip_offset_x = 0
+		local flip_offset_y = 0
+		
+		-- what kind of player ? (TODO!)
+		if game_data.actors[actor_number].type.name == "platformer" then
+			if hflip == -1 then flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) end
+			
+			love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM * hflip, WINDOW_ZOOM)
+		elseif game_data.actors[actor_number].type.name == "run & gun (top view)" then
+			flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) / 2
+			flip_offset_y = ScaleHeight(game_data.sprite_height, WINDOW_ZOOM) / 2
+			
+			love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.dir), game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM, game_data.sprite_width / 2, game_data.sprite_height / 2)
+		elseif game_data.actors[actor_number].type.name == "maze & chase" then
+			flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) / 2
+			flip_offset_y = ScaleHeight(game_data.sprite_height, WINDOW_ZOOM) / 2
+			
+			love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.dir), game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM, game_data.sprite_width / 2, game_data.sprite_height / 2)
+		else
+			--draw monsters and bonus
+			love.graphics.draw(img_sprites[sprite], px + xc, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM)
 		end
 	end
 end

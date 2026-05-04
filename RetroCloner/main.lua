@@ -916,7 +916,7 @@ function love.draw()
 					love.graphics.setColor(0, 1, 1)
 					if current_property == i then love.graphics.setColor(1, 1, 0) end
 
-					local k = enemy_animations[current_bonus_type][i]
+					local k = bonus_animations[current_bonus_type][i]
 					local v = game_data.actors[current_actor].type[bonus_animations[current_bonus_type][i]]
 
 					love.graphics.print(k .. ": " .. tostring(v), 440, 160 + ((i - 1) * 20))
@@ -929,8 +929,9 @@ function love.draw()
 		
 		-- draw shortcuts
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("[A]dd actor - [Del]ete actor - [Tab] Change entity kind - [T] Select type", 10, 720)
-		love.graphics.print("[Arrows] Change animation - [PgDown] Previous actor - [PgUp] Next actor", 10, 740)
+		love.graphics.print("[A]dd actor - [Del]ete actor - [Tab] Change entity kind - [T] Select type", 10, 700)
+		love.graphics.print("[Up][Down] Change parameter - [Left][Right][Shift] Change value", 10, 720)
+		love.graphics.print("[PgDown] Previous actor - [PgUp] Next actor", 10, 740)
 		love.graphics.print("[Esc] Back", 10, 760)
 	elseif mode == MODE_EDIT_LEVELS then
 		-- draw title
@@ -1056,7 +1057,7 @@ function love.draw()
 		-- draw shortcuts
 		love.graphics.setColor(0, 1, 1)
 		love.graphics.print("[A]dd a level - [Del]ete level - [W]idth - [H]eight - [L][Shift] Set level", 10, 700)
-		love.graphics.print("[Tab] Set block/actor - [S]wap blocks/actors - [M]emorize scrolling", 10, 720)
+		love.graphics.print("[S]wap blocks/actors - [Tab] Change block/actor - [M]emorize scrolling", 10, 720)
 		love.graphics.print("[R]emember scrolling - [F]ill blocks - [E]dit actor - [Del] actor", 10, 740)
 		love.graphics.print("[Esc] Back", 10, 760)
 	elseif mode == MODE_EDIT_GAMES_DATA then
@@ -2054,7 +2055,6 @@ function love.keypressed(key, scancode, isrepeat)
 					elseif current_property == 1 then
 						current_property = #bonus_animations[current_bonus_type]
 					end
-					current_property = 1
 				end
 			end
 		elseif key == "down" then
@@ -2077,7 +2077,6 @@ function love.keypressed(key, scancode, isrepeat)
 					elseif current_property == #bonus_animations[current_bonus_type] then
 						current_property = 1
 					end
-					current_property = 1
 				end
 			end
 		elseif key == "left" then
@@ -2236,16 +2235,27 @@ function love.keypressed(key, scancode, isrepeat)
 			end
 			
 			if key == "delete" then
-				-- delete current level
 				if current_level > 0 then
-					-- disable edit mode
-					current_level_actors_edit_mode = false
-
-					table.remove(game_data.scrolling_start_x, current_level)
-					table.remove(game_data.scrolling_start_y, current_level)
-					table.remove(game_data.levels, current_level)
-					
-					current_level = #game_data.levels
+					if current_level_actors_edit_mode == false then
+						-- delete current level
+						table.remove(game_data.scrolling_start_x, current_level)
+						table.remove(game_data.scrolling_start_y, current_level)
+						table.remove(game_data.levels, current_level)
+						
+						current_level = #game_data.levels
+					elseif current_level_actors_edit_mode == true then
+						if current_level_edited_actor_instance > 1 then
+							table.remove(game_data.levels[current_level].actors, current_level_edited_actor_instance)
+							
+							current_level_edited_actor_instance = current_level_edited_actor_instance - 1
+							
+							-- scroll the screen to show edited actor instance
+							GetActorInstanceScrolling()
+						elseif current_level_edited_actor_instance == 1 then
+							beep:stop()
+							beep:play()
+						end
+					end
 				end
 			end
 			
@@ -2430,22 +2440,6 @@ function love.keypressed(key, scancode, isrepeat)
 				GetActorInstanceScrolling()
 			end
 
-			if key == "delete" then
-				if current_level_actors_edit_mode == true then
-					if current_level_edited_actor_instance > 1 then
-						table.remove(game_data.levels[current_level].actors, current_level_edited_actor_instance)
-						
-						current_level_edited_actor_instance = current_level_edited_actor_instance - 1
-						
-						-- scroll the screen to show edited actor instance
-						GetActorInstanceScrolling()
-					elseif current_level_edited_actor_instance == 1 then
-						beep:stop()
-						beep:play()
-					end
-				end
-			end
-			
 			if key == "f" then
 				-- disable edit mode
 				current_level_actors_edit_mode = false
