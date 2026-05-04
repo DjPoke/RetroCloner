@@ -7,16 +7,14 @@ TODO
 	
 * Terminer la partie jeu:
 	- L'éditeur d'écran doit permettre d'ajouter ou non une barre de vie
-	- Déplacer le joueur en fonction de son type (WIP)
-	- Traiter le cas où les animations des acteurs sont à 0 dans run.lua
-	- Créer une variable pour activer le z-order sur le joueur/ennemis/bonus
-	- Si z-order non actif, Afficher les bonus en 1er, puis les monstres, puis le joueur
+	- Animer et déplacer les ennemis
 	- Animer les bonus
 	- Ajouter un random bonus (1 bonus sur 3 au hasard) si on tue un ennemi
-
-* Faire les acteurs:
+	- Déplacer le joueur en fonction de son type
+	- Créer une variable pour activer le z-order sur le joueur/ennemis/bonus
+	- Si z-order non actif, Afficher les bonus en 1er, puis les monstres, puis le joueur
 	- Ajouter la possibilité de scaler les acteurs en x1, x2 ou x3, pour obtenir des boss
-	- Animer et déplacer les ennemis
+	- Traiter les cas où les animations des acteurs sont à 0. Si certaines animations restent à zéro, le mouvement sera ignoré.
 	- Gérer les collisions et la mort du heros/des ennemis
 
 * Faire l'import de sons
@@ -25,6 +23,6 @@ TODO
 
 * Tests:
 	- Tester les menus dans différents ordres, en ajoutant, modifiant, supprimant des choses, pour voir s'il y a des bugs
-	- Tester les moteurs de jeu dans un maximum de situations
+	- Tester les différents moteurs de jeu dans un maximum de situations
 
 ETC.
