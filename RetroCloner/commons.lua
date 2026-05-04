@@ -1,3 +1,6 @@
+-- blocks types
+blocks_types = {"background", "wall", "platform", "stairs", "death", "eatable"}
+
 -- types of player
 player_types = {
 	{name = "platformer", idle = 0, walk = 0, jump = 0, climb = 0, hit = 0, die = 0, hflip = false },

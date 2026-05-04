@@ -176,9 +176,6 @@ block_data_copy = {}
 sprite_copy = {}
 frame_copy = {}
 
--- different blocks types
-blocks_types = {"background", "wall", "platform", "stairs", "death"}
-
 -- vars
 old_project_name = ""
 project_name = ""
@@ -1064,9 +1061,9 @@ function love.draw()
 		love.graphics.print("[Esc] Back", 10, 760)
 	elseif mode == MODE_EDIT_GAMES_DATA then
 		-- draw title
-		DrawTitleCentered("EDIT GAMES DATA", EDITOR_WINDOW_WIDTH, 32)
+		DrawTitleCentered("EDIT GAME DATA", EDITOR_WINDOW_WIDTH, 32)
 
-		-- draw games data
+		-- draw game data
 		love.graphics.setFont(EDITOR_FONT)
 
 		for i = 1, #parameters_list do
@@ -1404,6 +1401,9 @@ function love.keypressed(key, scancode, isrepeat)
 					
 					-- set default game data
 					SetDefaultGameData()
+					
+					-- set project name
+					game_data.game_name = project_name
 					
 					new_project_mode = NEW_PROJECT_MODE
 					mode = MODE_MENU

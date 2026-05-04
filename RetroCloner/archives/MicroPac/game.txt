@@ -2183,10 +2183,10 @@ false
 1
 move
 2
-name
-maze & chase
 idle
 1
+name
+maze & chase
 die
 3
 END
@@ -2508,10 +2508,10 @@ END
 1
 48
 152
-0
-0
+83.99984108
+8
 2
-1
+2
 nil
 nil
 false
@@ -2546,8 +2546,8 @@ wall
 0
 0
 3
+3
 10
-5
 2
 1
 1

@@ -6,6 +6,8 @@ local MODE_IN_GAME = 2
 local MODE_WINNER = 3
 local MODE_GAME_OVER = 4
 
+DT_CORRECTION = 60
+
 -- run arrays
 run.vars = {
 	game_mode = 0,
@@ -15,6 +17,7 @@ run.vars = {
 	scrolling_y = 0,
 	game_speed_timer = 0.0,
 	animations_timer = 0.0,
+	blink_timer = 0.0,
 	jump_power = 0,
 	fall_power = 0,
 	dir = 0,
@@ -138,6 +141,15 @@ function run.update(dt)
 				run.vars.musics.game_over:stop()
 			end
 		end
+		
+		-- press start to play blinks
+		if run.vars.images.intro == nil or run.vars.images.intro == "" then
+			blink_timer = blink_timer + dt
+			
+			if blink_timer >= 1.0 then
+				blink_timer = 0.0
+			end
+		end
 	elseif run.vars.game_mode == MODE_IN_GAME then
 		-- stop all musics and start in_game music, if needed
 		if run.vars.musics.intro ~= nil then
@@ -171,13 +183,17 @@ function run.update(dt)
 		animations_tick = false
 		game_speed_tick = false
 		
-		if run.vars.game_speed_timer >= (0.05 / game_data.vars.game_speed) then
-			run.vars.game_speed_timer = 0.0
+		local max_game_timer = 0.05 / game_data.vars.game_speed
+		
+		if run.vars.game_speed_timer >= max_game_timer then
+			run.vars.game_speed_timer = run.vars.game_speed_timer - max_game_timer
 			game_speed_tick = true
 		end
+		
+		local max_animations_timer = 0.5 / game_data.vars.animations_speed
 
-		if run.vars.animations_timer >= (0.5 / game_data.vars.animations_speed) then
-			run.vars.animations_timer = 0.0
+		if run.vars.animations_timer >= max_animations_timer then
+			run.vars.animations_timer = run.vars.animations_timer - max_animations_timer
 			animations_tick = true
 		end
 			
@@ -499,20 +515,46 @@ function run.update(dt)
 					new_x, new_y = SlidingCollisionZ(new_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
 				elseif game_data.actors[actor_number].type.name == "maze & chase" then
 					-- get inputs
-					if joy_up == true then
-						run.vars.requested_dir = 270
-					end
-					
-					if joy_down == true then
-						run.vars.requested_dir = 90
-					end
-					
-					if joy_left == true then
-						run.vars.requested_dir = 180
-					end
-					
-					if joy_right == true then
-						run.vars.requested_dir = 0
+					if run.vars.dir == 0 then
+						if joy_up == true then
+							run.vars.requested_dir = 270
+						elseif joy_down == true then
+							run.vars.requested_dir = 90
+						elseif joy_right == true then
+							run.vars.requested_dir = 0
+						elseif joy_left == true then
+							run.vars.requested_dir = 180
+						end
+					elseif run.vars.dir == 90 then
+						if joy_left == true then
+							run.vars.requested_dir = 180
+						elseif joy_right == true then
+							run.vars.requested_dir = 0
+						elseif joy_down == true then
+							run.vars.requested_dir = 90
+						elseif joy_up == true then
+							run.vars.requested_dir = 270
+						end
+					elseif run.vars.dir == 180 then
+						if joy_up == true then
+							run.vars.requested_dir = 270
+						elseif joy_down == true then
+							run.vars.requested_dir = 90
+						elseif joy_left == true then
+							run.vars.requested_dir = 180
+						elseif joy_right == true then
+							run.vars.requested_dir = 0
+						end
+					elseif run.vars.dir == 270 then
+						if joy_left == true then
+							run.vars.requested_dir = 180
+						elseif joy_right == true then
+							run.vars.requested_dir = 0
+						elseif joy_up == true then
+							run.vars.requested_dir = 270
+						elseif joy_down == true then
+							run.vars.requested_dir = 90
+						end
 					end
 
 					-- can we turn ?
@@ -830,7 +872,10 @@ end
 
 function run.draw()
 	-- adapt resolution to window (or fullscreen)
-	love.graphics.scale(love.graphics.getWidth() / (WINDOW_WIDTH + (WINDOW_BORDER * 2)), love.graphics.getHeight() / (WINDOW_HEIGHT + (WINDOW_BORDER * 2)))
+	local sx = love.graphics.getWidth() / (WINDOW_WIDTH + (WINDOW_BORDER * 2))
+	local sy = love.graphics.getHeight() / (WINDOW_HEIGHT + (WINDOW_BORDER * 2))
+	
+	love.graphics.scale(sx, sy)
 	
 	-- show what should be shown
 	if run.vars.game_mode == MODE_INTRO then
@@ -855,6 +900,16 @@ function run.draw()
 			local scale = 1.0 / 16
 
 			love.graphics.printf(game_data.game_name, 0, love.graphics.getHeight() / 4, love.graphics.getWidth() / scale, "center", 0, scale, scale)
+
+			love.graphics.setFont(GAME_FONT)
+			scale = 1.0 / 32
+			love.graphics.printf("Keys: [Arrows][Space][x][c][v]", 0, love.graphics.getHeight() * 48 / 100, love.graphics.getWidth() / scale, "center", 0, scale, scale)
+			love.graphics.printf("or Joystick/Gamepad", 0, love.graphics.getHeight() * 52 / 100, love.graphics.getWidth() / scale, "center", 0, scale, scale)
+
+			-- show press start to play
+			if blink_timer < 0.5 then
+				love.graphics.printf("PRESS START TO PLAY", 0, love.graphics.getHeight() * 80 / 100, love.graphics.getWidth() / scale, "center", 0, scale, scale)
+			end
 		end
 	elseif run.vars.game_mode == MODE_IN_GAME then
 		-- ===========================================================================================================================================================================
@@ -869,7 +924,7 @@ function run.draw()
 		-- ===========================================================================================================================================================================
 		
 		-- set scissor without the border
-		love.graphics.setScissor(WINDOW_BORDER, WINDOW_BORDER, WINDOW_WIDTH, WINDOW_HEIGHT)
+		love.graphics.setScissor(WINDOW_BORDER * sx, WINDOW_BORDER * sy, WINDOW_WIDTH * sx, WINDOW_HEIGHT * sy)
 
 		-- clear the background with background paper color
 		r, g, b = GetPenRGB(game_data.background_paper)
@@ -883,7 +938,7 @@ function run.draw()
 		-- ===========================================================================================================================================================================
 
 		-- set scissor to game area
-		love.graphics.setScissor(ScaleX(game_data.areas[GAME_AREA].x, WINDOW_ZOOM), ScaleY(game_data.areas[GAME_AREA].y, WINDOW_ZOOM), ScaleWidth(game_data.areas[GAME_AREA].width, WINDOW_ZOOM), ScaleHeight(game_data.areas[GAME_AREA].height, WINDOW_ZOOM))
+		love.graphics.setScissor(ScaleX(game_data.areas[GAME_AREA].x, WINDOW_ZOOM) * sx, ScaleY(game_data.areas[GAME_AREA].y, WINDOW_ZOOM) * sy, ScaleWidth(game_data.areas[GAME_AREA].width, WINDOW_ZOOM) * sx, ScaleHeight(game_data.areas[GAME_AREA].height, WINDOW_ZOOM) * sy)
 
 		-- draw the game
 		DrawGame()

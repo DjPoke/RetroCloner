@@ -11,6 +11,7 @@ function ResetAll()
 	game_data.sounds = {}
 	game_data.musics = {}
 	game_data.images = {}
+	game_data.areas = {}
 	
 	img_blocks = {}
 	img_sprites = {}
@@ -75,6 +76,8 @@ end
 
 -- load a preset
 function LoadPreset(path)
+	ResetAll()
+
 	-- remove preset data
 	preset_data = {}
 	
@@ -310,7 +313,7 @@ function LoadPreset(path)
 	else
 		print("GameAreaX missing!")
 	end
-
+	
 	-- get game area y
 	local n = PresetValue("GameAreaY")
 	
@@ -453,9 +456,7 @@ function LoadPreset(path)
 		game_data.fonts = preset_data[n][2]
 	else
 		print("Fonts missing!")
-	end
-	
-	ResetAll()
+	end	
 end
 
 -- find preset value
