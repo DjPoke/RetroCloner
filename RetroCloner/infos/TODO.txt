@@ -3,7 +3,8 @@ TODO
 ====
 
 * Bugs:
-	-
+	- Corriger scrolling différent de 4 et collisions
+	- En mode animation, le loop n'est toujours pas conservé lorsqu'on revient
 	
 * Terminer la partie jeu:
 	- L'éditeur d'écran doit permettre d'ajouter ou non une barre de vie
