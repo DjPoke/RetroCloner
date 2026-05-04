@@ -40,23 +40,25 @@ player_levels_max_size = {
 enemy_types = {
 	{name = "static", idle = 0},
 	{name = "moving left-right", idle = 0, walking = 0},
-	{name = "sniper", idle = 0, fire = 0},
+	{name = "moving up_down", idle = 0, walking = 0},
+	{name = "sniper", idle = 0, fire = 0, direction = 0},
 	{name = "oscillate left-right", idle = 0, walking = 0, fire = 0},
 	{name = "oscillate up_down", idle = 0, walking = 0, fire = 0},
 	{name = "turn", idle = 0, walking = 0, fire = 0},
-	{name = "seek", idle = 0, walking = 0, fire = 0},
-	{name = "random", idle = 0, walking = 0, fire = 0}
+	{name = "seek", idle = 0, walking = 0, fire = 0, directions = 0},
+	{name = "random", idle = 0, walking = 0, fire = 0, directions = 0}
 }
 
 enemy_animations = {
 	{"idle"},
 	{"idle", "walking"},
-	{"idle", "fire"},
+	{"idle", "walking"},
+	{"idle", "fire", "direction"},
 	{"idle", "walking", "fire"},
 	{"idle", "walking", "fire"},
 	{"idle", "walking", "fire"},
-	{"idle", "walking", "fire"},
-	{"idle", "walking", "fire"}
+	{"idle", "walking", "fire", "directions"},
+	{"idle", "walking", "fire", "directions"}
 }
 
 -- types of bonus-malus
@@ -206,4 +208,18 @@ function ToString2(n, z)
 	end
 	
 	return s
+end
+
+function DeepCopy(original)
+    local copy = {}
+	
+    for k, v in pairs(original) do
+        if type(v) == "table" then
+            copy[k] = DeepCopy(v)
+        else
+            copy[k] = v
+        end
+    end
+	
+    return copy
 end

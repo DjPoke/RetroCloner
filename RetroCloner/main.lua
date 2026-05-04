@@ -668,9 +668,9 @@ function love.draw()
 		love.graphics.rectangle("fill", screen_x + (game_data.areas[GAME_AREA].x * game_data.pixel_size * SCREEN_ZOOM), screen_y + (game_data.areas[GAME_AREA].y * SCREEN_ZOOM), game_data.areas[GAME_AREA].width * game_data.pixel_size * SCREEN_ZOOM, game_data.areas[GAME_AREA].height * SCREEN_ZOOM)
 				
 		-- draw text's areas
-		FontsPrint("SCORE " .. ToString2(run.vars.score, 7), screen_x + (game_data.areas[SCORE_AREA].x * game_data.pixel_size * SCREEN_ZOOM), screen_y + (game_data.areas[SCORE_AREA].y * SCREEN_ZOOM), game_data.areas[SCORE_AREA].width * SCREEN_ZOOM, game_data.areas[SCORE_AREA].height * SCREEN_ZOOM, GAME_FONT, FONT_DOWN_SCALE / SCREEN_ZOOM, game_data.text_paper, game_data.text_pen)
-		FontsPrint("LIVES " .. ToString2(game_data.vars.lives, 2), screen_x + (game_data.areas[LIVES_AREA].x * game_data.pixel_size * SCREEN_ZOOM), screen_y + (game_data.areas[LIVES_AREA].y * SCREEN_ZOOM), game_data.areas[LIVES_AREA].width * SCREEN_ZOOM, game_data.areas[LIVES_AREA].height * SCREEN_ZOOM, GAME_FONT, FONT_DOWN_SCALE / SCREEN_ZOOM, game_data.text_paper, game_data.text_pen)
-		FontsPrint("LEVEL " .. ToString2(run.vars.level, 3), screen_x + (game_data.areas[LEVEL_AREA].x * game_data.pixel_size * SCREEN_ZOOM), screen_y + (game_data.areas[LEVEL_AREA].y * SCREEN_ZOOM), game_data.areas[LEVEL_AREA].width * SCREEN_ZOOM, game_data.areas[LEVEL_AREA].height * SCREEN_ZOOM, GAME_FONT, FONT_DOWN_SCALE / SCREEN_ZOOM, game_data.text_paper, game_data.text_pen)
+		FontsPrint("SCORE " .. ToString2(run.vars.score, 7), screen_x + (game_data.areas[SCORE_AREA].x * game_data.pixel_size * SCREEN_ZOOM), screen_y + (game_data.areas[SCORE_AREA].y * SCREEN_ZOOM), game_data.areas[SCORE_AREA].width * game_data.pixel_size * SCREEN_ZOOM, game_data.areas[SCORE_AREA].height * SCREEN_ZOOM, GAME_FONT, FONT_DOWN_SCALE / SCREEN_ZOOM, game_data.text_paper, game_data.text_pen)
+		FontsPrint("LIVES " .. ToString2(game_data.vars.lives, 2), screen_x + (game_data.areas[LIVES_AREA].x * game_data.pixel_size * SCREEN_ZOOM), screen_y + (game_data.areas[LIVES_AREA].y * SCREEN_ZOOM), game_data.areas[LIVES_AREA].width * game_data.pixel_size * SCREEN_ZOOM, game_data.areas[LIVES_AREA].height * SCREEN_ZOOM, GAME_FONT, FONT_DOWN_SCALE / SCREEN_ZOOM, game_data.text_paper, game_data.text_pen)
+		FontsPrint("LEVEL " .. ToString2(run.vars.level, 3), screen_x + (game_data.areas[LEVEL_AREA].x * game_data.pixel_size * SCREEN_ZOOM), screen_y + (game_data.areas[LEVEL_AREA].y * SCREEN_ZOOM), game_data.areas[LEVEL_AREA].width * game_data.pixel_size * SCREEN_ZOOM, game_data.areas[LEVEL_AREA].height * SCREEN_ZOOM, GAME_FONT, FONT_DOWN_SCALE / SCREEN_ZOOM, game_data.text_paper, game_data.text_pen)
 			
 		for i = 1, LEVEL_AREA do
 			if area_selected == i then
@@ -1053,7 +1053,7 @@ function love.draw()
 		-- draw shortcuts
 		love.graphics.setColor(0, 1, 1)
 		love.graphics.print("[A]dd a level - [Del]ete level - [W]idth - [H]eight - [L][Shift] Set level", 10, 700)
-		love.graphics.print("[S]wap blocks/actors - [Tab] Change block/actor - [M]emorize scrolling", 10, 720)
+		love.graphics.print("[S]wap blocks/actors - [Tab][Shift] Change block/actor - [M]emo. scrolling", 10, 720)
 		love.graphics.print("[R]emember scrolling - [F]ill blocks - [E]dit actor - [Del] actor", 10, 740)
 		love.graphics.print("[Esc] Back", 10, 760)
 	elseif mode == MODE_EDIT_GAMES_DATA then

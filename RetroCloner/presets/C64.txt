@@ -24,14 +24,14 @@ GameAreaWidth:96
 GameAreaHeight:128
 ScoreAreaX:104
 ScoreAreaY:8
-ScoreAreaWidth:72
+ScoreAreaWidth:52
 ScoreAreaHeight:8
 LivesAreaX:104
 LivesAreaY:24
-LivesAreaWidth:72
+LivesAreaWidth:52
 LivesAreaHeight:8
 LevelAreaX:104
 LevelAreaY:40
-LevelAreaWidth:72
+LevelAreaWidth:52
 LevelAreaHeight:8
 Fonts:C64_Pro_Mono-STYLE.ttf

@@ -24,14 +24,14 @@ GameAreaWidth:96
 GameAreaHeight:128
 ScoreAreaX:104
 ScoreAreaY:8
-ScoreAreaWidth:72
+ScoreAreaWidth:36
 ScoreAreaHeight:8
 LivesAreaX:104
 LivesAreaY:24
-LivesAreaWidth:72
+LivesAreaWidth:36
 LivesAreaHeight:8
 LevelAreaX:104
 LevelAreaY:40
-LevelAreaWidth:72
+LevelAreaWidth:36
 LevelAreaHeight:8
 Fonts:CPCMode0.ttf
