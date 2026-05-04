@@ -704,7 +704,7 @@ function FilterImage(image_data, w, h)
 				local dr = r1 - r2
 				local dg = g1 - g2
 				local db = b1 - b2
-				local dist = dr*dr + dg*dg + db*db
+				local dist = 0.3*dr*dr + 0.59*dg*dg + 0.11*db*db
 
 				if dist < bestDist then
 					bestDist = dist
