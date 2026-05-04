@@ -3,7 +3,8 @@ TODO
 ====
 
 * Bugs:
-	- Corriger scrolling différent de 4 et collisions
+	- Corriger la sortie d'écran à droite et à gauche du joueur si autoscroll
+	- Si autoscroll est actif, le scrolling backward ne doit pas avoir d'effet. actuellement, le joueur peut sortie de l'écran
 	- En mode animation, le loop n'est toujours pas conservé lorsqu'on revient
 	
 * Terminer la partie jeu:
