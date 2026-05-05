@@ -178,9 +178,14 @@ function SaveGame(d, f, t)
 		ts = ts .. tostring(t.text_paper) .. "\r\n"
 		ts = ts .. tostring(t.text_pen) .. "\r\n"
 		ts = ts .. tostring(t.border_paper) .. "\r\n"
+		ts = ts .. tostring(t.health_paper) .. "\r\n"
+		ts = ts .. tostring(t.health_pen) .. "\r\n"
+
+		-- health area is on or off
+		ts = ts .. tostring(t.health_area) .. "\r\n"
 		
 		-- game areas data
-		for i = GAME_AREA, LEVEL_AREA do
+		for i = GAME_AREA, HEALTH_AREA do
 			ts = ts .. tostring(t.areas[i].x) .. "\r\n"
 			ts = ts .. tostring(t.areas[i].y) .. "\r\n"
 			ts = ts .. tostring(t.areas[i].width) .. "\r\n"

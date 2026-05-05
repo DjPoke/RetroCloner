@@ -69,6 +69,7 @@ GAME_AREA = 1
 SCORE_AREA = 2
 LIVES_AREA = 3
 LEVEL_AREA = 4
+HEALTH_AREA = 5
 
 MAX_ANIMATION_TIME = 2.0
 MAX_FRAMES_BY_ANIMATION = 8
@@ -118,7 +119,10 @@ game_data = {
 	text_paper = 0,
 	text_pen = 0,
 	border_paper = 0,
+	health_paper = 0,
+	health_pen = 0,
 	areas = {},
+	health_area = false,
 	fonts = "",
 	scrolling_start_x = {},
 	scrolling_start_y = {},
@@ -671,10 +675,22 @@ function love.draw()
 		FontsPrint("SCORE " .. ToString2(run.vars.score, 7), screen_x + (game_data.areas[SCORE_AREA].x * game_data.pixel_size * SCREEN_ZOOM), screen_y + (game_data.areas[SCORE_AREA].y * SCREEN_ZOOM), game_data.areas[SCORE_AREA].width * game_data.pixel_size * SCREEN_ZOOM, game_data.areas[SCORE_AREA].height * SCREEN_ZOOM, GAME_FONT, FONT_DOWN_SCALE / SCREEN_ZOOM, game_data.text_paper, game_data.text_pen)
 		FontsPrint("LIVES " .. ToString2(game_data.vars.lives, 2), screen_x + (game_data.areas[LIVES_AREA].x * game_data.pixel_size * SCREEN_ZOOM), screen_y + (game_data.areas[LIVES_AREA].y * SCREEN_ZOOM), game_data.areas[LIVES_AREA].width * game_data.pixel_size * SCREEN_ZOOM, game_data.areas[LIVES_AREA].height * SCREEN_ZOOM, GAME_FONT, FONT_DOWN_SCALE / SCREEN_ZOOM, game_data.text_paper, game_data.text_pen)
 		FontsPrint("LEVEL " .. ToString2(run.vars.level, 3), screen_x + (game_data.areas[LEVEL_AREA].x * game_data.pixel_size * SCREEN_ZOOM), screen_y + (game_data.areas[LEVEL_AREA].y * SCREEN_ZOOM), game_data.areas[LEVEL_AREA].width * game_data.pixel_size * SCREEN_ZOOM, game_data.areas[LEVEL_AREA].height * SCREEN_ZOOM, GAME_FONT, FONT_DOWN_SCALE / SCREEN_ZOOM, game_data.text_paper, game_data.text_pen)
-			
-		for i = 1, LEVEL_AREA do
+		
+		if game_data.health_area == true then
+			local r, g, b = GetPenRGB(game_data.health_paper)
+			love.graphics.setColor(r, g, b)
+			love.graphics.rectangle("fill", screen_x + (game_data.areas[HEALTH_AREA].x * game_data.pixel_size * SCREEN_ZOOM), screen_y + (game_data.areas[HEALTH_AREA].y * SCREEN_ZOOM), game_data.areas[HEALTH_AREA].width * game_data.pixel_size * SCREEN_ZOOM, game_data.areas[HEALTH_AREA].height * SCREEN_ZOOM)
+
+			local r, g, b = GetPenRGB(game_data.health_pen)
+			love.graphics.setColor(r, g, b)
+			love.graphics.rectangle("fill", screen_x + (game_data.areas[HEALTH_AREA].x * game_data.pixel_size * SCREEN_ZOOM), screen_y + (game_data.areas[HEALTH_AREA].y * SCREEN_ZOOM), game_data.areas[HEALTH_AREA].width * game_data.pixel_size * SCREEN_ZOOM * 3 / 4, game_data.areas[HEALTH_AREA].height * SCREEN_ZOOM)
+		end
+
+		for i = 1, HEALTH_AREA do
 			if area_selected == i then
-				ShowCursor(screen_x + (game_data.areas[i].x * game_data.pixel_size * SCREEN_ZOOM), screen_y + (game_data.areas[i].y * SCREEN_ZOOM), game_data.areas[i].width * game_data.pixel_size * SCREEN_ZOOM, game_data.areas[i].height * SCREEN_ZOOM, 1, 1, 1)
+				if (i ~= HEALTH_AREA) or game_data.health_area == true then
+					ShowCursor(screen_x + (game_data.areas[i].x * game_data.pixel_size * SCREEN_ZOOM), screen_y + (game_data.areas[i].y * SCREEN_ZOOM), game_data.areas[i].width * game_data.pixel_size * SCREEN_ZOOM, game_data.areas[i].height * SCREEN_ZOOM, 1, 1, 1)
+				end
 			end
 		end
 		
@@ -688,7 +704,7 @@ function love.draw()
 		love.graphics.print("Border color: " .. tostring(game_data.border_paper), 500, 500)
 		love.graphics.setColor(0, 1, 1)
 		love.graphics.print("[Tab] Select area to edit - [Arrows] Position - [Arrows][Shift] Resize", 10, 720)
-		love.graphics.print("[F1-F5] Change colors", 10, 740)
+		love.graphics.print("[F1-F7] Change colors - [H] Set health on/off", 10, 740)
 		love.graphics.print("[Esc] Back", 10, 760)
 	elseif mode == MODE_EDIT_BLOCKS then
 		-- draw title
@@ -1500,16 +1516,32 @@ function love.keypressed(key, scancode, isrepeat)
 		-- change area to edit
 		if key == "tab" then
 			if love.keyboard.isDown("lshift") then
-				if area_selected == GAME_AREA then
-					area_selected = LEVEL_AREA
-				else
-					area_selected = area_selected - 1
+				if game_data.health_area == true then
+					if area_selected == GAME_AREA then
+						area_selected = HEALTH_AREA
+					else
+						area_selected = area_selected - 1
+					end
+				elseif game_data.health_area == false then
+					if area_selected == GAME_AREA then
+						area_selected = LEVEL_AREA
+					else
+						area_selected = area_selected - 1
+					end
 				end
 			else
-				if area_selected == LEVEL_AREA then
-					area_selected = GAME_AREA
-				else
-					area_selected = area_selected + 1
+				if game_data.health_area == true then
+					if area_selected == HEALTH_AREA then
+						area_selected = GAME_AREA
+					else
+						area_selected = area_selected + 1
+					end
+				elseif game_data.health_area == false then
+					if area_selected == LEVEL_AREA then
+						area_selected = GAME_AREA
+					else
+						area_selected = area_selected + 1
+					end
 				end
 			end
 		end
@@ -1551,6 +1583,36 @@ function love.keypressed(key, scancode, isrepeat)
 				game_data.border_paper = 0
 			else
 				game_data.border_paper = game_data.border_paper + 1
+			end
+		end
+
+		if key == "f6" then
+			if game_data.health_area == true then
+				if game_data.health_paper == game_data.max_pens - 1 then
+					game_data.health_paper = 0
+				else
+					game_data.health_paper = game_data.health_paper + 1
+				end
+			end
+		end
+
+		if key == "f7" then
+			if game_data.health_area == true then
+				if game_data.health_pen == game_data.max_pens - 1 then
+					game_data.health_pen = 0
+				else
+					game_data.health_pen = game_data.health_pen + 1
+				end
+			end
+		end
+		
+		if key == "h" then
+			if game_data.health_area == false then
+				game_data.health_area = true
+			elseif game_data.health_area == true then
+				game_data.health_area = false
+				
+				area_selected = GAME_AREA
 			end
 		end
 

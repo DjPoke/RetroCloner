@@ -27,6 +27,7 @@ GAME_AREA = 1
 SCORE_AREA = 2
 LIVES_AREA = 3
 LEVEL_AREA = 4
+HEALTH_AREA = 5
 
 -- arrays
 game_data = {
@@ -64,7 +65,10 @@ game_data = {
 	text_paper = 0,
 	text_pen = 0,
 	border_paper = 0,
+	health_paper = 0,
+	health_pen = 0,
 	areas = {},
+	health_area = false,
 	fonts = "",
 	scrolling_start_x = {},
 	scrolling_start_y = {},

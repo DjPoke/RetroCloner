@@ -34,4 +34,8 @@ LevelAreaX:208
 LevelAreaY:40
 LevelAreaWidth:104
 LevelAreaHeight:8
+HealthAreaX:208
+HealthAreaY:56
+HealthAreaWidth:104
+HealthAreaHeight:8
 Fonts:CPCMode1.ttf

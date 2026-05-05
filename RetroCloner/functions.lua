@@ -26,6 +26,8 @@ function ResetAll()
 	game_data.text_paper = 0
 	game_data.text_pen = 1
 	game_data.border_paper = 1
+	game_data.health_paper = 1
+	game_data.health_pen = 0
 	
 	pen_color = 1
 	selected_color = 0
@@ -447,6 +449,42 @@ function LoadPreset(path)
 		game_data.areas[LEVEL_AREA].height = tonumber(preset_data[n][2])
 	else
 		print("LevelAreaHeight missing!")
+	end
+
+	-- get health area x
+	local n = PresetValue("HealthAreaX")
+	
+	if n > 0 then
+		table.insert(game_data.areas, {x = tonumber(preset_data[n][2])})
+	else
+		print("HealthAreaX missing!")
+	end
+
+	-- get health area y
+	local n = PresetValue("HealthAreaY")
+	
+	if n > 0 then
+		game_data.areas[HEALTH_AREA].y = tonumber(preset_data[n][2])
+	else
+		print("HealthAreaY missing!")
+	end
+
+	-- get health area width
+	local n = PresetValue("HealthAreaWidth")
+	
+	if n > 0 then
+		game_data.areas[HEALTH_AREA].width = tonumber(preset_data[n][2])
+	else
+		print("HealthAreaWidth missing!")
+	end
+
+	-- get health area height
+	local n = PresetValue("HealthAreaHeight")
+	
+	if n > 0 then
+		game_data.areas[HEALTH_AREA].height = tonumber(preset_data[n][2])
+	else
+		print("HealthAreaHeight missing!")
 	end
 
 	-- get fonts

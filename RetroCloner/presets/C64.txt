@@ -34,4 +34,8 @@ LevelAreaX:104
 LevelAreaY:40
 LevelAreaWidth:52
 LevelAreaHeight:8
+HealthAreaX:104
+HealthAreaY:56
+HealthAreaWidth:52
+HealthAreaHeight:8
 Fonts:C64_Pro_Mono-STYLE.ttf

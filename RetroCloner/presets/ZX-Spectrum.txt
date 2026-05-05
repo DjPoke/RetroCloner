@@ -34,4 +34,8 @@ LevelAreaX:126
 LevelAreaY:40
 LevelAreaWidth:120
 LevelAreaHeight:8
+HealthAreaX:126
+HealthAreaY:56
+HealthAreaWidth:120
+HealthAreaHeight:8
 Fonts:ZX_Spectrum.ttf

@@ -366,6 +366,25 @@ function LoadGame(d, f, t)
 	cpt = cpt + 1
 	t.border_paper = tonumber(ts[cpt])
 
+	-- health paper
+	cpt = cpt + 1
+	t.health_paper = tonumber(ts[cpt])
+
+	-- health pen
+	cpt = cpt + 1
+	t.health_pen = tonumber(ts[cpt])
+
+	-- health area active or not
+	cpt = cpt + 1
+
+	if ts[cpt] == "true" then
+		t.health_area = true
+	elseif ts[cpt] == "false" then
+		t.health_area = false
+	else
+		return nil
+	end
+
 	-- game area x
 	cpt = cpt + 1
 	table.insert(t.areas, {x = tonumber(ts[cpt])})
@@ -429,6 +448,22 @@ function LoadGame(d, f, t)
 	-- level area height
 	cpt = cpt + 1
 	t.areas[LEVEL_AREA].height = tonumber(ts[cpt])
+	
+	-- health area x
+	cpt = cpt + 1
+	table.insert(t.areas, {x = tonumber(ts[cpt])})
+
+	-- health area y
+	cpt = cpt + 1
+	t.areas[HEALTH_AREA].y = tonumber(ts[cpt])
+
+	-- health area width
+	cpt = cpt + 1
+	t.areas[HEALTH_AREA].width = tonumber(ts[cpt])
+
+	-- health area height
+	cpt = cpt + 1
+	t.areas[HEALTH_AREA].height = tonumber(ts[cpt])
 	
 	-- fonts
 	cpt = cpt + 1
