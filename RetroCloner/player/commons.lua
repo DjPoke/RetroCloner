@@ -38,27 +38,27 @@ player_levels_max_size = {
 
 -- types of enemies
 enemy_types = {
-	{name = "static", idle = 0},
-	{name = "moving left-right", idle = 0, walking = 0},
-	{name = "moving up_down", idle = 0, walking = 0},
-	{name = "sniper", idle = 0, fire = 0, direction = 0},
-	{name = "oscillate left-right", idle = 0, walking = 0, fire = 0},
-	{name = "oscillate up_down", idle = 0, walking = 0, fire = 0},
-	{name = "turn", idle = 0, walking = 0, fire = 0},
-	{name = "seek", idle = 0, walking = 0, fire = 0, directions = 0},
-	{name = "random", idle = 0, walking = 0, fire = 0, directions = 0}
+	{name = "static", idle = 0, health = 0, wound = 0},
+	{name = "moving left-right", idle = 0, walking = 0, health = 0, wound = 0},
+	{name = "moving up_down", idle = 0, walking = 0, health = 0, wound = 0},
+	{name = "sniper", idle = 0, fire = 0, direction = 0, health = 0, wound = 0},
+	{name = "oscillate left-right", idle = 0, walking = 0, fire = 0, health = 0, wound = 0},
+	{name = "oscillate up_down", idle = 0, walking = 0, fire = 0, health = 0, wound = 0},
+	{name = "turn", idle = 0, walking = 0, fire = 0, health = 0, wound = 0},
+	{name = "seek", idle = 0, walking = 0, fire = 0, directions = 0, health = 0, wound = 0},
+	{name = "random", idle = 0, walking = 0, fire = 0, directions = 0, health = 0, wound = 0}
 }
 
 enemy_animations = {
-	{"idle"},
-	{"idle", "walking"},
-	{"idle", "walking"},
-	{"idle", "fire", "direction"},
-	{"idle", "walking", "fire"},
-	{"idle", "walking", "fire"},
-	{"idle", "walking", "fire"},
-	{"idle", "walking", "fire", "directions"},
-	{"idle", "walking", "fire", "directions"}
+	{"idle", "health", "wound"},
+	{"idle", "walking", "health", "wound"},
+	{"idle", "walking", "health", "wound"},
+	{"idle", "fire", "direction", "health", "wound"},
+	{"idle", "walking", "fire", "health", "wound"},
+	{"idle", "walking", "fire", "health", "wound"},
+	{"idle", "walking", "fire", "health", "wound"},
+	{"idle", "walking", "fire", "directions", "health", "wound"},
+	{"idle", "walking", "fire", "directions", "health", "wound"}
 }
 
 -- types of bonus-malus

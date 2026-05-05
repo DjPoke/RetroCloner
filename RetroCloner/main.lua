@@ -1004,8 +1004,8 @@ function love.draw()
 			love.graphics.setColor(1, 1, 1)
 
 			for i = 1, #game_data.levels[current_level].actors do
-				local actor = game_data.levels[current_level].actors[i].number
-				local sprite = GetActorSprite(actor, "idle", 1)
+				local actor_number = game_data.levels[current_level].actors[i].number
+				local sprite = GetActorSprite(actor_number, "idle", 1)
 
 				local x = (game_data.levels[current_level].actors[i].start_x + (current_level_scroll_x * game_data.block_width)) * game_data.pixel_size * SCREEN_ZOOM
 				local y = (game_data.levels[current_level].actors[i].start_y + (current_level_scroll_y * game_data.block_height)) * SCREEN_ZOOM
@@ -2140,9 +2140,11 @@ function love.keypressed(key, scancode, isrepeat)
 		elseif key == "left" then
 			if current_actor > 0 then
 				if current_entity_type == ENTITY_TYPE_PLAYER then
-					if player_animations[current_player_type][current_property] == "hflip" then
+					local anim = player_animations[current_player_type][current_property]
+					
+					if anim == "hflip" then
 						game_data.actors[current_actor].type.hflip = not game_data.actors[current_actor].type.hflip
-					elseif player_animations[current_player_type][current_property] == "directions" then
+					elseif anim == "directions" then
 						if game_data.actors[current_actor].type.directions == 8 then
 							game_data.actors[current_actor].type.directions = 4
 						else
@@ -2154,13 +2156,33 @@ function love.keypressed(key, scancode, isrepeat)
 						game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] = game_data.max_animations
 					end
 				elseif current_entity_type == ENTITY_TYPE_ENEMY then
-					if game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] > 0 then
+					local anim = enemy_animations[current_enemy_type][current_property]
+					
+					if anim == "directions" then
+						if game_data.actors[current_actor].type.directions > 1 then
+							game_data.actors[current_actor].type.directions = math.floor(game_data.actors[current_actor].type.directions / 2)
+						end
+					elseif anim == "direction" then
+						if game_data.actors[current_actor].type.direction > 0 then
+							game_data.actors[current_actor].type.direction = game_data.actors[current_actor].type.direction - 90
+						end
+					elseif anim == "health" then
+						if game_data.actors[current_actor].type.health > 1 then
+							game_data.actors[current_actor].type.health = game_data.actors[current_actor].type.health - 1
+						end
+					elseif anim == "wound" then
+						if game_data.actors[current_actor].type.wound > 1 then
+							game_data.actors[current_actor].type.wound = game_data.actors[current_actor].type.wound - 1
+						end
+					elseif game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] > 0 then
 						game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] = game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] - 1
 					elseif game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] == 0 then
 						game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] = game_data.max_animations
 					end
 				elseif current_entity_type == ENTITY_TYPE_BONUS then
-					if bonus_animations[current_bonus_type][current_property] == "bonus" then
+					local anim = bonus_animations[current_bonus_type][current_property]
+					
+					if anim == "bonus" then
 						if love.keyboard.isDown("lshift") == true then
 							game_data.actors[current_actor].type.bonus = game_data.actors[current_actor].type.bonus - 10
 						else
@@ -2176,36 +2198,58 @@ function love.keypressed(key, scancode, isrepeat)
 		elseif key == "right" then
 			if current_actor > 0 then
 				if current_entity_type == ENTITY_TYPE_PLAYER then
-					if player_animations[current_player_type][current_property] == "hflip" then
+					local anim = player_animations[current_player_type][current_property]
+					
+					if anim == "hflip" then
 						game_data.actors[current_actor].type.hflip = not game_data.actors[current_actor].type.hflip
-					elseif player_animations[current_player_type][current_property] == "directions" then
+					elseif anim == "directions" then
 						if game_data.actors[current_actor].type.directions == 8 then
 							game_data.actors[current_actor].type.directions = 4
 						else
 							game_data.actors[current_actor].type.directions = 8
 						end
-					elseif game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] < game_data.max_animations then
-						game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] = game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] + 1
-					elseif game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] == game_data.max_animations then
-						game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] = 0
+					elseif game_data.actors[current_actor].type[anim] < game_data.max_animations then
+						game_data.actors[current_actor].type[anim] = game_data.actors[current_actor].type[anim] + 1
+					elseif game_data.actors[current_actor].type[anim] == game_data.max_animations then
+						game_data.actors[current_actor].type[anim] = 0
 					end
 				elseif current_entity_type == ENTITY_TYPE_ENEMY then
-					if game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] < game_data.max_animations then
-						game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] = game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] + 1
-					elseif game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] == game_data.max_animations then
-						game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] = 0
+					local anim = enemy_animations[current_enemy_type][current_property]
+					
+					if anim == "directions" then
+						if game_data.actors[current_actor].type.directions < 8 then
+							game_data.actors[current_actor].type.directions = game_data.actors[current_actor].type.directions * 2
+						end
+					elseif anim == "direction" then
+						if game_data.actors[current_actor].type.direction < 270 then
+							game_data.actors[current_actor].type.direction = game_data.actors[current_actor].type.direction + 90
+						end
+					elseif anim == "health" then
+						if game_data.actors[current_actor].type.health < 100 then
+							game_data.actors[current_actor].type.health = game_data.actors[current_actor].type.health + 1
+						end
+					elseif anim == "wound" then
+						if game_data.actors[current_actor].type.wound < 100 then
+							game_data.actors[current_actor].type.wound = game_data.actors[current_actor].type.wound + 1
+						end
+					elseif game_data.actors[current_actor].type[anim] < game_data.max_animations then
+						game_data.actors[current_actor].type[anim] = game_data.actors[current_actor].type[anim] + 1
+					elseif game_data.actors[current_actor].type[anim] == game_data.max_animations then
+						game_data.actors[current_actor].type[anim] = 0
 					end
 				elseif current_entity_type == ENTITY_TYPE_BONUS then
-					if bonus_animations[current_bonus_type][current_property] == "bonus" then
+					local anim = bonus_animations[current_bonus_type][current_property]
+					
+					if anim == "bonus" then
 						if love.keyboard.isDown("lshift") == true then
 							game_data.actors[current_actor].type.bonus = game_data.actors[current_actor].type.bonus + 10
 						else
 							game_data.actors[current_actor].type.bonus = game_data.actors[current_actor].type.bonus + 1
 						end
-					elseif game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] < game_data.max_animations then
-						game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] = game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] + 1
-					elseif game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] == game_data.max_animations then
-						game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] = 0
+					elseif game_data.actors[current_actor].type[anim] < game_data.max_animations then
+						game_data.actors[current_actor].type[anim] = game_data.actors[current_actor].type[anim] + 1
+					elseif game_data.actors[current_actor].type[anim] == game_data.max_animations then
+						game_data.actors[current_actor].type[anim] = 0
 					end
 				end
 			end
