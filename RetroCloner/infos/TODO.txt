@@ -5,10 +5,11 @@ TODO
 * Bugs:
 	- Corriger la sortie d'écran à droite et à gauche du joueur si autoscroll actif
 	- Si autoscroll est actif, le scrolling backward ne doit pas avoir d'effet. Hors, actuellement, le joueur peut sortir de l'écran
-	- Les bonus sont confondus, tant dans l'éditeur de niveaux que l'éditeur d'acteurs. Voir si c'est pareil pour les monstres.
+	- Quand on saute vers le bas sur une échelle, après, on descend avec l'anim "saut".
 	
 * Terminer la partie jeu:
 	- Animer et déplacer les ennemis
+	- Editer et tirer les projectiles
 	- Ajouter un type Projectile (qui n'est qu'un bonus négatif maquillé)
 	- Ajouter un random bonus (1 bonus sur 3 au hasard) si on tue un ennemi
 	- Déplacer le joueur en fonction de son type

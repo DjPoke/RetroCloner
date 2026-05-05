@@ -904,7 +904,7 @@ function love.draw()
 
 					local k = player_animations[current_player_type][i]
 					local v = game_data.actors[current_actor].type[k]
-
+					
 					love.graphics.print(k .. ": " .. tostring(v), 440, 160 + ((i - 1) * 20))
 				end
 			elseif game_data.actors[current_actor].entity == ENTITY_TYPE_ENEMY then
@@ -2002,12 +2002,12 @@ function love.keypressed(key, scancode, isrepeat)
 					current_entity_type = ENTITY_TYPE_PLAYER
 					current_player_type = 1
 					
-					table.insert(game_data.actors, {entity = current_entity_type, type = player_types[current_player_type]})
+					table.insert(game_data.actors, {entity = current_entity_type, type = DeepCopy(player_types[current_player_type])})
 				else
 					current_entity_type = ENTITY_TYPE_ENEMY
 					current_enemy_type = 1
 					
-					table.insert(game_data.actors, {entity = current_entity_type, type = enemy_types[current_enemy_type]})
+					table.insert(game_data.actors, {entity = current_entity_type, type = DeepCopy(enemy_types[current_enemy_type])})
 				end
 
 				current_actor = current_actor + 1
@@ -2056,13 +2056,13 @@ function love.keypressed(key, scancode, isrepeat)
 				-- update type for current actor
 				if current_entity_type == ENTITY_TYPE_PLAYER then
 					if current_player_type == 0 then current_player_type = 1 end
-					game_data.actors[current_actor].type = player_types[current_player_type]
+					game_data.actors[current_actor].type = DeepCopy(player_types[current_player_type])
 				elseif current_entity_type == ENTITY_TYPE_ENEMY then
 					if current_enemy_type == 0 then current_enemy_type = 1 end
-					game_data.actors[current_actor].type = enemy_types[current_enemy_type]
+					game_data.actors[current_actor].type = DeepCopy(enemy_types[current_enemy_type])
 				elseif current_entity_type == ENTITY_TYPE_BONUS then
 					if current_bonus_type == 0 then current_bonus_type = 1 end
-					game_data.actors[current_actor].type = bonus_types[current_bonus_type]
+					game_data.actors[current_actor].type = DeepCopy(bonus_types[current_bonus_type])
 				end
 			end
 		elseif key == "t" then
@@ -2090,11 +2090,11 @@ function love.keypressed(key, scancode, isrepeat)
 				game_data.actors[current_actor].type = {}
 				
 				if current_entity_type == ENTITY_TYPE_PLAYER then
-					game_data.actors[current_actor].type = player_types[current_player_type]
+					game_data.actors[current_actor].type = DeepCopy(player_types[current_player_type])
 				elseif current_entity_type == ENTITY_TYPE_ENEMY then
-					game_data.actors[current_actor].type = enemy_types[current_enemy_type]
+					game_data.actors[current_actor].type = DeepCopy(enemy_types[current_enemy_type])
 				elseif current_entity_type == ENTITY_TYPE_BONUS then
-					game_data.actors[current_actor].type = bonus_types[current_bonus_type]
+					game_data.actors[current_actor].type = DeepCopy(bonus_types[current_bonus_type])
 				end
 			end
 		elseif key == "up" then

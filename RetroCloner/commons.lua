@@ -74,8 +74,19 @@ bonus_animations = {
 	{"bonus", "idle", "collision_box"}
 }
 
+-- types of projectiles
+projectile_types = {
+	{name = "bullet", move = 0, explode = 0, wound = 1, collision_box = 1},
+	{name = "bomb", move = 0, explode = 0, wound = 2, collision_box = 1},
+}
+
+projectile_animations = {
+	{"move", "explode", "wound", "collision_box"},
+	{"move", "explode", "wound", "collision_box"}
+}
+
 -- types of entities
-entity_types = {"player", "enemy", "bonus"}
+entity_types = {"player", "enemy", "bonus", "projectile"}
 
 -- game goals
 game_goals = {"go to exit at right", "kill all enemies", "kill all enemies and exit at right", "take all bonus", "take a key and goto exit"}
