@@ -246,6 +246,7 @@ require("load_game")
 require("save_game")
 require("commons")
 run = require("run")
+require("love-zip")
 
 -- löve2d functions
 function love.load()
@@ -605,14 +606,11 @@ function love.draw()
 		-- draw message
 		love.graphics.setFont(EDITOR_FONT)
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("As I don't know how to create a .love file in Love2d, this is the steps to", 50, 100)
-		love.graphics.print("create one :", 50, 120)
-		love.graphics.print("1) The player folder with your game's data inside has been copied to your", 50, 160)
-		love.graphics.print("save folder: " .. love.filesystem.getSaveDirectory() .. "/games/", 50, 180)
-		love.graphics.print("2) Select all the files in this folder, and ZIP them. Next, rename the", 50, 220)
-		love.graphics.print("'.zip' file to '.love'.", 50, 240)
-		love.graphics.print("3) To create executable files, you can use 'love-release', or take a look", 50, 280)
-		love.graphics.print("at Love2d wiki. https://github.com/MisterDA/love-release", 50, 300)
+		love.graphics.print("Your .love file has been created in your save folder:", 50, 100)
+		love.graphics.print(love.filesystem.getSaveDirectory() .. "/games/", 50, 120)
+		love.graphics.print("Or create an executable file with LoveExport:", 50, 160)
+		love.graphics.print("https://raphytator.itch.io/love2d-export", 50, 180)
+		love.graphics.print("Press ESCAPE!", 50, 220)
 	elseif mode == MODE_TEST_GAME then
 		run.draw()
 	elseif mode == MODE_EDIT_PALETTE then
@@ -1222,7 +1220,15 @@ function love.keypressed(key, scancode, isrepeat)
 			end
 		elseif key == "d" then
 			if project_name ~= "" then
+				-- copy the player to the save folder
 				CopyPlayerToSaveFolder()
+				
+				-- zip the player
+				local zip = love.zip:newZip()
+				local compress, err = zip:compress("games/" .. project_name, "games/" .. project_name ..  ".love")
+				assert(compress == true)
+
+				-- rename .zip file to .love file
 				
 				mode = MODE_EXPORT_EXECUTABLE_GAME
 			else
