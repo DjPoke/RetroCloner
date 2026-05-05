@@ -903,7 +903,7 @@ function love.draw()
 					if current_property == i then love.graphics.setColor(1, 1, 0) end
 
 					local k = player_animations[current_player_type][i]
-					local v = game_data.actors[current_actor].type[player_animations[current_player_type][i]]
+					local v = game_data.actors[current_actor].type[k]
 
 					love.graphics.print(k .. ": " .. tostring(v), 440, 160 + ((i - 1) * 20))
 				end
@@ -916,7 +916,7 @@ function love.draw()
 					if current_property == i then love.graphics.setColor(1, 1, 0) end
 
 					local k = enemy_animations[current_enemy_type][i]
-					local v = game_data.actors[current_actor].type[enemy_animations[current_enemy_type][i]]
+					local v = game_data.actors[current_actor].type[k]
 
 					love.graphics.print(k .. ": " .. tostring(v), 440, 160 + ((i - 1) * 20))
 				end
@@ -929,7 +929,7 @@ function love.draw()
 					if current_property == i then love.graphics.setColor(1, 1, 0) end
 
 					local k = bonus_animations[current_bonus_type][i]
-					local v = game_data.actors[current_actor].type[bonus_animations[current_bonus_type][i]]
+					local v = game_data.actors[current_actor].type[k]
 
 					love.graphics.print(k .. ": " .. tostring(v), 440, 160 + ((i - 1) * 20))
 				end

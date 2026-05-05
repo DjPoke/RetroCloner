@@ -5,6 +5,7 @@ TODO
 * Bugs:
 	- Corriger la sortie d'écran à droite et à gauche du joueur si autoscroll actif
 	- Si autoscroll est actif, le scrolling backward ne doit pas avoir d'effet. Hors, actuellement, le joueur peut sortir de l'écran
+	- Les bonus sont confondus, tant dans l'éditeur de niveaux que l'éditeur d'acteurs. Voir si c'est pareil pour les monstres.
 	
 * Terminer la partie jeu:
 	- Animer et déplacer les ennemis

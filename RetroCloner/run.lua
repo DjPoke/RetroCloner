@@ -923,11 +923,17 @@ function run.update(dt)
 						-- add lives
 						run.vars.lives = run.vars.lives + game_data.actors[actor_number].type.bonus
 						
+						-- limit to 99 lives
+						if run.vars.lives > 99 then run.vars.lives = 99 end
+						
 						-- play bonus sound here
 						-- TODO!
 					elseif game_data.actors[actor_number].type.name == "health" then
 						-- add health, if there is a health bar
 						run.vars.health = run.vars.health + game_data.actors[actor_number].type.bonus
+						
+						-- limit to 100% health
+						if run.vars.health > 100 then run.vars.health = 100 end
 						
 						-- play bonus sound here
 						-- TODO!
