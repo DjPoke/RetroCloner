@@ -7,7 +7,6 @@ TODO
 	- Si autoscroll est actif, le scrolling backward ne doit pas avoir d'effet. Hors, actuellement, le joueur peut sortir de l'écran
 	
 * Terminer la partie jeu:
-	- Afficher health bar dans run.lua
 	- Animer et déplacer les ennemis
 	- Ajouter un random bonus (1 bonus sur 3 au hasard) si on tue un ennemi
 	- Déplacer le joueur en fonction de son type
