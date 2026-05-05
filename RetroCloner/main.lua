@@ -2178,6 +2178,12 @@ function love.keypressed(key, scancode, isrepeat)
 						if game_data.actors[current_actor].type.wound > 1 then
 							game_data.actors[current_actor].type.wound = game_data.actors[current_actor].type.wound - 1
 						end
+					elseif anim == "gravity" then
+						if game_data.actors[current_actor].type.gravity == false then
+							game_data.actors[current_actor].type.gravity = true
+						elseif game_data.actors[current_actor].type.gravity == true then
+							game_data.actors[current_actor].type.gravity = false
+						end
 					elseif game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] > 0 then
 						game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] = game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] - 1
 					elseif game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] == 0 then
@@ -2239,6 +2245,12 @@ function love.keypressed(key, scancode, isrepeat)
 					elseif anim == "wound" then
 						if game_data.actors[current_actor].type.wound < 100 then
 							game_data.actors[current_actor].type.wound = game_data.actors[current_actor].type.wound + 1
+						end
+					elseif anim == "gravity" then
+						if game_data.actors[current_actor].type.gravity == false then
+							game_data.actors[current_actor].type.gravity = true
+						elseif game_data.actors[current_actor].type.gravity == true then
+							game_data.actors[current_actor].type.gravity = false
 						end
 					elseif game_data.actors[current_actor].type[anim] < game_data.max_animations then
 						game_data.actors[current_actor].type[anim] = game_data.actors[current_actor].type[anim] + 1

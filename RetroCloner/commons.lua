@@ -38,46 +38,55 @@ player_levels_max_size = {
 
 -- types of enemies
 enemy_types = {
-	{name = "static", idle = 0, health = 1, wound = 1},
-	{name = "moving left-right", idle = 0, walking = 0, health = 1, wound = 1},
-	{name = "moving up_down", idle = 0, walking = 0, health = 1, wound = 1},
-	{name = "sniper", idle = 0, fire = 0, direction = 180, health = 1, wound = 1},
-	{name = "oscillate left-right", idle = 0, walking = 0, fire = 0, health = 1, wound = 1},
-	{name = "oscillate up_down", idle = 0, walking = 0, fire = 0, health = 1, wound = 1},
-	{name = "turn", idle = 0, walking = 0, fire = 0, health = 1, wound = 1},
-	{name = "seek", idle = 0, walking = 0, fire = 0, directions = 4, health = 1, wound = 1},
-	{name = "random", idle = 0, walking = 0, fire = 0, directions = 4, health = 1, wound = 1},
+	{name = "static", idle = 0, die = 0, health = 1, wound = 1},
+	{name = "moving left-right", idle = 0, walk_left = 0, walk_right = 0, die = 0, health = 1, wound = 1, gravity = false},
+	{name = "moving up_down", idle = 0, walk_up = 0, walk_down = 0, die = 0, health = 1, wound = 1},
+	{name = "sniper", idle = 0, fire = 0, die = 0, direction = 180, health = 1, wound = 1},
+	{name = "oscillate left-right", idle = 0, walk = 0, fire = 0, die = 0, health = 1, wound = 1},
+	{name = "oscillate up_down", idle = 0, walk = 0, fire = 0, die = 0, health = 1, wound = 1},
+	{name = "turn", idle = 0, walk = 0, fire = 0, die = 0, health = 1, wound = 1},
+	{name = "seek 4 directions", idle = 0, walk_up = 0, walk_down = 0, walk_left = 0, walk_right = 0,
+		fire_up = 0, fire_down = 0, fire_left = 0, fire_right = 0, die = 0, health = 1, wound = 1},
+	{name = "seek 8 directions", idle = 0, walk = 0, fire = 0, die = 0, health = 1, wound = 1},
+	{name = "random 4 directions", idle = 0, walk_up = 0, walk_down = 0, walk_left = 0, walk_right = 0,
+		fire_up = 0, fire_down = 0, fire_left = 0, fire_right = 0, die = 0, health = 1, wound = 1},
+	{name = "random 8 directions", idle = 0, walk = 0, fire = 0, die = 0, health = 1, wound = 1}
 }
 
 enemy_animations = {
-	{"idle", "health", "wound"},
-	{"idle", "walking", "health", "wound"},
-	{"idle", "walking", "health", "wound"},
-	{"idle", "fire", "direction", "health", "wound"},
-	{"idle", "walking", "fire", "health", "wound"},
-	{"idle", "walking", "fire", "health", "wound"},
-	{"idle", "walking", "fire", "health", "wound"},
-	{"idle", "walking", "fire", "directions", "health", "wound"},
-	{"idle", "walking", "fire", "directions", "health", "wound"}
+	{"idle", "die", "health", "wound"},
+	{"idle", "walk_left", "walk_right", "die", "health", "wound", "gravity"},
+	{"idle", "walk_up", "walk_down", "die", "health", "wound"},
+	{"idle", "fire", "die", "direction", "health", "wound"},
+	{"idle", "walk", "fire", "die", "health", "wound"},
+	{"idle", "walk", "fire", "die", "health", "wound"},
+	{"idle", "walk", "fire", "die", "health", "wound"},
+	{"idle", "walk_up", "walk_down", "walk_left", "walk_right", "fire_up", "fire_down", "fire_left", "fire_right", "die", "health", "wound"},
+	{"idle", "walk", "fire", "die", "health", "wound"},
+	{"idle", "walk_up", "walk_down", "walk_left", "walk_right", "fire_up", "fire_down", "fire_left", "fire_right", "die", "health", "wound"},
+	{"idle", "walk", "fire", "die", "health", "wound"}
 }
 
 -- types of bonus-malus
 bonus_types = {
 	{name = "points", bonus = 10, idle = 0, collision_box = 1},
 	{name = "life", bonus = 1, idle = 0, collision_box = 1},
-	{name = "health", bonus = 20, idle = 0, collision_box = 1}
+	{name = "health", bonus = 20, idle = 0, collision_box = 1},
+	{name = "invincible", duration = 10, idle = 0, collision_box = 1}
 }
 
 bonus_animations = {
 	{"bonus", "idle", "collision_box"},
 	{"bonus", "idle", "collision_box"},
-	{"bonus", "idle", "collision_box"}
+	{"bonus", "idle", "collision_box"},
+	{"duration", "idle", "collision_box"}
 }
 
 -- types of projectiles
 projectile_types = {
 	{name = "bullet", move = 0, explode = 0, wound = 1, collision_box = 1},
 	{name = "bomb", move = 0, explode = 0, wound = 2, collision_box = 1},
+	{name = "gravity_bomb", move = 0, explode = 0, wound = 2, collision_box = 1}
 }
 
 projectile_animations = {

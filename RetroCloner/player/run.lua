@@ -33,6 +33,9 @@ run.vars = {
 	requested_dir = 0,
 	on_the_ground = false,
 	on_stairs = false,
+	invincible = false,
+	invincibility_duration = 0,
+	enemy_move_timer = 0.0,
 	sounds = { player = {walk = "", run = "", jump = "", hit = "", fire1 = "", fire2 = ""},
 			   enemies = {},
 			   bonus = {}
@@ -76,6 +79,13 @@ function run.load()
 	-- game speed and animation timer
 	run.vars.game_speed_timer = 0.0
 	run.vars.animation_timer = 0.0
+	
+	-- invincibility is false at beginning
+	run.vars.invincible = false
+	run.vars.invincibility_duration = 0
+	
+	-- enemy timer for movements and animations
+	run.vars.enemy_move_timer = 0.0
 	
 	-- reset actors positions and animations
 	for i = 1, #game_data.levels do
@@ -194,6 +204,7 @@ function run.update(dt)
 		-- update timers
 		run.vars.game_speed_timer = run.vars.game_speed_timer + dt
 		run.vars.animations_timer = run.vars.animations_timer + dt
+		run.vars.enemy_move_timer = run.vars.enemy_move_timer + dt
 		animations_tick = false
 		game_speed_tick = false
 		
@@ -210,6 +221,10 @@ function run.update(dt)
 			run.vars.animations_timer = run.vars.animations_timer - max_animations_timer
 			animations_tick = true
 		end
+		
+		if run.vars.enemy_move_timer >= 2.0 then
+			run.vars.enemy_move_timer = 0.0
+		end
 			
 		if #game_data.levels > 0 then
 			local old_x = run.vars.level_actors[1].x
@@ -221,11 +236,11 @@ function run.update(dt)
 			local joy_down = false
 			local joy_left = false
 			local joy_right = false
+
+				-- move the player
+			local actor_number = run.vars.level_actors[1].number
 		
 			if game_speed_tick == true then	
-				-- move the player
-				local actor_number = run.vars.level_actors[1].number
-
 				-- get keyboard fist
 				joy_up = love.keyboard.isDown("up")
 				joy_down = love.keyboard.isDown("down")
@@ -376,7 +391,9 @@ function run.update(dt)
 					end
 
 					-- apply gravity
-					new_y = new_y + run.vars.fall_power + run.vars.jump_power
+					if run.vars.on_stairs == false then
+						new_y = new_y + run.vars.fall_power + run.vars.jump_power
+					end
 					
 					-- check for player's collisions with blocks, because may be he has moved
 					new_y, run.vars.on_the_ground = GroundCollision(old_x, new_y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height, run.vars.on_stairs, moving_down)
@@ -392,6 +409,18 @@ function run.update(dt)
 						if run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "jump") then
 							run.vars.level_actors[1].animation = GetActorAnimationNumber(actor_number, "idle")
 							run.vars.level_actors[1].frame = 1
+						end
+					end
+					
+					-- no jump if we are on stairs
+					if run.vars.on_stairs == true then
+						local actor_number = run.vars.level_actors[1].number
+
+						if run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "jump") then
+							run.vars.level_actors[1].animation = GetActorAnimationNumber(actor_number, "climb")
+							run.vars.level_actors[1].frame = 1
+							run.vars.jump_power = 0
+							run.vars.fall_power = 0
 						end
 					end
 
@@ -692,30 +721,38 @@ function run.update(dt)
 				
 				end
 				
-				-- limit left and up movements
-				if game_data.vars.scroll_backward == false then
-					if new_x + run.vars.scrolling_x < 0 then
-						new_x = -run.vars.scrolling_x
-					end
+				local screen_width = game_data.levels_data.sw * game_data.block_width
+				local screen_height = game_data.levels_data.sh * game_data.block_height
 
-					if new_y + run.vars.scrolling_y < 0 then
-						new_y = -run.vars.scrolling_y
-					end
+				-- clamp left / right (in the screen)
+				if new_x + run.vars.scrolling_x < 0 then
+					new_x = -run.vars.scrolling_x
 				end
-				
+
+				if new_x + run.vars.scrolling_x > screen_width - game_data.sprite_width then
+					new_x = screen_width - game_data.sprite_width - run.vars.scrolling_x
+				end
+
+				-- clamp up / down (in the screen)
+				if new_y + run.vars.scrolling_y < 0 then
+					new_y = -run.vars.scrolling_y
+				end
+
+				if new_y + run.vars.scrolling_y > screen_height - game_data.sprite_height then
+					new_y = screen_height - game_data.sprite_height - run.vars.scrolling_y
+				end
+
 				-- update coordinates of the player
 				run.vars.level_actors[1].x = new_x
 				run.vars.level_actors[1].y = new_y
 			end
 
-			-- it is time to animate characters
+			-- it is time to animate the player
 			if animations_tick == true then
-				for i = 1, #run.vars.level_actors do
-					-- animation not looping and ended ?
-					if AnimateCharacter(i, moving) == true then
-						run.vars.level_actors[1].animation = 1
-						run.vars.level_actors[1].frame = 1
-					end
+				-- animation not looping and ended ?
+				if AnimateCharacter(1, moving) == true then
+					run.vars.level_actors[1].animation = GetActorAnimationNumber(actor_number, "idle")
+					run.vars.level_actors[1].frame = 1
 				end
 			end
 		end
@@ -851,7 +888,6 @@ function run.update(dt)
 					end
 				end
 			end
-			
 		elseif game_data.vars.scrolling_type == 4 then
 			-- scroll when the player go out of a screen
 			if game_data.vars.scrolling_horizontally == true and game_data.vars.scrolling_vertically == false then
@@ -888,7 +924,55 @@ function run.update(dt)
 		-- TODO!
 		
 		-- move enemies
-		-- TODO!
+		for i = 2, #run.vars.level_actors do
+			local actor_number = run.vars.level_actors[i].number
+			
+			if game_data.actors[actor_number].entity == ENTITY_TYPE_ENEMY then
+				-- move left to right
+				if game_data.actors[actor_number].type.name == "moving left-right" then
+					if run.vars.enemy_move_timer < 0.5 then
+						if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "idle") then
+							run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
+							run.vars.level_actors[i].frame = 1
+						end
+						
+						moving = false
+					elseif run.vars.enemy_move_timer >= 0.5 and run.vars.enemy_move_timer < 1.0 then
+						if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "walk_left") then
+							run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_left")
+							run.vars.level_actors[i].frame = 1
+						end
+
+						run.vars.level_actors[i].x = run.vars.level_actors[i].x - 0.5						
+						moving = true
+					elseif run.vars.enemy_move_timer >= 1.0 and run.vars.enemy_move_timer < 1.5 then
+						if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "idle") then
+							run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
+							run.vars.level_actors[i].frame = 1
+						end
+						
+						moving = false
+					elseif run.vars.enemy_move_timer >= 1.5 then
+						if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "walk_right") then
+							run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_right")
+							run.vars.level_actors[i].frame = 1
+						end
+						
+						run.vars.level_actors[i].x = run.vars.level_actors[i].x + 0.5
+						moving = true
+					end
+				end
+				
+				-- it is time to animate enemies
+				if animations_tick == true then
+					-- animation not looping and ended ?
+					if AnimateCharacter(i, moving) == true then
+						run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
+						run.vars.level_actors[i].frame = 1
+					end
+				end
+			end
+		end
 		
 		-- check for enemies collisions with blocks
 		-- TODO!
@@ -896,6 +980,22 @@ function run.update(dt)
 		-- check for player collisions with enemies
 		-- TODO!
 		
+		-- animate bonus
+		for i = 2, #run.vars.level_actors do
+			local actor_number = run.vars.level_actors[i].number
+			
+			if game_data.actors[actor_number].entity == ENTITY_TYPE_BONUS then
+				-- it is time to animate bonus
+				if animations_tick == true then
+					-- animation not looping and ended ?
+					if AnimateCharacter(i, moving) == true then
+						run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
+						run.vars.level_actors[i].frame = 1
+					end
+				end
+			end
+		end
+
 		-- check for player collisions with bonus
 		for i = #run.vars.level_actors, 2, -1 do
 			local actor_number = run.vars.level_actors[i].number
@@ -942,6 +1042,13 @@ function run.update(dt)
 						
 						-- limit to 100% health
 						if run.vars.health > 100 then run.vars.health = 100 end
+						
+						-- play bonus sound here
+						-- TODO!
+					elseif game_data.actors[actor_number].type.name == "invincible" then
+						-- start invincibility
+						run.vars.invincible = true
+						run.vars.invincibility_duration = game_data.actors[actor_number].type.duration
 						
 						-- play bonus sound here
 						-- TODO!
@@ -1130,8 +1237,7 @@ function Fire1(a)
 		if run.vars.on_the_ground == true or run.vars.on_stairs == true then
 			-- the player is idle or walking or climbing ?
 			if run.vars.level_actors[1].animation == GetActorAnimationNumber(a, "idle") or
-										run.vars.level_actors[1].animation == GetActorAnimationNumber(a, "walk") or
-										run.vars.level_actors[1].animation == GetActorAnimationNumber(a, "climb") then
+										run.vars.level_actors[1].animation == GetActorAnimationNumber(a, "walk") then
 				-- jump
 				run.vars.level_actors[1].animation = GetActorAnimationNumber(a, "jump")
 				run.vars.level_actors[1].frame = 1

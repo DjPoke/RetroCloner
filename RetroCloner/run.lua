@@ -33,6 +33,9 @@ run.vars = {
 	requested_dir = 0,
 	on_the_ground = false,
 	on_stairs = false,
+	invincible = false,
+	invincibility_duration = 0,
+	enemy_move_timer = 0.0,
 	sounds = { player = {walk = "", run = "", jump = "", hit = "", fire1 = "", fire2 = ""},
 			   enemies = {},
 			   bonus = {}
@@ -76,6 +79,13 @@ function run.load()
 	-- game speed and animation timer
 	run.vars.game_speed_timer = 0.0
 	run.vars.animation_timer = 0.0
+	
+	-- invincibility is false at beginning
+	run.vars.invincible = false
+	run.vars.invincibility_duration = 0
+	
+	-- enemy timer for movements and animations
+	run.vars.enemy_move_timer = 0.0
 	
 	-- reset actors positions and animations
 	for i = 1, #game_data.levels do
@@ -194,6 +204,7 @@ function run.update(dt)
 		-- update timers
 		run.vars.game_speed_timer = run.vars.game_speed_timer + dt
 		run.vars.animations_timer = run.vars.animations_timer + dt
+		run.vars.enemy_move_timer = run.vars.enemy_move_timer + dt
 		animations_tick = false
 		game_speed_tick = false
 		
@@ -210,6 +221,10 @@ function run.update(dt)
 			run.vars.animations_timer = run.vars.animations_timer - max_animations_timer
 			animations_tick = true
 		end
+		
+		if run.vars.enemy_move_timer >= 2.0 then
+			run.vars.enemy_move_timer = 0.0
+		end
 			
 		if #game_data.levels > 0 then
 			local old_x = run.vars.level_actors[1].x
@@ -221,11 +236,11 @@ function run.update(dt)
 			local joy_down = false
 			local joy_left = false
 			local joy_right = false
+
+				-- move the player
+			local actor_number = run.vars.level_actors[1].number
 		
 			if game_speed_tick == true then	
-				-- move the player
-				local actor_number = run.vars.level_actors[1].number
-
 				-- get keyboard fist
 				joy_up = love.keyboard.isDown("up")
 				joy_down = love.keyboard.isDown("down")
@@ -732,14 +747,12 @@ function run.update(dt)
 				run.vars.level_actors[1].y = new_y
 			end
 
-			-- it is time to animate characters
+			-- it is time to animate the player
 			if animations_tick == true then
-				for i = 1, #run.vars.level_actors do
-					-- animation not looping and ended ?
-					if AnimateCharacter(i, moving) == true then
-						run.vars.level_actors[1].animation = 1
-						run.vars.level_actors[1].frame = 1
-					end
+				-- animation not looping and ended ?
+				if AnimateCharacter(1, moving) == true then
+					run.vars.level_actors[1].animation = GetActorAnimationNumber(actor_number, "idle")
+					run.vars.level_actors[1].frame = 1
 				end
 			end
 		end
@@ -911,7 +924,55 @@ function run.update(dt)
 		-- TODO!
 		
 		-- move enemies
-		-- TODO!
+		for i = 2, #run.vars.level_actors do
+			local actor_number = run.vars.level_actors[i].number
+			
+			if game_data.actors[actor_number].entity == ENTITY_TYPE_ENEMY then
+				-- move left to right
+				if game_data.actors[actor_number].type.name == "moving left-right" then
+					if run.vars.enemy_move_timer < 0.5 then
+						if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "idle") then
+							run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
+							run.vars.level_actors[i].frame = 1
+						end
+						
+						moving = false
+					elseif run.vars.enemy_move_timer >= 0.5 and run.vars.enemy_move_timer < 1.0 then
+						if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "walk_left") then
+							run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_left")
+							run.vars.level_actors[i].frame = 1
+						end
+
+						run.vars.level_actors[i].x = run.vars.level_actors[i].x - 0.5						
+						moving = true
+					elseif run.vars.enemy_move_timer >= 1.0 and run.vars.enemy_move_timer < 1.5 then
+						if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "idle") then
+							run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
+							run.vars.level_actors[i].frame = 1
+						end
+						
+						moving = false
+					elseif run.vars.enemy_move_timer >= 1.5 then
+						if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "walk_right") then
+							run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_right")
+							run.vars.level_actors[i].frame = 1
+						end
+						
+						run.vars.level_actors[i].x = run.vars.level_actors[i].x + 0.5
+						moving = true
+					end
+				end
+				
+				-- it is time to animate enemies
+				if animations_tick == true then
+					-- animation not looping and ended ?
+					if AnimateCharacter(i, moving) == true then
+						run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
+						run.vars.level_actors[i].frame = 1
+					end
+				end
+			end
+		end
 		
 		-- check for enemies collisions with blocks
 		-- TODO!
@@ -919,6 +980,22 @@ function run.update(dt)
 		-- check for player collisions with enemies
 		-- TODO!
 		
+		-- animate bonus
+		for i = 2, #run.vars.level_actors do
+			local actor_number = run.vars.level_actors[i].number
+			
+			if game_data.actors[actor_number].entity == ENTITY_TYPE_BONUS then
+				-- it is time to animate bonus
+				if animations_tick == true then
+					-- animation not looping and ended ?
+					if AnimateCharacter(i, moving) == true then
+						run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
+						run.vars.level_actors[i].frame = 1
+					end
+				end
+			end
+		end
+
 		-- check for player collisions with bonus
 		for i = #run.vars.level_actors, 2, -1 do
 			local actor_number = run.vars.level_actors[i].number
@@ -965,6 +1042,13 @@ function run.update(dt)
 						
 						-- limit to 100% health
 						if run.vars.health > 100 then run.vars.health = 100 end
+						
+						-- play bonus sound here
+						-- TODO!
+					elseif game_data.actors[actor_number].type.name == "invincible" then
+						-- start invincibility
+						run.vars.invincible = true
+						run.vars.invincibility_duration = game_data.actors[actor_number].type.duration
 						
 						-- play bonus sound here
 						-- TODO!
