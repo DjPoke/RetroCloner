@@ -1159,20 +1159,20 @@ true
 256
 3
 1
-die
-2
-name
-run & gun (top view)
+fire1
+1
 fire2
 1
-fire1
+run
+1
+die
+2
+idle
 1
 directions
 8
-run
-1
-idle
-1
+name
+run & gun (top view)
 END
 2
 wound
@@ -1185,12 +1185,14 @@ health
 1
 END
 3
-bonus
-10
 name
 points
+collision_box
+1
 idle
 4
+bonus
+10
 END
 256
 1

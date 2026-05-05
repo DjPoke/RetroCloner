@@ -9,6 +9,7 @@ TODO
 	
 * Terminer la partie jeu:
 	- Animer et déplacer les ennemis
+	- Ajouter un type Projectile (qui n'est qu'un bonus négatif maquillé)
 	- Ajouter un random bonus (1 bonus sur 3 au hasard) si on tue un ennemi
 	- Déplacer le joueur en fonction de son type
 	- Créer une variable pour activer le z-order sur le joueur/ennemis/bonus

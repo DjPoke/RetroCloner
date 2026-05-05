@@ -910,6 +910,14 @@ function run.update(dt)
 				local by = run.vars.level_actors[i].y
 				local bw = game_data.sprite_width
 				local bh = game_data.sprite_height
+
+				local div = game_data.actors[actor_number].type.collision_box
+
+				bx = bx + math.floor((bw - (bw / div)) / 2)
+				by = by + math.floor((bh - (bh / div)) / 2)
+
+				bw = bw / div
+				bh = bh / div
 				
 				if Collision(px, py, pw, ph, bx, by, bw, bh) == true then
 					-- add points, lives or health

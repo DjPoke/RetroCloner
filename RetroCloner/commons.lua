@@ -38,15 +38,15 @@ player_levels_max_size = {
 
 -- types of enemies
 enemy_types = {
-	{name = "static", idle = 0, health = 0, wound = 0},
-	{name = "moving left-right", idle = 0, walking = 0, health = 0, wound = 0},
-	{name = "moving up_down", idle = 0, walking = 0, health = 0, wound = 0},
-	{name = "sniper", idle = 0, fire = 0, direction = 0, health = 0, wound = 0},
-	{name = "oscillate left-right", idle = 0, walking = 0, fire = 0, health = 0, wound = 0},
-	{name = "oscillate up_down", idle = 0, walking = 0, fire = 0, health = 0, wound = 0},
-	{name = "turn", idle = 0, walking = 0, fire = 0, health = 0, wound = 0},
-	{name = "seek", idle = 0, walking = 0, fire = 0, directions = 0, health = 0, wound = 0},
-	{name = "random", idle = 0, walking = 0, fire = 0, directions = 0, health = 0, wound = 0}
+	{name = "static", idle = 0, health = 1, wound = 1},
+	{name = "moving left-right", idle = 0, walking = 0, health = 1, wound = 1},
+	{name = "moving up_down", idle = 0, walking = 0, health = 1, wound = 1},
+	{name = "sniper", idle = 0, fire = 0, direction = 180, health = 1, wound = 1},
+	{name = "oscillate left-right", idle = 0, walking = 0, fire = 0, health = 1, wound = 1},
+	{name = "oscillate up_down", idle = 0, walking = 0, fire = 0, health = 1, wound = 1},
+	{name = "turn", idle = 0, walking = 0, fire = 0, health = 1, wound = 1},
+	{name = "seek", idle = 0, walking = 0, fire = 0, directions = 4, health = 1, wound = 1},
+	{name = "random", idle = 0, walking = 0, fire = 0, directions = 4, health = 1, wound = 1},
 }
 
 enemy_animations = {
@@ -63,15 +63,15 @@ enemy_animations = {
 
 -- types of bonus-malus
 bonus_types = {
-	{name = "points", bonus = 0, idle = 0},
-	{name = "life", bonus = 0, idle = 0},
-	{name = "health", bonus = 0, idle = 0}
+	{name = "points", bonus = 10, idle = 0, collision_box = 1},
+	{name = "life", bonus = 1, idle = 0, collision_box = 1},
+	{name = "health", bonus = 20, idle = 0, collision_box = 1}
 }
 
 bonus_animations = {
-	{"bonus", "idle"},
-	{"bonus", "idle"},
-	{"bonus", "idle"}
+	{"bonus", "idle", "collision_box"},
+	{"bonus", "idle", "collision_box"},
+	{"bonus", "idle", "collision_box"}
 }
 
 -- types of entities

@@ -931,7 +931,11 @@ function love.draw()
 					local k = bonus_animations[current_bonus_type][i]
 					local v = game_data.actors[current_actor].type[k]
 
-					love.graphics.print(k .. ": " .. tostring(v), 440, 160 + ((i - 1) * 20))
+					if k ~= "collision_box" then
+						love.graphics.print(k .. ": " .. tostring(v), 440, 160 + ((i - 1) * 20))
+					elseif k == "collision_box" then
+						love.graphics.print(k .. ": 1/" .. tostring(v), 440, 160 + ((i - 1) * 20))
+					end
 				end
 			end
 
@@ -2188,6 +2192,10 @@ function love.keypressed(key, scancode, isrepeat)
 						else
 							game_data.actors[current_actor].type.bonus = game_data.actors[current_actor].type.bonus - 1
 						end
+					elseif anim == "collision_box" then
+						if game_data.actors[current_actor].type.collision_box > 1 then
+							game_data.actors[current_actor].type.collision_box = math.floor(game_data.actors[current_actor].type.collision_box / 2)
+						end
 					elseif game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] > 0 then
 						game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] = game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] - 1
 					elseif game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] == 0 then
@@ -2245,6 +2253,10 @@ function love.keypressed(key, scancode, isrepeat)
 							game_data.actors[current_actor].type.bonus = game_data.actors[current_actor].type.bonus + 10
 						else
 							game_data.actors[current_actor].type.bonus = game_data.actors[current_actor].type.bonus + 1
+						end
+					elseif anim == "collision_box" then
+						if game_data.actors[current_actor].type.collision_box < 4 then
+							game_data.actors[current_actor].type.collision_box = game_data.actors[current_actor].type.collision_box * 2
 						end
 					elseif game_data.actors[current_actor].type[anim] < game_data.max_animations then
 						game_data.actors[current_actor].type[anim] = game_data.actors[current_actor].type[anim] + 1
