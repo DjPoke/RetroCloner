@@ -19,6 +19,7 @@ run.vars = {
 	game_mode = 0,
 	score = 0,
 	level = 0,
+	health = 0,
 	scrolling_x = 0,
 	scrolling_y = 0,
 	game_speed_timer = 0.0,
@@ -58,7 +59,8 @@ function run.load()
 	-- initialize player's data
 	run.vars.score = 0
 	run.vars.level = 1
-
+	run.vars.health = 100
+	
 	run.vars.dir = 0
 	run.vars.dir_x = 1
 	run.vars.dir_y = 0
@@ -924,8 +926,8 @@ function run.update(dt)
 						-- play bonus sound here
 						-- TODO!
 					elseif game_data.actors[actor_number].type.name == "health" then
-						-- add health, if there is a health bar (TODO!)
-						--run.vars.health = run.vars.health + game_data.actors[actor_number].type.bonus
+						-- add health, if there is a health bar
+						run.vars.health = run.vars.health + game_data.actors[actor_number].type.bonus
 						
 						-- play bonus sound here
 						-- TODO!
@@ -1029,6 +1031,23 @@ function run.draw()
 
 		-- draw level area
 		FontsPrint("LEVEL " .. ToString2(run.vars.level, 3), ScaleX(game_data.areas[LEVEL_AREA].x, WINDOW_ZOOM), ScaleY(game_data.areas[LEVEL_AREA].y, WINDOW_ZOOM), game_data.areas[LEVEL_AREA].width * game_data.pixel_size * WINDOW_ZOOM, game_data.areas[LEVEL_AREA].height * WINDOW_ZOOM, GAME_FONT, FONT_DOWN_SCALE / WINDOW_ZOOM, game_data.text_paper, game_data.text_pen)
+	
+		-- draw health bar
+		if game_data.health_area == true then
+			r, g, b = GetPenRGB(game_data.health_paper)
+			love.graphics.setColor(r, g, b)
+
+			love.graphics.rectangle("fill", ScaleX(game_data.areas[HEALTH_AREA].x, WINDOW_ZOOM), ScaleY(game_data.areas[HEALTH_AREA].y, WINDOW_ZOOM), ScaleWidth(game_data.areas[HEALTH_AREA].width, WINDOW_ZOOM), ScaleHeight(game_data.areas[HEALTH_AREA].height, WINDOW_ZOOM))
+
+			r, g, b = GetPenRGB(game_data.health_pen)
+			love.graphics.setColor(r, g, b)
+
+			local health = game_data.areas[HEALTH_AREA].width * run.vars.health / 100
+			
+			if health >= 0 then
+				love.graphics.rectangle("fill", ScaleX(game_data.areas[HEALTH_AREA].x, WINDOW_ZOOM), ScaleY(game_data.areas[HEALTH_AREA].y, WINDOW_ZOOM), ScaleWidth(health, WINDOW_ZOOM), ScaleHeight(game_data.areas[HEALTH_AREA].height, WINDOW_ZOOM))
+			end
+		end
 	end
 end
 
