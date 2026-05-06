@@ -937,8 +937,6 @@ function run.update(dt)
 					local old_y = run.vars.level_actors[i].y
 					local new_x = old_x
 					local new_y = old_y
-					local requested_x = 0
-					local requested_y = 0
 
 					-- move left to right
 					if game_data.actors[actor_number].type.name == "moving left-right" then
@@ -956,7 +954,7 @@ function run.update(dt)
 							end
 
 							new_x = new_x - 1
-							requested_x = -1
+							requested_dir = 180
 							moving = true
 						elseif run.vars.enemy_move_timer >= 1.0 and run.vars.enemy_move_timer < 1.5 then
 							if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "idle") then
@@ -972,7 +970,7 @@ function run.update(dt)
 							end
 							
 							new_x = new_x + 1
-							requested_x = 1
+							requested_dir = 0
 							moving = true
 						end
 					elseif game_data.actors[actor_number].type.name == "moving up-down" then
@@ -990,7 +988,7 @@ function run.update(dt)
 							end
 
 							new_y = new_y + 1
-							requested_y = 1
+							requested_dir = 90
 							moving = true
 						elseif run.vars.enemy_move_timer >= 1.0 and run.vars.enemy_move_timer < 1.5 then
 							if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "idle") then
@@ -1006,7 +1004,7 @@ function run.update(dt)
 							end
 							
 							new_y = new_y - 1
-							requested_y = -1
+							requested_dir = 270
 							moving = true
 						end
 					elseif game_data.actors[actor_number].type.name == "sniper" then
@@ -1016,33 +1014,50 @@ function run.update(dt)
 					elseif game_data.actors[actor_number].type.name == "oscillate up_down" then
 
 					elseif game_data.actors[actor_number].type.name == "turn" then
+						-- get turn angle
+						requested_dir = math.floor(math.floor((run.vars.enemy_move_timer * 180) / 45) * 45)
+						
+						new_x = new_x + math.cos(math.rad(requested_dir))
+						new_y = new_y + math.sin(math.rad(requested_dir))
+						
+						moving = false
+						
+						if new_x ~= old_x or new_y ~= old_y then
+							moving = true
+						end
+						
+						-- set animation to walk
+						if run.vars.level_actors[i].animation == GetActorAnimationNumber(actor_number, "idle") then
+							run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk")
+						end
 
 					elseif game_data.actors[actor_number].type.name == "seek 4 directions" then
 						local xa = run.vars.level_actors[1].x
 						local ya = run.vars.level_actors[1].y
 						local xe = run.vars.level_actors[i].x
 						local ye = run.vars.level_actors[i].y
-						local dir = 0
+						
+						requested_dir = 0
 						
 						-- seek
 						if run.vars.level_actors[i].param == ENEMY_SEEK_MODE then
 							if xe < xa then
-								dir = 0
+								requested_dir = 0
 							elseif xe > xa then
-								dir = 180
+								requested_dir = 180
 							elseif xe == xa then
-								dir = run.vars.level_actors[i].dir
+								requested_dir = run.vars.level_actors[i].dir
 							end
 							
 							local dist = math.abs(xe - xa)
 							
 							if math.abs(ye - ya) > dist then
 								if ye > ya then
-									dir = 270
+									requested_dir = 270
 								elseif ye < ya then
-									dir = 90
+									requested_dir = 90
 								else
-									dir = run.vars.level_actors[i].dir
+									requested_dir = run.vars.level_actors[i].dir
 								end
 							end
 							
@@ -1051,11 +1066,11 @@ function run.update(dt)
 								run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
 							end
 						elseif run.vars.level_actors[i].param == ENEMY_RANDOM_MODE then
-							dir = run.vars.level_actors[i].dir
+							requested_dir = run.vars.level_actors[i].dir
 							
 							-- randomize
 							if math.random(1, 100) == 1 then
-								dir = math.random(0, 3) * 90
+								requested_dir = math.random(0, 3) * 90
 							end
 
 							-- switch to seek mode
@@ -1064,22 +1079,14 @@ function run.update(dt)
 							end
 						end
 						
-						if dir == 0 then
+						if requested_dir == 0 then
 							new_x = new_x + game_data.vars.player_speed
-							requested_x = 1
-							requested_y = 0
-						elseif dir == 180 then
+						elseif requested_dir == 180 then
 							new_x = new_x - game_data.vars.player_speed
-							requested_x = -1
-							requested_y = 0
-						elseif dir == 90 then
+						elseif requested_dir == 90 then
 							new_y = new_y + game_data.vars.player_speed
-							requested_x = 0
-							requested_y = 1
-						elseif dir == 270 then
+						elseif requested_dir == 270 then
 							new_y = new_y - game_data.vars.player_speed
-							requested_x = 0
-							requested_y = -1
 						end
 
 						moving = true
@@ -1092,29 +1099,25 @@ function run.update(dt)
 					end
 
 					-- check for enemies collisions with blocks
-					if moving == true then
-						local requested_dir = 0
-
-						if requested_x > 0 and requested_y > 0 then
-							requested_dir = 45
-						elseif requested_x < 0 and requested_y > 0 then
-							requested_dir = 135
-						elseif requested_x < 0 and requested_y < 0 then
-							requested_dir = 225
-						elseif requested_x > 0 and requested_y < 0 then
-							requested_dir = 315
-						elseif requested_x > 0 and requested_y == 0 then
-							requested_dir = 0
-						elseif requested_x < 0 and requested_y == 0 then
-							requested_dir = 180
-						elseif requested_x == 0 and requested_y > 0 then
-							requested_dir = 90
-						elseif requested_x == 0 and requested_y < 0 then
-							requested_dir = 270
-						end
+					if moving == true then						
+						local quantized_dir = math.floor(requested_dir / 45) * 45
+						local move_x = 0
+						local move_y = 0
 						
+						if quantized_dir == 0 or quantized_dir == 45 or quantized_dir == 315 then
+							move_x = 1
+						elseif quantized_dir == 180 or quantized_dir == 135 or quantized_dir == 225 then
+							move_x = -1
+						end
+
+						if quantized_dir == 90 or quantized_dir == 45 or quantized_dir == 135 then
+							move_y = 1
+						elseif quantized_dir == 270 or quantized_dir == 225 or quantized_dir == 315 then
+							move_y = -1
+						end
+
 						-- check if the enemy can move or not on x axis
-						if requested_x ~= 0 then
+						if move_x ~= 0 then
 							local collision = false
 							
 							_, collision = SlidingCollisionX(
@@ -1122,7 +1125,7 @@ function run.update(dt)
 								old_y,
 								game_data.sprite_width,
 								game_data.sprite_height,
-								requested_dir,
+								quantized_dir,
 								game_data.levels[run.vars.level],
 								game_data.block_width,
 								game_data.block_height
@@ -1145,7 +1148,7 @@ function run.update(dt)
 						end
 
 						-- check if the enemy can move or not on y axis
-						if requested_y ~= 0 then
+						if move_y ~= 0 then
 							local collision = false
 							
 							_, collision = SlidingCollisionY(
@@ -1153,7 +1156,7 @@ function run.update(dt)
 								new_y,
 								game_data.sprite_width,
 								game_data.sprite_height,
-								requested_dir,
+								quantized_dir,
 								game_data.levels[run.vars.level],
 								game_data.block_width,
 								game_data.block_height
@@ -1181,7 +1184,7 @@ function run.update(dt)
 							new_y,
 							game_data.sprite_width,
 							game_data.sprite_height,
-							requested_dir,
+							quantized_dir,
 							game_data.levels[run.vars.level],
 							game_data.block_width,
 							game_data.block_height
