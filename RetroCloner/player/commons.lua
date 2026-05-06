@@ -114,7 +114,7 @@ game_goals = {"go to exit at right", "kill all enemies", "kill all enemies and e
 scrolling_types = {"no scrolling", "scroll from screen's middle", "auto-scroll", "scroll screen by screen"}
 
 -- types of images to import
-image_types = {"intro", "interface", "winner", "game_over"}
+image_types = {"intro", "interface", "winner", "game_over", "interlude"}
 
 -- types of musics to import
 music_types = {"intro", "in_game", "winner", "game_over"}

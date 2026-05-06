@@ -5,6 +5,7 @@ local MODE_INTRO = 1
 local MODE_IN_GAME = 2
 local MODE_WINNER = 3
 local MODE_GAME_OVER = 4
+local MODE_INTERLUDE = 5
 
 local DT_CORRECTION = 60
 local SCROLLING_SLOW_DOWN = 4
@@ -34,6 +35,7 @@ run.vars = {
 	game_speed_timer = 0.0,
 	animations_timer = 0.0,
 	blink_timer = 0.0,
+	interlude_timer = 0.0,
 	jump_power = 0,
 	fall_power = 0,
 	dir = 0,
@@ -1504,7 +1506,7 @@ function run.update(dt)
 		end
 	elseif run.vars.game_mode == MODE_WINNER then
 		-- stop all musics and start winner music, if needed
-		if run.vars.musics.winner ~= nil then
+		if run.vars.musics.intro ~= nil then
 			if run.vars.musics.intro:isPlaying() then
 				run.vars.musics.intro:stop()
 			end
@@ -1527,6 +1529,64 @@ function run.update(dt)
 			if run.vars.musics.game_over:isPlaying() then
 				run.vars.musics.game_over:stop()
 			end
+		end
+	elseif run.vars.game_mode == MODE_GAME_OVER then
+		-- stop all musics and start winner music, if needed
+		if run.vars.musics.intro ~= nil then
+			if run.vars.musics.intro:isPlaying() then
+				run.vars.musics.intro:stop()
+			end
+		end
+
+		if run.vars.musics.in_game ~= nil then
+			if run.vars.musics.in_game:isPlaying() then
+				run.vars.musics.in_game:stop()
+			end
+		end
+		
+		if run.vars.musics.winner ~= nil then
+			if run.vars.musics.winner:isPlaying() then
+				run.vars.musics.winner:stop()
+			end
+		end
+		
+		if run.vars.musics.game_over ~= nil then
+			if not run.vars.musics.game_over:isPlaying() then
+				run.vars.musics.game_over:play()
+				run.vars.musics.game_over:setLooping(true)
+			end
+		end
+	elseif run.vars.game_mode == MODE_INTERLUDE then
+		-- stop all musics
+		if run.vars.musics.intro ~= nil then
+			if run.vars.musics.intro:isPlaying() then
+				run.vars.musics.intro:stop()
+			end
+		end
+
+		if run.vars.musics.in_game ~= nil then
+			if run.vars.musics.in_game:isPlaying() then
+				run.vars.musics.in_game:stop()
+			end
+		end
+		
+		if run.vars.musics.winner ~= nil then
+			if run.vars.musics.winner:isPlaying() then
+				run.vars.musics.winner:stop()
+			end
+		end
+
+		if run.vars.musics.game_over ~= nil then
+			if run.vars.musics.game_over:isPlaying() then
+				run.vars.musics.game_over:stop()
+			end
+		end
+		
+		-- count time
+		run.vars.interlude_timer = run.vars.interlude_timer + dt
+		
+		if run.vars.interlude_timer > 2.0 then
+			run.vars.game_mode = MODE_IN_GAME
 		end
 	end
 end
@@ -1668,6 +1728,65 @@ function run.draw()
 			scale = 1.0 / 32
 			love.graphics.printf("PRESS START TO PLAY AGAIN!", 0, virtual_height * 80 / 100, virtual_width / scale, "center", 0, scale, scale)
 		end
+	elseif run.vars.game_mode == MODE_GAME_OVER then
+		-- disable scissor
+		love.graphics.setScissor()
+
+		-- clear the background with game paper
+		r, g, b = GetPenRGB(game_data.game_paper)
+		love.graphics.clear(r, g, b)
+		
+		-- show game_over image if it exists else show game title
+		if run.vars.images.game_over ~= nil and run.vars.images.game_over ~= "" then
+			-- show intro image
+			love.graphics.setColor(1, 1, 1)
+			love.graphics.draw(run.vars.images.game_over, WINDOW_BORDER, WINDOW_BORDER, 0, game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM)
+		else
+			-- show game over
+			local virtual_width = WINDOW_WIDTH + (WINDOW_BORDER * 2)
+			local virtual_height = WINDOW_HEIGHT + (WINDOW_BORDER * 2)
+			
+			love.graphics.setFont(GAME_TITLE_FONT)
+			r, g, b = GetPenRGB(1)
+			love.graphics.setColor(r, g, b)
+			
+			local scale = 1.0 / 16
+
+			love.graphics.printf("GAME OVER", 0, virtual_height / 4, virtual_width / scale, "center", 0, scale, scale)
+
+			love.graphics.setFont(GAME_FONT)
+			scale = 1.0 / 32
+
+			-- show press start to play
+			love.graphics.printf("PRESS START TO AGAIN!", 0, virtual_height * 80 / 100, virtual_width / scale, "center", 0, scale, scale)
+		end
+	elseif run.vars.game_mode == MODE_INTERLUDE then
+		-- disable scissor
+		love.graphics.setScissor()
+
+		-- clear the background with game paper
+		r, g, b = GetPenRGB(game_data.game_paper)
+		love.graphics.clear(r, g, b)
+		
+		-- show interlude image if it exists else show level number
+		if run.vars.images.interlude ~= nil and run.vars.images.interlude ~= "" then
+			-- show interlude image
+			love.graphics.setColor(1, 1, 1)
+			love.graphics.draw(run.vars.images.interlude, WINDOW_BORDER, WINDOW_BORDER, 0, game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM)
+		else
+			-- show level number
+			local virtual_width = WINDOW_WIDTH + (WINDOW_BORDER * 2)
+			local virtual_height = WINDOW_HEIGHT + (WINDOW_BORDER * 2)
+			
+			love.graphics.setFont(GAME_TITLE_FONT)
+			r, g, b = GetPenRGB(1)
+			love.graphics.setColor(r, g, b)
+			
+			local scale = 1.0 / 16
+
+			love.graphics.printf("LEVEL " .. tostring(run.vars.level), 0, virtual_height / 4, virtual_width / scale, "center", 0, scale, scale)
+			love.graphics.printf("READY?", 0, virtual_height / 2, virtual_width / scale, "center", 0, scale, scale)
+		end
 	end
 end
 
@@ -1676,7 +1795,7 @@ function run.keypressed(key, scancode, isrepeat)
 	if run.vars.game_mode == MODE_INTRO then
 		-- space to enter the game
 		if key == "space" then
-			run.vars.game_mode = MODE_IN_GAME
+			run.vars.game_mode = MODE_INTERLUDE
 		end
 	elseif run.vars.game_mode == MODE_IN_GAME then
 		-- fire with keyboard
@@ -1714,7 +1833,7 @@ function run.gamepadpressed(joystick, button)
 		if joy == joystick then
 			-- start to enter the game
 			if button == "start" then
-				run.vars.game_mode = MODE_IN_GAME
+				run.vars.game_mode = MODE_INTERLUDE
 			end
 		end
 	elseif run.vars.game_mode == MODE_IN_GAME then
@@ -2376,6 +2495,7 @@ function CommonInit()
 	-- game speed and animation timer
 	run.vars.game_speed_timer = 0.0
 	run.vars.animation_timer = 0.0
+	run.vars.interlude_timer = 0.0
 	
 	-- invincibility is false at beginning
 	run.vars.invincible = false
