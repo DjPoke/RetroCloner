@@ -782,9 +782,10 @@ function love.draw()
 
 		-- draw shortcuts
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("[A]dd a block - [C]opy block - [P]aste block - [Del]ete block - [T]ype", 10, 700)
+		love.graphics.print("[A]dd a block - [C]opy block - [P]aste block - [Del]ete block - [T]ype", 10, 680)
+		love.graphics.print("[F1] Flip horizontally - [F2] Flip vertically - [F]ill", 10, 700)
 		love.graphics.print("[Tab] Change pen - [Mouse] Move - [LClick] Draw - [RClick] Clear", 10, 720)
-		love.graphics.print("[F]ill - [PgDown] Previous block - [PgUp] Next block", 10, 740)
+		love.graphics.print("[PgDown] Previous block - [PgUp] Next block", 10, 740)
 		love.graphics.print("[Esc] Back", 10, 760)
 	elseif mode == MODE_EDIT_SPRITES then
 		-- draw title
@@ -834,9 +835,10 @@ function love.draw()
 
 		-- draw shortcuts
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("[A]dd a sprite - [C]opy sprite - [P]aste sprite - [Del]ete sprite", 10, 700)
-		love.graphics.print("[Mouse] Move - [LClick] Draw - [RClick] Clear", 10, 720)
-		love.graphics.print("[F]ill - [PgDown] Previous sprite - [PgUp] Next sprite", 10, 740)
+		love.graphics.print("[A]dd a sprite - [C]opy sprite - [P]aste sprite - [Del]ete sprite", 10, 680)
+		love.graphics.print("[F1] Flip horizontally - [F2] Flip vertically - [F]ill", 10, 700)
+		love.graphics.print("[Tab] Change pen - [Mouse] Move - [LClick] Draw - [RClick] Clear", 10, 720)
+		love.graphics.print("[PgDown] Previous sprite - [PgUp] Next sprite", 10, 740)
 		love.graphics.print("[Esc] Back", 10, 760)
 	elseif mode == MODE_EDIT_ANIMATIONS then
 		-- draw title
@@ -1835,6 +1837,24 @@ function love.keypressed(key, scancode, isrepeat)
 					end
 				end
 			end
+		elseif key == "f1" then
+			for x = 0, math.floor(game_data.block_width / 2) - 1 do
+				for y = 0, game_data.block_height - 1 do
+					local c1 = game_data.blocks[current_block][x][y]
+					local c2 = game_data.blocks[current_block][game_data.block_width - x - 1][y]
+					game_data.blocks[current_block][x][y] = c2
+					game_data.blocks[current_block][game_data.block_width - x - 1][y] = c1
+				end
+			end
+		elseif key == "f2" then
+			for x = 0, game_data.block_width - 1 do
+				for y = 0, math.floor(game_data.block_height / 2) - 1 do
+					local c1 = game_data.blocks[current_block][x][y]
+					local c2 = game_data.blocks[current_block][x][game_data.block_height - y - 1]
+					game_data.blocks[current_block][x][y] = c2
+					game_data.blocks[current_block][x][game_data.block_height - y - 1] = c1
+				end
+			end		
 		elseif key == "escape" then
 			ConvertBlocksToImages()
 
@@ -1935,6 +1955,24 @@ function love.keypressed(key, scancode, isrepeat)
 				FloodFill(game_data.sprites[current_sprite], game_data.sprite_width, game_data.sprite_height, sprite_x, sprite_y, pen_color, game_data.sprites[current_sprite][sprite_x][sprite_y])
 				sprite_too_many_color = TooManyColorsInSprite(game_data.sprites[current_sprite])
 			end
+		elseif key == "f1" then
+			for x = 0, math.floor(game_data.sprite_width / 2) - 1 do
+				for y = 0, game_data.sprite_height - 1 do
+					local c1 = game_data.sprites[current_sprite][x][y]
+					local c2 = game_data.sprites[current_sprite][game_data.sprite_width - x - 1][y]
+					game_data.sprites[current_sprite][x][y] = c2
+					game_data.sprites[current_sprite][game_data.sprite_width - x - 1][y] = c1
+				end
+			end
+		elseif key == "f2" then
+			for x = 0, game_data.sprite_width - 1 do
+				for y = 0, math.floor(game_data.sprite_height / 2) - 1 do
+					local c1 = game_data.sprites[current_sprite][x][y]
+					local c2 = game_data.sprites[current_sprite][x][game_data.sprite_height - y - 1]
+					game_data.sprites[current_sprite][x][y] = c2
+					game_data.sprites[current_sprite][x][game_data.sprite_height - y - 1] = c1
+				end
+			end		
 		elseif key == "escape" then
 			ConvertSpritesToImages()
 			

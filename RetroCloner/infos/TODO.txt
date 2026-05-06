@@ -6,7 +6,6 @@ TODO
 	- ...
 	
 * Terminer la partie jeu:
-	- Ajouter fonctions flip et rotate dans le dessin des blocks et des sprites
 	- Animer et déplacer les ennemis (wip)
 	- Pouvoir détruire les ennemis "affraid" par collision
 	- Tirer les projectiles
