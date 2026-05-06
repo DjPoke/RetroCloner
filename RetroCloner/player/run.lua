@@ -114,36 +114,16 @@ function run.load()
 	
 	-- hide mouse
 	love.mouse.setVisible(false)
+	
+	-- start intro music
+	if run.vars.musics.intro ~= nil then
+		run.vars.musics.intro:play()
+		run.vars.musics.intro:setLooping(true)
+	end
 end
 
 function run.update(dt)
-	if run.vars.game_mode == MODE_INTRO then
-		-- stop all musics and start intro music, if needed
-		if run.vars.musics.intro ~= nil then
-			if not run.vars.musics.intro:isPlaying() then
-				run.vars.musics.intro:play()
-				run.vars.musics.intro:setLooping(true)
-			end
-		end
-
-		if run.vars.musics.in_game ~= nil then
-			if run.vars.musics.in_game:isPlaying() then
-				run.vars.musics.in_game:stop()
-			end
-		end
-
-		if run.vars.musics.winner ~= nil then
-			if run.vars.musics.winner:isPlaying() then
-				run.vars.musics.winner:stop()
-			end
-		end
-
-		if run.vars.musics.game_over ~= nil then
-			if run.vars.musics.game_over:isPlaying() then
-				run.vars.musics.game_over:stop()
-			end
-		end
-		
+	if run.vars.game_mode == MODE_INTRO then		
 		-- press start to play blinks
 		if run.vars.images.intro == nil or run.vars.images.intro == "" then
 			run.vars.blink_timer = run.vars.blink_timer + dt
@@ -153,32 +133,6 @@ function run.update(dt)
 			end
 		end
 	elseif run.vars.game_mode == MODE_IN_GAME then
-		-- stop all musics and start in_game music, if needed
-		if run.vars.musics.intro ~= nil then
-			if run.vars.musics.intro:isPlaying() then
-				run.vars.musics.intro:stop()
-			end
-		end
-
-		if run.vars.musics.in_game ~= nil then
-			if not run.vars.musics.in_game:isPlaying() then
-				run.vars.musics.in_game:play()
-				run.vars.musics.in_game:setLooping(true)
-			end
-		end
-
-		if run.vars.musics.winner ~= nil then
-			if run.vars.musics.winner:isPlaying() then
-				run.vars.musics.winner:stop()
-			end
-		end
-
-		if run.vars.musics.game_over ~= nil then
-			if run.vars.musics.game_over:isPlaying() then
-				run.vars.musics.game_over:stop()
-			end
-		end
-
 		-- update timers
 		run.vars.game_speed_timer = run.vars.game_speed_timer + dt
 		run.vars.animations_timer = run.vars.animations_timer + dt
@@ -1505,87 +1459,19 @@ function run.update(dt)
 			-- TODO!
 		end
 	elseif run.vars.game_mode == MODE_WINNER then
-		-- stop all musics and start winner music, if needed
-		if run.vars.musics.intro ~= nil then
-			if run.vars.musics.intro:isPlaying() then
-				run.vars.musics.intro:stop()
-			end
-		end
 
-		if run.vars.musics.in_game ~= nil then
-			if run.vars.musics.in_game:isPlaying() then
-				run.vars.musics.in_game:stop()
-			end
-		end
-		
-		if run.vars.musics.winner ~= nil then
-			if not run.vars.musics.winner:isPlaying() then
-				run.vars.musics.winner:play()
-				run.vars.musics.winner:setLooping(true)
-			end
-		end
-
-		if run.vars.musics.game_over ~= nil then
-			if run.vars.musics.game_over:isPlaying() then
-				run.vars.musics.game_over:stop()
-			end
-		end
 	elseif run.vars.game_mode == MODE_GAME_OVER then
-		-- stop all musics and start winner music, if needed
-		if run.vars.musics.intro ~= nil then
-			if run.vars.musics.intro:isPlaying() then
-				run.vars.musics.intro:stop()
-			end
-		end
 
-		if run.vars.musics.in_game ~= nil then
-			if run.vars.musics.in_game:isPlaying() then
-				run.vars.musics.in_game:stop()
-			end
-		end
-		
-		if run.vars.musics.winner ~= nil then
-			if run.vars.musics.winner:isPlaying() then
-				run.vars.musics.winner:stop()
-			end
-		end
-		
-		if run.vars.musics.game_over ~= nil then
-			if not run.vars.musics.game_over:isPlaying() then
-				run.vars.musics.game_over:play()
-				run.vars.musics.game_over:setLooping(true)
-			end
-		end
-	elseif run.vars.game_mode == MODE_INTERLUDE then
-		-- stop all musics
-		if run.vars.musics.intro ~= nil then
-			if run.vars.musics.intro:isPlaying() then
-				run.vars.musics.intro:stop()
-			end
-		end
-
-		if run.vars.musics.in_game ~= nil then
-			if run.vars.musics.in_game:isPlaying() then
-				run.vars.musics.in_game:stop()
-			end
-		end
-		
-		if run.vars.musics.winner ~= nil then
-			if run.vars.musics.winner:isPlaying() then
-				run.vars.musics.winner:stop()
-			end
-		end
-
-		if run.vars.musics.game_over ~= nil then
-			if run.vars.musics.game_over:isPlaying() then
-				run.vars.musics.game_over:stop()
-			end
-		end
-		
+	elseif run.vars.game_mode == MODE_INTERLUDE then		
 		-- count time
 		run.vars.interlude_timer = run.vars.interlude_timer + dt
 		
 		if run.vars.interlude_timer > 2.0 then
+			if run.vars.musics.in_game ~= nil then
+				run.vars.musics.in_game:play()
+				run.vars.musics.in_game:setLooping(true)
+			end
+
 			run.vars.game_mode = MODE_IN_GAME
 		end
 	end
@@ -1795,6 +1681,11 @@ function run.keypressed(key, scancode, isrepeat)
 	if run.vars.game_mode == MODE_INTRO then
 		-- space to enter the game
 		if key == "space" then
+			-- stop intro music for interlude
+			if run.vars.musics.intro ~= nil then
+				run.vars.musics.intro:stop()
+			end
+
 			run.vars.game_mode = MODE_INTERLUDE
 		end
 	elseif run.vars.game_mode == MODE_IN_GAME then
@@ -1813,6 +1704,12 @@ function run.keypressed(key, scancode, isrepeat)
 	elseif run.vars.game_mode == MODE_WINNER then
 		-- space to restart the game
 		if key == "space" then
+			-- start intro music
+			if run.vars.musics.intro ~= nil then
+				run.vars.musics.intro:play()
+				run.vars.musics.intro:setLooping(true)
+			end
+
 			-- initialize game mode
 			run.vars.game_mode = MODE_INTRO
 
@@ -1833,6 +1730,11 @@ function run.gamepadpressed(joystick, button)
 		if joy == joystick then
 			-- start to enter the game
 			if button == "start" then
+				-- stop intro music for interlude
+				if run.vars.musics.intro ~= nil then
+					run.vars.musics.intro:stop()
+				end
+
 				run.vars.game_mode = MODE_INTERLUDE
 			end
 		end
@@ -1855,6 +1757,12 @@ function run.gamepadpressed(joystick, button)
 		if joy == joystick then
 			-- start to restart the game
 			if button == "start" then
+				-- start intro music
+				if run.vars.musics.intro ~= nil then
+					run.vars.musics.intro:play()
+					run.vars.musics.intro:setLooping(true)
+				end
+
 				-- initialize game mode
 				run.vars.game_mode = MODE_INTRO
 	
@@ -2528,6 +2436,17 @@ function GotoNextLevel()
 
 	-- win the game ?
 	if run.vars.level > #game_data.levels then
+		-- stop game music
+		if run.vars.musics.in_game ~= nil then
+			run.vars.musics.in_game:stop()
+		end
+
+		-- start winner music, if it exists
+		if run.vars.musics.winner ~= nil then
+			run.vars.musics.winner:play()
+			run.vars.musics.winner:setLooping(true)
+		end
+
 		run.vars.game_mode = MODE_WINNER
 		
 		return
