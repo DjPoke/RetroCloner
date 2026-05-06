@@ -44,6 +44,7 @@ function ResetAll()
 	current_player_type = 0
 	current_enemy_type = 0
 	current_bonus_type = 0
+	current_projectile_type = 0
 	current_property = 0
 	current_level = 0
 	current_level_mode = 0

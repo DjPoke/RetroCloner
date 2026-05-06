@@ -101,6 +101,7 @@ projectile_types = {
 
 projectile_animations = {
 	{"move", "explode", "wound", "collision_box"},
+	{"move", "explode", "wound", "collision_box"},
 	{"move", "explode", "wound", "collision_box"}
 }
 
@@ -160,24 +161,31 @@ end
 
 -- find current entity types
 function FindCurrentEntityType(t)
-	if current_entity_type == 1 then
+	if current_entity_type == ENTITY_TYPE_PLAYER then
 		for i = 1, #player_types do
 			if t.actors[current_actor].type.name == player_types[i].name then
 				current_player_type = i
 				break
 			end
 		end
-	elseif current_entity_type == 2 then
+	elseif current_entity_type == ENTITY_TYPE_ENEMY then
 		for i = 1, #enemy_types do
 			if t.actors[current_actor].type.name == enemy_types[i].name then
 				current_enemy_type = i
 				break
 			end
 		end
-	elseif current_entity_type == 3 then
+	elseif current_entity_type == ENTITY_TYPE_BONUS then
 		for i = 1, #bonus_types do
 			if t.actors[current_actor].type.name == bonus_types[i].name then
 				current_bonus_type = i
+				break
+			end
+		end
+	elseif current_entity_type == ENTITY_TYPE_PROJECTILE then
+		for i = 1, #projectile_types do
+			if t.actors[current_actor].type.name == projectile_types[i].name then
+				current_projectile_type = i
 				break
 			end
 		end

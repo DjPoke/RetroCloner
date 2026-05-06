@@ -201,6 +201,7 @@ current_entity_type = 0
 current_player_type = 0
 current_enemy_type = 0
 current_bonus_type = 0
+current_projectile_type = 0
 current_property = 0
 current_level = 0
 current_level_mode = 0
@@ -306,39 +307,40 @@ function love.update(dt)
 	elseif mode == MODE_EDIT_SCREEN then
 		-- move or resize the selected area
 		if love.keyboard.isDown("up") then
-			if love.keyboard.isDown("lshift") then
+			if love.keyboard.isDown("lshift")  then
 				game_data.areas[area_selected].height = game_data.areas[area_selected].height - 1
+				
+				if area_selected == GAME_AREA then UpdateLevelsData() end
 			else
 				game_data.areas[area_selected].y = game_data.areas[area_selected].y - 1
 			end
 				
-			if area_selected == GAME_AREA then UpdateLevelsData() end
 		elseif love.keyboard.isDown("down") then
 			if love.keyboard.isDown("lshift") then
 				game_data.areas[area_selected].height = game_data.areas[area_selected].height + 1
+				
+				if area_selected == GAME_AREA then UpdateLevelsData() end
 			else
 				game_data.areas[area_selected].y = game_data.areas[area_selected].y + 1
 			end
-				
-			if area_selected == GAME_AREA then UpdateLevelsData() end
 		end
 		
 		if love.keyboard.isDown("left") then
 			if love.keyboard.isDown("lshift") then
 				game_data.areas[area_selected].width = game_data.areas[area_selected].width - 1
+				
+				if area_selected == GAME_AREA then UpdateLevelsData() end
 			else
 				game_data.areas[area_selected].x = game_data.areas[area_selected].x - 1
 			end		
-				
-			if area_selected == GAME_AREA then UpdateLevelsData() end
 		elseif love.keyboard.isDown("right") then
 			if love.keyboard.isDown("lshift") then
 				game_data.areas[area_selected].width = game_data.areas[area_selected].width + 1
+				
+				if area_selected == GAME_AREA then UpdateLevelsData() end
 			else
 				game_data.areas[area_selected].x = game_data.areas[area_selected].x + 1
 			end
-				
-			if area_selected == GAME_AREA then UpdateLevelsData() end
 		end
 	elseif mode == MODE_EDIT_BLOCKS then
 		if current_block > 0 then
@@ -461,22 +463,54 @@ function love.update(dt)
 
 			-- scroll the level's (in blocks)
 			if love.keyboard.isDown("up") == true then
-				if current_level_scroll_y < 0 then
-					current_level_scroll_y = current_level_scroll_y + 1
+				local steps = 1
+				
+				if love.keyboard.isDown("lshift") then
+					steps = 10
+				end
+				
+				for i = 1, steps do
+					if current_level_scroll_y < 0 then
+						current_level_scroll_y = current_level_scroll_y + 1
+					end
 				end
 			elseif love.keyboard.isDown("down") == true then
-				if current_level_scroll_y > -(game_data.levels_data.sh * (game_data.levels_data.h - 1)) then
-					current_level_scroll_y = current_level_scroll_y - 1
+				local steps = 1
+				
+				if love.keyboard.isDown("lshift") then
+					steps = 10
+				end
+				
+				for i = 1, steps do
+					if current_level_scroll_y > -(game_data.levels_data.sh * (game_data.levels_data.h - 1)) then
+						current_level_scroll_y = current_level_scroll_y - 1
+					end
 				end
 			end
 
 			if love.keyboard.isDown("left") == true then
-				if current_level_scroll_x < 0 then
-					current_level_scroll_x = current_level_scroll_x + 1
+				local steps = 1
+				
+				if love.keyboard.isDown("lshift") then
+					steps = 10
+				end
+				
+				for i = 1, steps do
+					if current_level_scroll_x < 0 then
+						current_level_scroll_x = current_level_scroll_x + 1
+					end
 				end
 			elseif love.keyboard.isDown("right") == true then
-				if current_level_scroll_x > -(game_data.levels_data.sw * (game_data.levels_data.w - 1)) then
-					current_level_scroll_x = current_level_scroll_x - 1
+				local steps = 1
+				
+				if love.keyboard.isDown("lshift") then
+					steps = 10
+				end
+				
+				for i = 1, steps do
+					if current_level_scroll_x > -(game_data.levels_data.sw * (game_data.levels_data.w - 1)) then
+						current_level_scroll_x = current_level_scroll_x - 1
+					end
 				end
 			end
 		end
@@ -927,6 +961,23 @@ function love.draw()
 					if current_property == i then love.graphics.setColor(1, 1, 0) end
 
 					local k = bonus_animations[current_bonus_type][i]
+					local v = game_data.actors[current_actor].type[k]
+
+					if k ~= "collision_box" then
+						love.graphics.print(k .. ": " .. tostring(v), 440, 160 + ((i - 1) * 20))
+					elseif k == "collision_box" then
+						love.graphics.print(k .. ": 1/" .. tostring(v), 440, 160 + ((i - 1) * 20))
+					end
+				end
+			elseif game_data.actors[current_actor].entity == ENTITY_TYPE_PROJECTILE then
+				love.graphics.print("Projectile type " .. game_data.actors[current_actor].type.name, 440, 120)
+				
+				-- show animation's names list
+				for i = 1, #projectile_animations[current_projectile_type] do
+					love.graphics.setColor(0, 1, 1)
+					if current_property == i then love.graphics.setColor(1, 1, 0) end
+
+					local k = projectile_animations[current_projectile_type][i]
 					local v = game_data.actors[current_actor].type[k]
 
 					if k ~= "collision_box" then
@@ -1522,10 +1573,26 @@ function love.keypressed(key, scancode, isrepeat)
 			end
 		elseif key == "up" then
 			-- increase color in the full palette
-			ChangePensInk(selected_color, 1)
+			local steps = 1
+				
+			if love.keyboard.isDown("lshift") then
+				steps = 10
+			end
+			
+			for i = 1, steps do
+				ChangePensInk(selected_color, 1)
+			end
 		elseif key == "down" then
 			-- decrease color in the full palette
-			ChangePensInk(selected_color, -1)
+			local steps = 1
+				
+			if love.keyboard.isDown("lshift") then
+				steps = 10
+			end
+			
+			for i = 1, steps do
+				ChangePensInk(selected_color, -1)
+			end
 		elseif key == "escape" then
 			mode = MODE_MENU
 		end
@@ -1696,17 +1763,33 @@ function love.keypressed(key, scancode, isrepeat)
 			end
 		elseif key == "pagedown" then
 			-- edit previous block
-			if current_block > 1 then
-				current_block = current_block - 1
-			elseif current_block == 1 then
-				current_block = #game_data.blocks
+			local steps = 1
+			
+			if love.keyboard.isDown("lshift") then
+				steps = 10
+			end
+
+			for i = 1, steps do
+				if current_block > 1 then
+					current_block = current_block - 1
+				elseif current_block == 1 then
+					current_block = #game_data.blocks
+				end
 			end
 		elseif key == "pageup" then
 			-- edit next block
-			if current_block < #game_data.blocks then
-				current_block = current_block + 1
-			elseif current_block == #game_data.blocks then
-				current_block = 1
+			local steps = 1
+			
+			if love.keyboard.isDown("lshift") then
+				steps = 10
+			end
+
+			for i = 1, steps do
+				if current_block < #game_data.blocks then
+					current_block = current_block + 1
+				elseif current_block == #game_data.blocks then
+					current_block = 1
+				end
 			end
 		elseif key == "tab" then
 			if love.keyboard.isDown("lshift") then
@@ -1805,17 +1888,33 @@ function love.keypressed(key, scancode, isrepeat)
 			end
 		elseif key == "pagedown" then
 			-- edit previous sprite
-			if current_sprite > 1 then
-				current_sprite = current_sprite - 1
-			elseif current_sprite == 1 then
-				current_sprite = #game_data.sprites
+			local steps = 1
+			
+			if love.keyboard.isDown("lshift") then
+				steps = 10
+			end
+
+			for i = 1, steps do
+				if current_sprite > 1 then
+					current_sprite = current_sprite - 1
+				elseif current_sprite == 1 then
+					current_sprite = #game_data.sprites
+				end
 			end
 		elseif key == "pageup" then
 			-- edit next sprite
-			if current_sprite < #game_data.sprites then
-				current_sprite = current_sprite + 1
-			elseif current_sprite == #game_data.sprites then
-				current_sprite = 1
+			local steps = 1
+			
+			if love.keyboard.isDown("lshift") then
+				steps = 10
+			end
+
+			for i = 1, steps do
+				if current_sprite < #game_data.sprites then
+					current_sprite = current_sprite + 1
+				elseif current_sprite == #game_data.sprites then
+					current_sprite = 1
+				end
 			end
 		elseif key == "tab" then
 			if love.keyboard.isDown("lshift") then
@@ -1938,48 +2037,80 @@ function love.keypressed(key, scancode, isrepeat)
 			end
 		elseif key == "pagedown" then
 			-- edit previous animation
-			if current_animation > 1 then
-				current_animation = current_animation - 1
-			elseif current_animation == 1 then
-				current_animation = #game_data.animations
+			local steps = 1
+			
+			if love.keyboard.isDown("lshift") then
+				steps = 10
+			end
+
+			for i = 1, steps do
+				if current_animation > 1 then
+					current_animation = current_animation - 1
+				elseif current_animation == 1 then
+					current_animation = #game_data.animations
+				end
 			end
 			
-			animation_frame = 1
-							
+			current_frame = 1
+			
 			animation_playing = game_data.animations_loop[current_animation].loop
 			animation_frame = 1
 			animation_timer = 0.0
 		elseif key == "pageup" then
 			-- edit next animation
-			if current_animation < #game_data.animations then
-				current_animation = current_animation + 1
-			elseif current_animation == #game_data.animations then
-				current_animation = 1
+			local steps = 1
+			
+			if love.keyboard.isDown("lshift") then
+				steps = 10
+			end
+
+			for i = 1, steps do
+				if current_animation < #game_data.animations then
+					current_animation = current_animation + 1
+				elseif current_animation == #game_data.animations then
+					current_animation = 1
+				end
 			end
 			
-			animation_frame = 1
-							
+			current_frame = 1
+			
 			animation_playing = game_data.animations_loop[current_animation].loop
 			animation_frame = 1
 			animation_timer = 0.0
 		elseif key == "down" then
 			if current_animation > 0 then
-				if current_frame > 0 then
-					if game_data.animations[current_animation][current_frame] > 1 then
-						game_data.animations[current_animation][current_frame] = game_data.animations[current_animation][current_frame] - 1
-					elseif game_data.animations[current_animation][current_frame] == 1 then
-						game_data.animations[current_animation][current_frame] = game_data.max_animations
+				local steps = 1
+					
+				if love.keyboard.isDown("lshift") then
+					steps = 10
+				end
+				
+				for i = 1, steps do
+					if current_frame > 0 then
+						if game_data.animations[current_animation][current_frame] > 1 then
+							game_data.animations[current_animation][current_frame] = game_data.animations[current_animation][current_frame] - 1
+						elseif game_data.animations[current_animation][current_frame] == 1 then
+							game_data.animations[current_animation][current_frame] = game_data.max_animations
+						end
 					end
 				end
 			end			
 		elseif key == "up" then
 			if current_animation > 0 then
-				if current_frame > 0 then
-					if game_data.animations[current_animation][current_frame] < game_data.max_animations then
-						game_data.animations[current_animation][current_frame] = game_data.animations[current_animation][current_frame] + 1
-					else
-						game_data.animations[current_animation][current_frame] = 1
-					end					
+				local steps = 1
+					
+				if love.keyboard.isDown("lshift") then
+					steps = 10
+				end
+				
+				for i = 1, steps do
+					if current_frame > 0 then
+						if game_data.animations[current_animation][current_frame] < game_data.max_animations then
+							game_data.animations[current_animation][current_frame] = game_data.animations[current_animation][current_frame] + 1
+						else
+							game_data.animations[current_animation][current_frame] = 1
+						end					
+					end
 				end
 			end
 		elseif key == "left" then
@@ -1997,7 +2128,7 @@ function love.keypressed(key, scancode, isrepeat)
 				elseif current_frame == #game_data.animations[current_animation] then
 					current_frame = 1
 				end
-			end			
+			end
 		elseif key == "space" then
 			if current_animation > 0 then
 				animation_playing = true
@@ -2038,6 +2169,7 @@ function love.keypressed(key, scancode, isrepeat)
 					current_player_type = 0
 					current_enemy_type = 0
 					current_bonus_type = 0
+					current_projectile_type = 0
 					current_property = 0
 				else
 					current_entity_type = game_data.actors[current_actor].entity
@@ -2049,6 +2181,8 @@ function love.keypressed(key, scancode, isrepeat)
 						if current_enemy_type == 0 then current_enemy_type = 1 end
 					elseif current_entity_type == ENTITY_TYPE_BONUS then
 						if current_bonus_type == 0 then current_bonus_type = 1 end
+					elseif current_entity_type == ENTITY_TYPE_PROJECTILE then
+						if current_projectile_type == 0 then current_projectile_type = 1 end
 					end
 				end
 			end
@@ -2076,6 +2210,9 @@ function love.keypressed(key, scancode, isrepeat)
 				elseif current_entity_type == ENTITY_TYPE_BONUS then
 					if current_bonus_type == 0 then current_bonus_type = 1 end
 					game_data.actors[current_actor].type = DeepCopy(bonus_types[current_bonus_type])
+				elseif current_entity_type == ENTITY_TYPE_PROJECTILE then
+					if current_projectile_type == 0 then current_projectile_type = 1 end
+					game_data.actors[current_actor].type = DeepCopy(projectile_types[current_bonus_type])
 				end
 			end
 		elseif key == "t" then
@@ -2098,6 +2235,12 @@ function love.keypressed(key, scancode, isrepeat)
 					elseif current_bonus_type == #bonus_types then
 						current_bonus_type = 1
 					end
+				elseif current_entity_type == ENTITY_TYPE_PROJECTILE then
+					if current_projectile_type < #projectile_types then
+						current_projectile_type = current_projectile_type + 1
+					elseif current_projectile_type == #projectile_types then
+						current_projectile_type = 1
+					end
 				end
 				
 				game_data.actors[current_actor].type = {}
@@ -2108,187 +2251,277 @@ function love.keypressed(key, scancode, isrepeat)
 					game_data.actors[current_actor].type = DeepCopy(enemy_types[current_enemy_type])
 				elseif current_entity_type == ENTITY_TYPE_BONUS then
 					game_data.actors[current_actor].type = DeepCopy(bonus_types[current_bonus_type])
+				elseif current_entity_type == ENTITY_TYPE_PROJECTILE then
+					game_data.actors[current_actor].type = DeepCopy(projectile_types[current_projectile_type])
 				end
 			end
 		elseif key == "up" then
 			if current_actor > 0 then
-				if current_entity_type == ENTITY_TYPE_PLAYER then
-					if current_property > 1 then
-						current_property = current_property - 1
-					elseif current_property == 1 then
-						current_property = #player_animations[current_player_type]
-					end
-				elseif current_entity_type == ENTITY_TYPE_ENEMY then
-					if current_property > 1 then
-						current_property = current_property - 1
-					elseif current_property == 1 then
-						current_property = #enemy_animations[current_enemy_type]
-					end
-				elseif current_entity_type == ENTITY_TYPE_BONUS then
-					if current_property > 1 then
-						current_property = current_property - 1
-					elseif current_property == 1 then
-						current_property = #bonus_animations[current_bonus_type]
+				local steps = 1
+				
+				if love.keyboard.isDown("lshift") then
+					steps = 10
+				end
+
+				for i = 1, steps do
+					if current_entity_type == ENTITY_TYPE_PLAYER then
+						if current_property > 1 then
+							current_property = current_property - 1
+						elseif current_property == 1 then
+							current_property = #player_animations[current_player_type]
+						end
+					elseif current_entity_type == ENTITY_TYPE_ENEMY then
+						if current_property > 1 then
+							current_property = current_property - 1
+						elseif current_property == 1 then
+							current_property = #enemy_animations[current_enemy_type]
+						end
+					elseif current_entity_type == ENTITY_TYPE_BONUS then
+						if current_property > 1 then
+							current_property = current_property - 1
+						elseif current_property == 1 then
+							current_property = #bonus_animations[current_bonus_type]
+						end
+					elseif current_entity_type == ENTITY_TYPE_PROJECTILE then
+						if current_property > 1 then
+							current_property = current_property - 1
+						elseif current_property == 1 then
+							current_property = #projectile_animations[current_projectile_type]
+						end
 					end
 				end
 			end
 		elseif key == "down" then
 			if current_actor > 0 then
-				if current_entity_type == ENTITY_TYPE_PLAYER then
-					if current_property < #player_animations[current_player_type] then
-						current_property = current_property + 1
-					elseif current_property == #player_animations[current_player_type] then
-						current_property = 1
-					end
-				elseif current_entity_type == ENTITY_TYPE_ENEMY then
-					if current_property < #enemy_animations[current_enemy_type] then
-						current_property = current_property + 1
-					elseif current_property == #enemy_animations[current_enemy_type] then
-						current_property = 1
-					end
-				elseif current_entity_type == ENTITY_TYPE_BONUS then
-					if current_property < #bonus_animations[current_bonus_type] then
-						current_property = current_property + 1
-					elseif current_property == #bonus_animations[current_bonus_type] then
-						current_property = 1
+				local steps = 1
+				
+				if love.keyboard.isDown("lshift") then
+					steps = 10
+				end
+
+				for i = 1, steps do
+					if current_entity_type == ENTITY_TYPE_PLAYER then
+						if current_property < #player_animations[current_player_type] then
+							current_property = current_property + 1
+						elseif current_property == #player_animations[current_player_type] then
+							current_property = 1
+						end
+					elseif current_entity_type == ENTITY_TYPE_ENEMY then
+						if current_property < #enemy_animations[current_enemy_type] then
+							current_property = current_property + 1
+						elseif current_property == #enemy_animations[current_enemy_type] then
+							current_property = 1
+						end
+					elseif current_entity_type == ENTITY_TYPE_BONUS then
+						if current_property < #bonus_animations[current_bonus_type] then
+							current_property = current_property + 1
+						elseif current_property == #bonus_animations[current_bonus_type] then
+							current_property = 1
+						end
+					elseif current_entity_type == ENTITY_TYPE_PROJECTILE then
+						if current_property < #projectile_animations[current_projectile_type] then
+							current_property = current_property + 1
+						elseif current_property == #bonus_animations[current_projectile_type] then
+							current_property = 1
+						end
 					end
 				end
 			end
 		elseif key == "left" then
 			if current_actor > 0 then
-				if current_entity_type == ENTITY_TYPE_PLAYER then
-					local anim = player_animations[current_player_type][current_property]
-					
-					if anim == "hflip" then
-						game_data.actors[current_actor].type.hflip = not game_data.actors[current_actor].type.hflip
-					elseif anim == "directions" then
-						if game_data.actors[current_actor].type.directions == 8 then
-							game_data.actors[current_actor].type.directions = 4
-						else
-							game_data.actors[current_actor].type.directions = 8
+				local steps = 1
+				
+				if love.keyboard.isDown("lshift") then
+					steps = 10
+				end
+
+				for i = 1, steps do
+					if current_entity_type == ENTITY_TYPE_PLAYER then
+						local anim = player_animations[current_player_type][current_property]
+						
+						if anim == "hflip" then
+							game_data.actors[current_actor].type.hflip = not game_data.actors[current_actor].type.hflip
+						elseif anim == "directions" then
+							if game_data.actors[current_actor].type.directions == 8 then
+								game_data.actors[current_actor].type.directions = 4
+							else
+								game_data.actors[current_actor].type.directions = 8
+							end
+						elseif game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] > 0 then
+							game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] = game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] - 1
+						elseif game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] == 0 then
+							game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] = game_data.max_animations
 						end
-					elseif game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] > 0 then
-						game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] = game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] - 1
-					elseif game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] == 0 then
-						game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] = game_data.max_animations
-					end
-				elseif current_entity_type == ENTITY_TYPE_ENEMY then
-					local anim = enemy_animations[current_enemy_type][current_property]
-					
-					if anim == "direction" then
-						if game_data.actors[current_actor].type.direction > 0 then
-							game_data.actors[current_actor].type.direction = game_data.actors[current_actor].type.direction - 90
+					elseif current_entity_type == ENTITY_TYPE_ENEMY then
+						local anim = enemy_animations[current_enemy_type][current_property]
+						
+						if anim == "direction" then
+							if game_data.actors[current_actor].type.direction > 0 then
+								game_data.actors[current_actor].type.direction = game_data.actors[current_actor].type.direction - 90
+							end
+						elseif anim == "health" then
+							if game_data.actors[current_actor].type.health > 1 then
+								game_data.actors[current_actor].type.health = game_data.actors[current_actor].type.health - 1
+							end
+						elseif anim == "wound" then
+							if game_data.actors[current_actor].type.wound > 1 then
+								game_data.actors[current_actor].type.wound = game_data.actors[current_actor].type.wound - 1
+							end
+						elseif anim == "gravity" then
+							if game_data.actors[current_actor].type.gravity == false then
+								game_data.actors[current_actor].type.gravity = true
+							elseif game_data.actors[current_actor].type.gravity == true then
+								game_data.actors[current_actor].type.gravity = false
+							end
+						elseif game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] > 0 then
+							game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] = game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] - 1
+						elseif game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] == 0 then
+							game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] = game_data.max_animations
 						end
-					elseif anim == "health" then
-						if game_data.actors[current_actor].type.health > 1 then
-							game_data.actors[current_actor].type.health = game_data.actors[current_actor].type.health - 1
+					elseif current_entity_type == ENTITY_TYPE_BONUS then
+						local anim = bonus_animations[current_bonus_type][current_property]
+						
+						if anim == "bonus" then
+							if love.keyboard.isDown("lshift") == true then
+								game_data.actors[current_actor].type.bonus = game_data.actors[current_actor].type.bonus - 10
+							else
+								game_data.actors[current_actor].type.bonus = game_data.actors[current_actor].type.bonus - 1
+							end
+						elseif anim == "collision_box" then
+							if game_data.actors[current_actor].type.collision_box > 1 then
+								game_data.actors[current_actor].type.collision_box = math.floor(game_data.actors[current_actor].type.collision_box / 2)
+							end
+						elseif game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] > 0 then
+							game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] = game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] - 1
+						elseif game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] == 0 then
+							game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] = game_data.max_animations
 						end
-					elseif anim == "wound" then
-						if game_data.actors[current_actor].type.wound > 1 then
-							game_data.actors[current_actor].type.wound = game_data.actors[current_actor].type.wound - 1
+					elseif current_entity_type == ENTITY_TYPE_PROJECTILE then
+						local anim = projectile_animations[current_projectile_type][current_property]
+						
+						if anim == "wound" then
+							if love.keyboard.isDown("lshift") == true then
+								game_data.actors[current_actor].type.wound = game_data.actors[current_actor].type.wound - 10
+							else
+								game_data.actors[current_actor].type.wound = game_data.actors[current_actor].type.wound - 1
+							end
+						elseif anim == "collision_box" then
+							if game_data.actors[current_actor].type.collision_box > 1 then
+								game_data.actors[current_actor].type.collision_box = math.floor(game_data.actors[current_actor].type.collision_box / 2)
+							end
+						elseif game_data.actors[current_actor].type[projectile_animations[current_projectile_type][current_property]] > 0 then
+							game_data.actors[current_actor].type[projectile_animations[current_projectile_type][current_property]] = game_data.actors[current_actor].type[projectile_animations[current_projectile_type][current_property]] - 1
+						elseif game_data.actors[current_actor].type[projectile_animations[current_projectile_type][current_property]] == 0 then
+							game_data.actors[current_actor].type[projectile_animations[current_projectile_type][current_property]] = game_data.max_animations
 						end
-					elseif anim == "gravity" then
-						if game_data.actors[current_actor].type.gravity == false then
-							game_data.actors[current_actor].type.gravity = true
-						elseif game_data.actors[current_actor].type.gravity == true then
-							game_data.actors[current_actor].type.gravity = false
-						end
-					elseif game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] > 0 then
-						game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] = game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] - 1
-					elseif game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] == 0 then
-						game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] = game_data.max_animations
-					end
-				elseif current_entity_type == ENTITY_TYPE_BONUS then
-					local anim = bonus_animations[current_bonus_type][current_property]
-					
-					if anim == "bonus" then
-						if love.keyboard.isDown("lshift") == true then
-							game_data.actors[current_actor].type.bonus = game_data.actors[current_actor].type.bonus - 10
-						else
-							game_data.actors[current_actor].type.bonus = game_data.actors[current_actor].type.bonus - 1
-						end
-					elseif anim == "collision_box" then
-						if game_data.actors[current_actor].type.collision_box > 1 then
-							game_data.actors[current_actor].type.collision_box = math.floor(game_data.actors[current_actor].type.collision_box / 2)
-						end
-					elseif game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] > 0 then
-						game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] = game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] - 1
-					elseif game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] == 0 then
-						game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] = game_data.max_animations
 					end
 				end
 			end
 		elseif key == "right" then
 			if current_actor > 0 then
-				if current_entity_type == ENTITY_TYPE_PLAYER then
-					local anim = player_animations[current_player_type][current_property]
-					
-					if anim == "hflip" then
-						game_data.actors[current_actor].type.hflip = not game_data.actors[current_actor].type.hflip
-					elseif anim == "directions" then
-						if game_data.actors[current_actor].type.directions == 8 then
-							game_data.actors[current_actor].type.directions = 4
-						else
-							game_data.actors[current_actor].type.directions = 8
+				local steps = 1
+				
+				if love.keyboard.isDown("lshift") then
+					steps = 10
+				end
+
+				for i = 1, steps do
+					if current_entity_type == ENTITY_TYPE_PLAYER then
+						local anim = player_animations[current_player_type][current_property]
+						
+						if anim == "hflip" then
+							game_data.actors[current_actor].type.hflip = not game_data.actors[current_actor].type.hflip
+						elseif anim == "directions" then
+							if game_data.actors[current_actor].type.directions == 8 then
+								game_data.actors[current_actor].type.directions = 4
+							else
+								game_data.actors[current_actor].type.directions = 8
+							end
+						elseif game_data.actors[current_actor].type[anim] < game_data.max_animations then
+							game_data.actors[current_actor].type[anim] = game_data.actors[current_actor].type[anim] + 1
+						elseif game_data.actors[current_actor].type[anim] == game_data.max_animations then
+							game_data.actors[current_actor].type[anim] = 0
 						end
-					elseif game_data.actors[current_actor].type[anim] < game_data.max_animations then
-						game_data.actors[current_actor].type[anim] = game_data.actors[current_actor].type[anim] + 1
-					elseif game_data.actors[current_actor].type[anim] == game_data.max_animations then
-						game_data.actors[current_actor].type[anim] = 0
-					end
-				elseif current_entity_type == ENTITY_TYPE_ENEMY then
-					local anim = enemy_animations[current_enemy_type][current_property]
-					
-					if anim == "direction" then
-						if game_data.actors[current_actor].type.direction < 270 then
-							game_data.actors[current_actor].type.direction = game_data.actors[current_actor].type.direction + 90
+					elseif current_entity_type == ENTITY_TYPE_ENEMY then
+						local anim = enemy_animations[current_enemy_type][current_property]
+						
+						if anim == "direction" then
+							if game_data.actors[current_actor].type.direction < 270 then
+								game_data.actors[current_actor].type.direction = game_data.actors[current_actor].type.direction + 90
+							end
+						elseif anim == "health" then
+							if game_data.actors[current_actor].type.health < 100 then
+								game_data.actors[current_actor].type.health = game_data.actors[current_actor].type.health + 1
+							end
+						elseif anim == "wound" then
+							if game_data.actors[current_actor].type.wound < 100 then
+								game_data.actors[current_actor].type.wound = game_data.actors[current_actor].type.wound + 1
+							end
+						elseif anim == "gravity" then
+							if game_data.actors[current_actor].type.gravity == false then
+								game_data.actors[current_actor].type.gravity = true
+							elseif game_data.actors[current_actor].type.gravity == true then
+								game_data.actors[current_actor].type.gravity = false
+							end
+						elseif game_data.actors[current_actor].type[anim] < game_data.max_animations then
+							game_data.actors[current_actor].type[anim] = game_data.actors[current_actor].type[anim] + 1
+						elseif game_data.actors[current_actor].type[anim] == game_data.max_animations then
+							game_data.actors[current_actor].type[anim] = 0
 						end
-					elseif anim == "health" then
-						if game_data.actors[current_actor].type.health < 100 then
-							game_data.actors[current_actor].type.health = game_data.actors[current_actor].type.health + 1
+					elseif current_entity_type == ENTITY_TYPE_BONUS then
+						local anim = bonus_animations[current_bonus_type][current_property]
+						
+						if anim == "bonus" then
+							if love.keyboard.isDown("lshift") == true then
+								game_data.actors[current_actor].type.bonus = game_data.actors[current_actor].type.bonus + 10
+							else
+								game_data.actors[current_actor].type.bonus = game_data.actors[current_actor].type.bonus + 1
+							end
+						elseif anim == "collision_box" then
+							if game_data.actors[current_actor].type.collision_box < 4 then
+								game_data.actors[current_actor].type.collision_box = game_data.actors[current_actor].type.collision_box * 2
+							end
+						elseif game_data.actors[current_actor].type[anim] < game_data.max_animations then
+							game_data.actors[current_actor].type[anim] = game_data.actors[current_actor].type[anim] + 1
+						elseif game_data.actors[current_actor].type[anim] == game_data.max_animations then
+							game_data.actors[current_actor].type[anim] = 0
 						end
-					elseif anim == "wound" then
-						if game_data.actors[current_actor].type.wound < 100 then
-							game_data.actors[current_actor].type.wound = game_data.actors[current_actor].type.wound + 1
+					elseif current_entity_type == ENTITY_TYPE_PROJECTILE then
+						local anim = projectile_animations[current_projectile_type][current_property]
+						
+						if anim == "wound" then
+							if love.keyboard.isDown("lshift") == true then
+								game_data.actors[current_actor].type.wound = game_data.actors[current_actor].type.wound + 10
+							else
+								game_data.actors[current_actor].type.wound = game_data.actors[current_actor].type.wound + 1
+							end
+						elseif anim == "collision_box" then
+							if game_data.actors[current_actor].type.collision_box < 4 then
+								game_data.actors[current_actor].type.collision_box = game_data.actors[current_actor].type.collision_box * 2
+							end
+						elseif game_data.actors[current_actor].type[anim] < game_data.max_animations then
+							game_data.actors[current_actor].type[anim] = game_data.actors[current_actor].type[anim] + 1
+						elseif game_data.actors[current_actor].type[anim] == game_data.max_animations then
+							game_data.actors[current_actor].type[anim] = 0
 						end
-					elseif anim == "gravity" then
-						if game_data.actors[current_actor].type.gravity == false then
-							game_data.actors[current_actor].type.gravity = true
-						elseif game_data.actors[current_actor].type.gravity == true then
-							game_data.actors[current_actor].type.gravity = false
-						end
-					elseif game_data.actors[current_actor].type[anim] < game_data.max_animations then
-						game_data.actors[current_actor].type[anim] = game_data.actors[current_actor].type[anim] + 1
-					elseif game_data.actors[current_actor].type[anim] == game_data.max_animations then
-						game_data.actors[current_actor].type[anim] = 0
-					end
-				elseif current_entity_type == ENTITY_TYPE_BONUS then
-					local anim = bonus_animations[current_bonus_type][current_property]
-					
-					if anim == "bonus" then
-						if love.keyboard.isDown("lshift") == true then
-							game_data.actors[current_actor].type.bonus = game_data.actors[current_actor].type.bonus + 10
-						else
-							game_data.actors[current_actor].type.bonus = game_data.actors[current_actor].type.bonus + 1
-						end
-					elseif anim == "collision_box" then
-						if game_data.actors[current_actor].type.collision_box < 4 then
-							game_data.actors[current_actor].type.collision_box = game_data.actors[current_actor].type.collision_box * 2
-						end
-					elseif game_data.actors[current_actor].type[anim] < game_data.max_animations then
-						game_data.actors[current_actor].type[anim] = game_data.actors[current_actor].type[anim] + 1
-					elseif game_data.actors[current_actor].type[anim] == game_data.max_animations then
-						game_data.actors[current_actor].type[anim] = 0
 					end
 				end
 			end
 		elseif key == "pagedown" then
 			-- edit previous actor
 			if current_actor > 0 then
-				if current_actor > 1 then
-					current_actor = current_actor - 1
-				elseif current_actor == 1 then
-					current_actor = #game_data.actors
+				local steps = 1
+				
+				if love.keyboard.isDown("lshift") then
+					steps = 10
+				end
+
+				for i = 1, steps do
+					if current_actor > 1 then
+						current_actor = current_actor - 1
+					elseif current_actor == 1 then
+						current_actor = #game_data.actors
+					end
 				end
 				
 				current_entity_type = game_data.actors[current_actor].entity
@@ -2298,10 +2531,18 @@ function love.keypressed(key, scancode, isrepeat)
 		elseif key == "pageup" then
 			-- edit next actor
 			if current_actor > 0 then
-				if current_actor < #game_data.actors then
-					current_actor = current_actor + 1
-				elseif current_actor == #game_data.actors then
-					current_actor = 1
+				local steps = 1
+				
+				if love.keyboard.isDown("lshift") then
+					steps = 10
+				end
+
+				for i = 1, steps do
+					if current_actor < #game_data.actors then
+						current_actor = current_actor + 1
+					elseif current_actor == #game_data.actors then
+						current_actor = 1
+					end
 				end
 				
 				current_entity_type = game_data.actors[current_actor].entity
@@ -2608,16 +2849,32 @@ function love.keypressed(key, scancode, isrepeat)
 		end
 	elseif mode == MODE_EDIT_GAMES_DATA then
 		if key == "up" then
-			if current_parameter > 1 then
-				current_parameter = current_parameter - 1
-			elseif current_parameter == 1 then
-				current_parameter = #parameters_list
+			local steps = 1
+				
+			if love.keyboard.isDown("lshift") then
+				steps = 10
+			end
+			
+			for i = 1, steps do
+				if current_parameter > 1 then
+					current_parameter = current_parameter - 1
+				elseif current_parameter == 1 then
+					current_parameter = #parameters_list
+				end
 			end
 		elseif key == "down" then
-			if current_parameter < #parameters_list then
-				current_parameter = current_parameter + 1
-			elseif current_parameter == #parameters_list then
-				current_parameter = 1
+			local steps = 1
+				
+			if love.keyboard.isDown("lshift") then
+				steps = 10
+			end
+			
+			for i = 1, steps do
+				if current_parameter < #parameters_list then
+					current_parameter = current_parameter + 1
+				elseif current_parameter == #parameters_list then
+					current_parameter = 1
+				end
 			end
 		end
 
@@ -2644,18 +2901,34 @@ function love.keypressed(key, scancode, isrepeat)
 		end
 		
 		if key == "pageup" then
-			if current_page > 1 then
-				current_page = current_page - 1
-			elseif current_page == 1 then
-				current_page = math.ceil(#vars_values / PARAMETERS_BY_PAGE)
+			local steps = 1
+				
+			if love.keyboard.isDown("lshift") then
+				steps = 10
+			end
+
+			for i = 1, steps do
+				if current_page > 1 then
+					current_page = current_page - 1
+				elseif current_page == 1 then
+					current_page = math.ceil(#vars_values / PARAMETERS_BY_PAGE)
+				end
 			end
 			
 			parameters_list = GetParametersPage(current_page)
 		elseif key == "pagedown" then
-			if current_page < math.ceil(#vars_values / PARAMETERS_BY_PAGE) then
-				current_page = current_page + 1
-			elseif current_page == math.ceil(#vars_values / PARAMETERS_BY_PAGE) then
-				current_page = 1
+			local steps = 1
+				
+			if love.keyboard.isDown("lshift") then
+				steps = 10
+			end
+
+			for i = 1, steps do
+				if current_page < math.ceil(#vars_values / PARAMETERS_BY_PAGE) then
+					current_page = current_page + 1
+				elseif current_page == math.ceil(#vars_values / PARAMETERS_BY_PAGE) then
+					current_page = 1
+				end
 			end
 
 			parameters_list = GetParametersPage(current_page)
@@ -2670,16 +2943,32 @@ function love.keypressed(key, scancode, isrepeat)
 		end
 	elseif mode == MODE_IMPORT_MUSICS then
 		if key == "up" then
-			if current_music > 1 then
-				current_music = current_music - 1
-			elseif current_music == 1 then
-				current_music = #music_types
+			local steps = 1
+				
+			if love.keyboard.isDown("lshift") then
+				steps = 10
+			end
+			
+			for i = 1, steps do
+				if current_music > 1 then
+					current_music = current_music - 1
+				elseif current_music == 1 then
+					current_music = #music_types
+				end
 			end
 		elseif key == "down" then
-			if current_music < #music_types then
-				current_music = current_music + 1
-			elseif current_music == #music_types then
-				current_music = 1
+			local steps = 1
+				
+			if love.keyboard.isDown("lshift") then
+				steps = 10
+			end
+			
+			for i = 1, steps do
+				if current_music < #music_types then
+					current_music = current_music + 1
+				elseif current_music == #music_types then
+					current_music = 1
+				end
 			end
 		end
 	
@@ -2688,16 +2977,32 @@ function love.keypressed(key, scancode, isrepeat)
 		end
 	elseif mode == MODE_IMPORT_IMAGES then
 		if key == "up" then
-			if current_image > 1 then
-				current_image = current_image - 1
-			elseif current_image == 1 then
-				current_image = #image_types
+			local steps = 1
+				
+			if love.keyboard.isDown("lshift") then
+				steps = 10
+			end
+			
+			for i = 1, steps do
+				if current_image > 1 then
+					current_image = current_image - 1
+				elseif current_image == 1 then
+					current_image = #image_types
+				end
 			end
 		elseif key == "down" then
-			if current_image < #image_types then
-				current_image = current_image + 1
-			elseif current_image == #image_types then
-				current_image = 1
+			local steps = 1
+				
+			if love.keyboard.isDown("lshift") then
+				steps = 10
+			end
+			
+			for i = 1, steps do
+				if current_image < #image_types then
+					current_image = current_image + 1
+				elseif current_image == #image_types then
+					current_image = 1
+				end
 			end
 		end
 	
