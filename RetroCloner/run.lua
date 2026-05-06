@@ -6,15 +6,21 @@ local MODE_IN_GAME = 2
 local MODE_WINNER = 3
 local MODE_GAME_OVER = 4
 
-DT_CORRECTION = 60
-SCROLLING_SLOW_DOWN = 4
+local DT_CORRECTION = 60
+local SCROLLING_SLOW_DOWN = 4
 
-ENTITY_TYPE_PLAYER = 1
-ENTITY_TYPE_ENEMY = 2
-ENTITY_TYPE_BONUS = 3
+local ENTITY_TYPE_PLAYER = 1
+local ENTITY_TYPE_ENEMY = 2
+local ENTITY_TYPE_BONUS = 3
 
-ENEMY_SEEK_MODE = 0
-ENEMY_RANDOM_MODE = 1
+local ENEMY_SEEK_MODE = 0
+local ENEMY_RANDOM_MODE = 1
+
+local GOAL_EXIT_RIGHT = 1
+local GOAL_KILL_ALL_ENEMIES = 2
+local GOAL_KILL_ALL_ENEMIES_EXIT_RIGHT = 3
+local GOAL_TAKE_ALL_BONUS = 4
+local GOAL_TAKE_KEY_AND_EXIT = 5
 
 -- run arrays
 run.vars = {
@@ -67,41 +73,8 @@ function run.load()
 	run.vars.level = 1
 	run.vars.health = 100
 	
-	run.vars.dir = 0
-	run.vars.dir_x = 1
-	run.vars.dir_y = 0
-	run.vars.jump_power = 0
-	run.vars.fall_power = 0
-	run.vars.on_the_ground = false
-	run.vars.on_stairs = false
-	
-	-- scrolling values
-	run.vars.scrolling_x = game_data.scrolling_start_x[run.vars.level]
-	run.vars.scrolling_y = game_data.scrolling_start_y[run.vars.level]
-	
-	-- game speed and animation timer
-	run.vars.game_speed_timer = 0.0
-	run.vars.animation_timer = 0.0
-	
-	-- invincibility is false at beginning
-	run.vars.invincible = false
-	run.vars.invincibility_duration = 0
-	
-	-- enemy timer for movements and animations
-	run.vars.enemy_move_timer = 0.0
-	
-	-- reset actors positions and animations
-	for i = 1, #game_data.levels do
-		for j = 1, #game_data.levels[i].actors do
-			game_data.levels[i].actors[j].x = game_data.levels[i].actors[j].start_x
-			game_data.levels[i].actors[j].y = game_data.levels[i].actors[j].start_y
-			game_data.levels[i].actors[j].animation = GetActorAnimationNumber(game_data.levels[i].actors[j].number, "idle")
-			game_data.levels[i].actors[j].frame = 1
-		end
-	end
-	
-	-- create a copy of the current level
-	run.vars.level_actors = DeepCopy(game_data.levels[run.vars.level].actors)
+	-- initialize all
+	CommonInit()
 
 	-- load musics
 	for i = 1, #music_types do
@@ -1338,7 +1311,6 @@ function run.update(dt)
 			end
 		end
 
-
 		-- check for player collisions with enemies
 		-- TODO!
 		
@@ -1477,6 +1449,85 @@ function run.update(dt)
 				end
 			end
 		end
+		
+		-- test victory
+		if game_data.vars.game_goal == GOAL_EXIT_RIGHT then
+			if run.vars.level_actors[1].x >= (game_data.levels_data.sw * game_data.levels_data.w * game_data.block_width) - game_data.sprite_width then
+				GotoNextLevel()
+			end
+		elseif game_data.vars.game_goal == GOAL_KILL_ALL_ENEMIES then
+			local flag = false
+			
+			for i = 2, #run.vars.level_actors do
+				local actor_number = run.vars.level_actors[i].number
+					
+				if game_data.actors[actor_number].entity == ENTITY_TYPE_ENEMY then
+					flag = true
+				end
+			end
+			
+			if flag == false then
+				GotoNextLevel()
+			end
+		elseif game_data.vars.game_goal == GOAL_KILL_ALL_ENEMIES_EXIT_RIGHT then
+			if run.vars.level_actors[1].x >= (game_data.levels_data.sw * game_data.levels_data.w * game_data.block_width) - game_data.sprite_width then
+				local flag = false
+				
+				for i = 2, #run.vars.level_actors do
+					local actor_number = run.vars.level_actors[i].number
+						
+					if game_data.actors[actor_number].entity == ENTITY_TYPE_ENEMY then
+						flag = true
+					end
+				end
+					
+				if flag == false then
+					GotoNextLevel()
+				end
+			end
+		elseif game_data.vars.game_goal == GOAL_TAKE_ALL_BONUS then
+			local flag = false
+			
+			for i = 2, #run.vars.level_actors do
+				local actor_number = run.vars.level_actors[i].number
+					
+				if game_data.actors[actor_number].entity == ENTITY_TYPE_BONUS then
+					flag = true
+				end
+			end
+				
+			if flag == false then
+				GotoNextLevel()
+			end
+		elseif game_data.vars.game_goal == GOAL_TAKE_KEY_AND_EXIT then
+			-- TODO!
+		end
+	elseif run.vars.game_mode == MODE_WINNER then
+		-- stop all musics and start winner music, if needed
+		if run.vars.musics.winner ~= nil then
+			if run.vars.musics.intro:isPlaying() then
+				run.vars.musics.intro:stop()
+			end
+		end
+
+		if run.vars.musics.in_game ~= nil then
+			if run.vars.musics.in_game:isPlaying() then
+				run.vars.musics.in_game:stop()
+			end
+		end
+		
+		if run.vars.musics.winner ~= nil then
+			if not run.vars.musics.winner:isPlaying() then
+				run.vars.musics.winner:play()
+				run.vars.musics.winner:setLooping(true)
+			end
+		end
+
+		if run.vars.musics.game_over ~= nil then
+			if run.vars.musics.game_over:isPlaying() then
+				run.vars.musics.game_over:stop()
+			end
+		end	
 	end
 end
 
@@ -2248,4 +2299,63 @@ function AnimateCharacter(i, moving)
 	return false
 end
 
+-- common initialization
+function CommonInit()
+	run.vars.dir = 0
+	run.vars.dir_x = 1
+	run.vars.dir_y = 0
+	run.vars.jump_power = 0
+	run.vars.fall_power = 0
+	run.vars.on_the_ground = false
+	run.vars.on_stairs = false
+	
+	-- scrolling values
+	run.vars.scrolling_x = game_data.scrolling_start_x[run.vars.level]
+	run.vars.scrolling_y = game_data.scrolling_start_y[run.vars.level]
+	
+	-- game speed and animation timer
+	run.vars.game_speed_timer = 0.0
+	run.vars.animation_timer = 0.0
+	
+	-- invincibility is false at beginning
+	run.vars.invincible = false
+	run.vars.invincibility_duration = 0
+	
+	-- enemy timer for movements and animations
+	run.vars.enemy_move_timer = 0.0
+	
+	-- reset actors positions and animations
+	for i = 1, #game_data.levels do
+		for j = 1, #game_data.levels[i].actors do
+			game_data.levels[i].actors[j].x = game_data.levels[i].actors[j].start_x
+			game_data.levels[i].actors[j].y = game_data.levels[i].actors[j].start_y
+			game_data.levels[i].actors[j].animation = GetActorAnimationNumber(game_data.levels[i].actors[j].number, "idle")
+			game_data.levels[i].actors[j].frame = 1
+		end
+	end
+	
+	-- create a copy of the current level
+	run.vars.level_actors = DeepCopy(game_data.levels[run.vars.level].actors)
+end
+
+-- go to next level, if possible
+function GotoNextLevel()
+	-- initialize player's data
+	run.vars.health = 100
+	
+	-- go to next level
+	run.vars.level = run.vars.level + 1
+
+	-- win the game ?
+	if run.vars.level > #game_data.levels then
+		run.vars.game_mode = MODE_WINNER
+		
+		return
+	end
+	
+	-- initialize all
+	CommonInit()
+end
+
 return run
+

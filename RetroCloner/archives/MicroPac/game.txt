@@ -4131,9 +4131,9 @@ name
 maze & chase
 END
 3
-collision_box
-4
 idle
+4
+collision_box
 4
 bonus
 10
@@ -4147,8 +4147,8 @@ walk_right
 5
 affraid_left
 7
-wound
-1
+affraid_right
+7
 walk_up
 5
 walk_down
@@ -4157,6 +4157,8 @@ affraid_up
 7
 affraid_down
 7
+die
+0
 fire_up
 0
 fire_down
@@ -4165,24 +4167,22 @@ fire_left
 0
 fire_right
 0
+name
+seek 4 directions
+wound
+1
 idle
 5
 health
 1
-affraid_right
-7
-die
-0
-name
-seek 4 directions
 END
 3
 idle
 6
-duration
-10
 collision_box
 2
+duration
+10
 name
 invincible
 END
@@ -5030,7 +5030,7 @@ wall
 2
 10
 2
-1
+4
 1
 4
 false
