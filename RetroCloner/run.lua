@@ -208,6 +208,19 @@ function run.update(dt)
 		run.vars.game_speed_timer = run.vars.game_speed_timer + dt
 		run.vars.animations_timer = run.vars.animations_timer + dt
 		run.vars.enemy_move_timer = run.vars.enemy_move_timer + dt
+		
+		if run.vars.invincibility_duration > 0.0 then
+			run.vars.invincibility_duration = run.vars.invincibility_duration - dt
+			
+			if run.vars.invincibility_duration < 0.0 then
+				run.vars.invincibility_duration = 0.0
+			end
+			
+			if run.vars.invincibility_duration == 0.0 then
+				run.vars.invincible = false
+			end
+		end
+		
 		animations_tick = false
 		game_speed_tick = false
 		
@@ -941,32 +954,66 @@ function run.update(dt)
 					-- move left to right
 					if game_data.actors[actor_number].type.name == "moving left-right" then
 						if run.vars.enemy_move_timer < 0.5 then
-							if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "idle") then
-								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
+							if run.vars.invincible == false then
+								if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "idle") then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
+									run.vars.level_actors[i].frame = 1
+								end
+							elseif run.vars.invincible == true then
+								if run.vars.level_actors[i].dir == 180 then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "affraid_left")
+								elseif run.vars.level_actors[i].dir == 0 then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "affraid_right")
+								end
+								
 								run.vars.level_actors[i].frame = 1
 							end
 							
 							moving = false
 						elseif run.vars.enemy_move_timer >= 0.5 and run.vars.enemy_move_timer < 1.0 then
-							if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "walk_left") then
-								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_left")
-								run.vars.level_actors[i].frame = 1
+							if run.vars.invincible == false then
+								if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "walk_left") then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_left")
+									run.vars.level_actors[i].frame = 1
+								end
+							elseif run.vars.invincible == true then
+								if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "affraid_left") then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "affraid_left")
+									run.vars.level_actors[i].frame = 1
+								end
 							end
 
 							new_x = new_x - 1
 							requested_dir = 180
 							moving = true
 						elseif run.vars.enemy_move_timer >= 1.0 and run.vars.enemy_move_timer < 1.5 then
-							if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "idle") then
-								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
+							if run.vars.invincible == false then
+								if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "idle") then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
+									run.vars.level_actors[i].frame = 1
+								end
+							elseif run.vars.invincible == true then
+								if run.vars.level_actors[i].dir == 180 then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "affraid_left")
+								else
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "affraid_right")
+								end
+								
 								run.vars.level_actors[i].frame = 1
 							end
 							
 							moving = false
 						elseif run.vars.enemy_move_timer >= 1.5 then
-							if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "walk_right") then
-								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_right")
-								run.vars.level_actors[i].frame = 1
+							if run.vars.invincible == false then
+								if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "walk_right") then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_right")
+									run.vars.level_actors[i].frame = 1
+								end
+							elseif run.vars.invincible == true then
+								if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "affraid_right") then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "affraid_right")
+									run.vars.level_actors[i].frame = 1
+								end
 							end
 							
 							new_x = new_x + 1
@@ -975,32 +1022,66 @@ function run.update(dt)
 						end
 					elseif game_data.actors[actor_number].type.name == "moving up-down" then
 						if run.vars.enemy_move_timer < 0.5 then
-							if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "idle") then
-								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
+							if run.vars.invincible == false then
+								if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "idle") then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
+									run.vars.level_actors[i].frame = 1
+								end
+							elseif run.vars.invincible == true then
+								if run.vars.level_actors[i].dir == 270 then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "affraid_up")
+								elseif run.vars.level_actors[i].dir == 90 then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "affraid_down")
+								end
+								
 								run.vars.level_actors[i].frame = 1
 							end
 							
 							moving = false
 						elseif run.vars.enemy_move_timer >= 0.5 and run.vars.enemy_move_timer < 1.0 then
-							if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "walk_down") then
-								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_down")
-								run.vars.level_actors[i].frame = 1
+							if run.vars.invincible == false then
+								if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "walk_down") then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_down")
+									run.vars.level_actors[i].frame = 1
+								end
+							elseif run.vars.invincible == true then
+								if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "affraid_down") then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "affraid_down")
+									run.vars.level_actors[i].frame = 1
+								end
 							end
 
 							new_y = new_y + 1
 							requested_dir = 90
 							moving = true
 						elseif run.vars.enemy_move_timer >= 1.0 and run.vars.enemy_move_timer < 1.5 then
-							if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "idle") then
-								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
+							if run.vars.invincible == false then
+								if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "idle") then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
+									run.vars.level_actors[i].frame = 1
+								end
+							elseif run.vars.invincible == true then
+								if run.vars.level_actors[i].dir == 270 then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "affraid_up")
+								elseif run.vars.level_actors[i].dir == 90 then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "affraid_down")
+								end
+								
 								run.vars.level_actors[i].frame = 1
 							end
 							
 							moving = false
 						elseif run.vars.enemy_move_timer >= 1.5 then
-							if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "walk_up") then
-								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_up")
-								run.vars.level_actors[i].frame = 1
+							if run.vars.invincible == false then
+								if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "walk_up") then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_up")
+									run.vars.level_actors[i].frame = 1
+								end
+							elseif run.vars.invincible == true then
+								if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "affraid_up") then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "affraid_up")
+									run.vars.level_actors[i].frame = 1
+								end
 							end
 							
 							new_y = new_y - 1
@@ -1027,10 +1108,17 @@ function run.update(dt)
 						end
 						
 						-- set animation to walk
-						if run.vars.level_actors[i].animation == GetActorAnimationNumber(actor_number, "idle") then
-							run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk")
+						if run.vars.invincible == false then
+							if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "walk") then
+								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk")
+								run.vars.level_actors[i].frame = 1
+							end
+						elseif run.vars.invincible == true then
+							if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "affraid") then
+								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "affraid")
+								run.vars.level_actors[i].frame = 1
+							end
 						end
-
 					elseif game_data.actors[actor_number].type.name == "seek 4 directions" then
 						local xa = run.vars.level_actors[1].x
 						local ya = run.vars.level_actors[1].y
@@ -1038,6 +1126,11 @@ function run.update(dt)
 						local ye = run.vars.level_actors[i].y
 						
 						requested_dir = 0
+						
+						-- affraid mode
+						if run.vars.invincible == true and run.vars.invincibility_duration > 0.0 then
+							run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
+						end
 						
 						-- seek
 						if run.vars.level_actors[i].param == ENEMY_SEEK_MODE then
@@ -1069,7 +1162,7 @@ function run.update(dt)
 							requested_dir = run.vars.level_actors[i].dir
 							
 							-- randomize
-							if math.random(1, 100) == 1 then
+							if math.random(1, 50) == 1 then
 								requested_dir = math.random(0, 3) * 90
 							end
 
@@ -1139,10 +1232,14 @@ function run.update(dt)
 								requested_dir = run.vars.level_actors[i].dir
 
 								-- change behaviour on collision
-								if run.vars.level_actors[i].param == ENEMY_SEEK_MODE then
-									run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
-								elseif run.vars.level_actors[i].param == ENEMY_RANDOM_MODE then
-									run.vars.level_actors[i].param = ENEMY_SEEK_MODE									
+								if run.vars.invincible == false then
+									if run.vars.level_actors[i].param == ENEMY_SEEK_MODE then
+										run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
+									elseif run.vars.level_actors[i].param == ENEMY_RANDOM_MODE then
+										run.vars.level_actors[i].param = ENEMY_SEEK_MODE
+									end
+								else
+									requested_dir = (requested_dir + 90) % 360
 								end
 							end
 						end
@@ -1170,10 +1267,14 @@ function run.update(dt)
 								requested_dir = run.vars.level_actors[i].dir
 
 								-- change behaviour on collision
-								if run.vars.level_actors[i].param == ENEMY_SEEK_MODE then
-									run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
-								elseif run.vars.level_actors[i].param == ENEMY_RANDOM_MODE then
-									run.vars.level_actors[i].param = ENEMY_SEEK_MODE									
+								if run.vars.invincible == false then
+									if run.vars.level_actors[i].param == ENEMY_SEEK_MODE then
+										run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
+									elseif run.vars.level_actors[i].param == ENEMY_RANDOM_MODE then
+										run.vars.level_actors[i].param = ENEMY_SEEK_MODE
+									end
+								else
+									requested_dir = (requested_dir + 90) % 360
 								end
 							end
 						end
@@ -1198,18 +1299,31 @@ function run.update(dt)
 						run.vars.level_actors[i].dir = requested_dir
 						
 						-- change enemy animation, depending on the type of enemy
-						if game_data.actors[actor_number].type.name == "seek 4 directions" then
-							if run.vars.level_actors[i].dir == 270 then
-								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_up")
-							elseif run.vars.level_actors[i].dir == 90 then
-								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_down")
-							elseif run.vars.level_actors[i].dir == 180 then
-								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_left")
-							elseif run.vars.level_actors[i].dir == 0 then
-								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_right")
+						if run.vars.invincible == false then
+							if game_data.actors[actor_number].type.name == "seek 4 directions" then
+								if run.vars.level_actors[i].dir == 270 then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_up")
+								elseif run.vars.level_actors[i].dir == 90 then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_down")
+								elseif run.vars.level_actors[i].dir == 180 then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_left")
+								elseif run.vars.level_actors[i].dir == 0 then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_right")
+								end
+							end
+						elseif run.vars.invincible == true then
+							if game_data.actors[actor_number].type.name == "seek 4 directions" then
+								if run.vars.level_actors[i].dir == 270 then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "affraid_up")
+								elseif run.vars.level_actors[i].dir == 90 then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "affraid_down")
+								elseif run.vars.level_actors[i].dir == 180 then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "affraid_left")
+								elseif run.vars.level_actors[i].dir == 0 then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "affraid_right")
+								end
 							end
 						end
-
 					end
 				end
 		
@@ -1297,6 +1411,62 @@ function run.update(dt)
 						-- start invincibility
 						run.vars.invincible = true
 						run.vars.invincibility_duration = game_data.actors[actor_number].type.duration
+						
+						-- set enemies to affraid
+						for j = 2, #run.vars.level_actors do
+							local actor_number = run.vars.level_actors[j].number
+
+							if game_data.actors[actor_number].entity == ENTITY_TYPE_ENEMY then
+								if game_data.actors[actor_number].type.name == "static" then
+									run.vars.level_actors[j].animation = GetActorAnimationNumber(actor_number, "affraid")
+								elseif game_data.actors[actor_number].type.name == "moving left-right" then
+									if run.vars.level_actors[i].dir == 180 then
+										run.vars.level_actors[j].animation = GetActorAnimationNumber(actor_number, "affraid_left")
+									elseif run.vars.level_actors[i].dir == 0 then
+										run.vars.level_actors[j].animation = GetActorAnimationNumber(actor_number, "affraid_right")
+									end
+								elseif game_data.actors[actor_number].type.name == "moving up-down" then
+									if run.vars.level_actors[i].dir == 270 then
+										run.vars.level_actors[j].animation = GetActorAnimationNumber(actor_number, "affraid_up")
+									elseif run.vars.level_actors[i].dir == 90 then
+										run.vars.level_actors[j].animation = GetActorAnimationNumber(actor_number, "affraid_down")
+									end
+								elseif game_data.actors[actor_number].type.name == "sniper" then
+									run.vars.level_actors[j].animation = GetActorAnimationNumber(actor_number, "affraid")
+								elseif game_data.actors[actor_number].type.name == "oscillate left-right" then
+									run.vars.level_actors[j].animation = GetActorAnimationNumber(actor_number, "affraid")
+								elseif game_data.actors[actor_number].type.name == "oscillate up-down" then
+									run.vars.level_actors[j].animation = GetActorAnimationNumber(actor_number, "affraid")
+								elseif game_data.actors[actor_number].type.name == "turn" then
+									run.vars.level_actors[j].animation = GetActorAnimationNumber(actor_number, "affraid")
+								elseif game_data.actors[actor_number].type.name == "seek 4 directions" then
+									if run.vars.level_actors[i].dir == 270 then
+										run.vars.level_actors[j].animation = GetActorAnimationNumber(actor_number, "affraid_up")
+									elseif run.vars.level_actors[i].dir == 90 then
+										run.vars.level_actors[j].animation = GetActorAnimationNumber(actor_number, "affraid_down")
+									elseif run.vars.level_actors[i].dir == 180 then
+										run.vars.level_actors[j].animation = GetActorAnimationNumber(actor_number, "affraid_left")
+									elseif run.vars.level_actors[i].dir == 0 then
+										run.vars.level_actors[j].animation = GetActorAnimationNumber(actor_number, "affraid_right")
+									end
+								elseif game_data.actors[actor_number].type.name == "seek 8 directions" then
+									run.vars.level_actors[j].animation = GetActorAnimationNumber(actor_number, "affraid")
+								elseif game_data.actors[actor_number].type.name == "random 4 directions" then
+									if run.vars.level_actors[i].dir == 270 then
+										run.vars.level_actors[j].animation = GetActorAnimationNumber(actor_number, "affraid_up")
+									elseif run.vars.level_actors[i].dir == 90 then
+										run.vars.level_actors[j].animation = GetActorAnimationNumber(actor_number, "affraid_down")
+									elseif run.vars.level_actors[i].dir == 180 then
+										run.vars.level_actors[j].animation = GetActorAnimationNumber(actor_number, "affraid_left")
+									elseif run.vars.level_actors[i].dir == 0 then
+										run.vars.level_actors[j].animation = GetActorAnimationNumber(actor_number, "affraid_right")
+									end
+								elseif game_data.actors[actor_number].type.name == "random 8 directions" then
+									run.vars.level_actors[j].animation = GetActorAnimationNumber(actor_number, "affraid")
+								end
+							end
+						end
+
 						
 						-- play bonus sound here
 						-- TODO!

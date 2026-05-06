@@ -38,33 +38,43 @@ player_levels_max_size = {
 
 -- types of enemies
 enemy_types = {
-	{name = "static", idle = 0, die = 0, health = 1, wound = 1},
-	{name = "moving left-right", idle = 0, walk_left = 0, walk_right = 0, die = 0, health = 1, wound = 1, gravity = false},
-	{name = "moving up-down", idle = 0, walk_up = 0, walk_down = 0, die = 0, health = 1, wound = 1},
-	{name = "sniper", idle = 0, fire = 0, die = 0, direction = 180, health = 1, wound = 1},
-	{name = "oscillate left-right", idle = 0, walk = 0, fire = 0, die = 0, health = 1, wound = 1},
-	{name = "oscillate up_down", idle = 0, walk = 0, fire = 0, die = 0, health = 1, wound = 1},
-	{name = "turn", idle = 0, walk = 0, fire = 0, die = 0, health = 1, wound = 1},
+	{name = "static", idle = 0, affraid = 0, die = 0, health = 1, wound = 1},
+	{name = "moving left-right", idle = 0, walk_left = 0, walk_right = 0, affraid_left = 0, affraid_right = 0, die = 0, health = 1, wound = 1, gravity = false},
+	{name = "moving up-down", idle = 0, walk_up = 0, walk_down = 0, affraid_up = 0, affraid_down = 0, die = 0, health = 1, wound = 1},
+	{name = "sniper", idle = 0, fire = 0, affraid = 0, die = 0, direction = 180, health = 1, wound = 1},
+	{name = "oscillate left-right", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1},
+	{name = "oscillate up_down", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1},
+	{name = "turn", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1},
 	{name = "seek 4 directions", idle = 0, walk_up = 0, walk_down = 0, walk_left = 0, walk_right = 0,
-		fire_up = 0, fire_down = 0, fire_left = 0, fire_right = 0, die = 0, health = 1, wound = 1},
-	{name = "seek 8 directions", idle = 0, walk = 0, fire = 0, die = 0, health = 1, wound = 1},
+		fire_up = 0, fire_down = 0, fire_left = 0, fire_right = 0,
+		affraid_up = 0, affraid_down = 0, affraid_left = 0, affraid_right = 0,
+		die = 0, health = 1, wound = 1},
+	{name = "seek 8 directions", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1},
 	{name = "random 4 directions", idle = 0, walk_up = 0, walk_down = 0, walk_left = 0, walk_right = 0,
-		fire_up = 0, fire_down = 0, fire_left = 0, fire_right = 0, die = 0, health = 1, wound = 1},
-	{name = "random 8 directions", idle = 0, walk = 0, fire = 0, die = 0, health = 1, wound = 1}
+		fire_up = 0, fire_down = 0, fire_left = 0, fire_right = 0,
+		affraid_up = 0, affraid_down = 0, affraid_left = 0, affraid_right = 0,
+		die = 0, health = 1, wound = 1},
+	{name = "random 8 directions", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1}
 }
 
 enemy_animations = {
-	{"idle", "die", "health", "wound"},
-	{"idle", "walk_left", "walk_right", "die", "health", "wound", "gravity"},
-	{"idle", "walk_up", "walk_down", "die", "health", "wound"},
-	{"idle", "fire", "die", "direction", "health", "wound"},
-	{"idle", "walk", "fire", "die", "health", "wound"},
-	{"idle", "walk", "fire", "die", "health", "wound"},
-	{"idle", "walk", "fire", "die", "health", "wound"},
-	{"idle", "walk_up", "walk_down", "walk_left", "walk_right", "fire_up", "fire_down", "fire_left", "fire_right", "die", "health", "wound"},
-	{"idle", "walk", "fire", "die", "health", "wound"},
-	{"idle", "walk_up", "walk_down", "walk_left", "walk_right", "fire_up", "fire_down", "fire_left", "fire_right", "die", "health", "wound"},
-	{"idle", "walk", "fire", "die", "health", "wound"}
+	{"idle", "affraid", "die", "health", "wound"},
+	{"idle", "walk_left", "walk_right", "affraid_left", "affraid_right", "die", "health", "wound", "gravity"},
+	{"idle", "walk_up", "walk_down", "affraid_up", "affraid_down", "die", "health", "wound"},
+	{"idle", "fire", "affraid", "die", "direction", "health", "wound"},
+	{"idle", "walk", "fire", "affraid", "die", "health", "wound"},
+	{"idle", "walk", "fire", "affraid", "die", "health", "wound"},
+	{"idle", "walk", "fire", "affraid", "die", "health", "wound"},
+	{"idle", "walk_up", "walk_down", "walk_left", "walk_right",
+		"fire_up", "fire_down", "fire_left", "fire_right",
+		"affraid_up", "affraid_down", "affraid_left", "affraid_right", 
+		"die", "health", "wound"},
+	{"idle", "walk", "fire", "affraid", "die", "health", "wound"},
+	{"idle", "walk_up", "walk_down", "walk_left", "walk_right",
+		"fire_up", "fire_down", "fire_left", "fire_right",
+		"affraid_up", "affraid_down", "affraid_left", "affraid_right", 
+		"die", "health", "wound"},
+	{"idle", "walk", "fire", "affraid", "die", "health", "wound"}
 }
 
 -- types of bonus-malus
