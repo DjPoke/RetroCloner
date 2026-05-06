@@ -3,8 +3,7 @@ TODO
 ====
 
 * Bugs:
-	- Bug  lors de la suppression de plusieurs acteurs dans le level editor
-	- Faire revenir le numéro de frame de l'animation à 1, pour ne pas qu'il soit caché
+	- Dans le menu animations, faire revenir le numéro de frame de l'animation à 1, pour ne pas que le curseur de frame soit caché
 	
 * Terminer la partie jeu:
 	- Pouvoir utiliser shift pour aller plus vite dans les menus nécessaires

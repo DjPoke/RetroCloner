@@ -993,7 +993,7 @@ function love.draw()
 					local by = y - current_level_scroll_y
 					local real_x = pos_x + (x * game_data.block_width * game_data.pixel_size * SCREEN_ZOOM)
 					local real_y = pos_y + (y * game_data.block_height * SCREEN_ZOOM)
-					
+
 					if game_data.levels[current_level].blocks[bx][by] > 0 then
 						if #img_blocks > 0 then
 							love.graphics.draw(img_blocks[game_data.levels[current_level].blocks[bx][by]], real_x, real_y, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
@@ -1003,8 +1003,6 @@ function love.draw()
 			end
 
 			-- draw level's actors
-			love.graphics.setColor(1, 1, 1)
-
 			for i = 1, #game_data.levels[current_level].actors do
 				local actor_number = game_data.levels[current_level].actors[i].number
 				local sprite = GetActorSprite(actor_number, "idle", 1)
@@ -1017,24 +1015,33 @@ function love.draw()
 				if #img_sprites > 0 then
 					if current_level_actors_edit_mode == false then
 						-- draw all actors
+						love.graphics.setColor(1, 1, 1)
 						love.graphics.draw(img_sprites[sprite], real_x, real_y, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
 					elseif current_level_actors_edit_mode == true then
 						-- editing actor instance i
 						if i == current_level_edited_actor_instance then
 							if blink_timer < MID_BLINK_TIME then
+								love.graphics.setColor(1, 1, 1)
 								love.graphics.draw(img_sprites[sprite], real_x, real_y, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
 							end
 						else
+							love.graphics.setColor(1, 1, 1)
 							love.graphics.draw(img_sprites[sprite], real_x, real_y, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
-						end
+						end						
 					end
-					
-
 				end
 			end
 
 			-- disable scissor
 			love.graphics.setScissor()
+
+			-- show edited actor instance number
+			if #img_sprites > 0 then
+				if current_level_actors_edit_mode == true then
+					love.graphics.setColor(0, 1, 1)
+					love.graphics.print("Edited actor: " .. current_level_edited_actor_instance, 450, 670)
+				end
+			end
 			
 			-- print the scroll values
 			love.graphics.setColor(0, 1, 1)

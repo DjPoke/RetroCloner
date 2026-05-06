@@ -643,6 +643,7 @@ end
 
 -- scroll the screen to show edited actor instance
 function GetActorInstanceScrolling()
+	-- get x
 	current_level_scroll_x = math.floor(game_data.levels[current_level].actors[current_level_edited_actor_instance].start_x / game_data.block_width)
 		
 	if current_level_scroll_x >= game_data.levels_data.sw * (game_data.levels_data.w - 1) then
@@ -651,10 +652,11 @@ function GetActorInstanceScrolling()
 		
 	current_level_scroll_x = -current_level_scroll_x
 
+	-- get y
 	current_level_scroll_y = math.floor(game_data.levels[current_level].actors[current_level_edited_actor_instance].start_y / game_data.block_height)
 		
 	if current_level_scroll_y >= game_data.levels_data.sh * (game_data.levels_data.h - 1) then
-		current_level_scroll_y = game_data.levels_data.sw * (game_data.levels_data.h - 1)
+		current_level_scroll_y = game_data.levels_data.sh * (game_data.levels_data.h - 1)
 	end
 
 	current_level_scroll_y = -current_level_scroll_y
