@@ -13,6 +13,9 @@ ENTITY_TYPE_PLAYER = 1
 ENTITY_TYPE_ENEMY = 2
 ENTITY_TYPE_BONUS = 3
 
+ENEMY_SEEK_MODE = 0
+ENEMY_RANDOM_MODE = 1
+
 -- run arrays
 run.vars = {
 	level_actors = {},
@@ -553,7 +556,7 @@ function run.update(dt)
 					end
 					
 					-- check for player's collisions with blocks, because may be he has moved
-					new_x, collision = SlidingCollisionX(new_x, old_y, game_data.sprite_width, game_data.sprite_height, run.vars.dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)					
+					new_x, collision = SlidingCollisionX(new_x, old_y, game_data.sprite_width, game_data.sprite_height, run.vars.dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
 					new_y, collision = SlidingCollisionY(old_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
 					new_x, new_y = SlidingCollisionZ(new_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
 				elseif game_data.actors[actor_number].type.name == "maze & chase" then
@@ -926,43 +929,287 @@ function run.update(dt)
 		-- move enemies
 		for i = 2, #run.vars.level_actors do
 			local actor_number = run.vars.level_actors[i].number
-			
+				
 			if game_data.actors[actor_number].entity == ENTITY_TYPE_ENEMY then
-				-- move left to right
-				if game_data.actors[actor_number].type.name == "moving left-right" then
-					if run.vars.enemy_move_timer < 0.5 then
-						if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "idle") then
-							run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
-							run.vars.level_actors[i].frame = 1
+				if game_speed_tick == true then
+					-- get enemy position
+					local old_x = run.vars.level_actors[i].x
+					local old_y = run.vars.level_actors[i].y
+					local new_x = old_x
+					local new_y = old_y
+					local requested_x = 0
+					local requested_y = 0
+
+					-- move left to right
+					if game_data.actors[actor_number].type.name == "moving left-right" then
+						if run.vars.enemy_move_timer < 0.5 then
+							if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "idle") then
+								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
+								run.vars.level_actors[i].frame = 1
+							end
+							
+							moving = false
+						elseif run.vars.enemy_move_timer >= 0.5 and run.vars.enemy_move_timer < 1.0 then
+							if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "walk_left") then
+								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_left")
+								run.vars.level_actors[i].frame = 1
+							end
+
+							new_x = new_x - 1
+							requested_x = -1
+							moving = true
+						elseif run.vars.enemy_move_timer >= 1.0 and run.vars.enemy_move_timer < 1.5 then
+							if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "idle") then
+								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
+								run.vars.level_actors[i].frame = 1
+							end
+							
+							moving = false
+						elseif run.vars.enemy_move_timer >= 1.5 then
+							if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "walk_right") then
+								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_right")
+								run.vars.level_actors[i].frame = 1
+							end
+							
+							new_x = new_x + 1
+							requested_x = 1
+							moving = true
+						end
+					elseif game_data.actors[actor_number].type.name == "moving up-down" then
+						if run.vars.enemy_move_timer < 0.5 then
+							if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "idle") then
+								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
+								run.vars.level_actors[i].frame = 1
+							end
+							
+							moving = false
+						elseif run.vars.enemy_move_timer >= 0.5 and run.vars.enemy_move_timer < 1.0 then
+							if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "walk_down") then
+								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_down")
+								run.vars.level_actors[i].frame = 1
+							end
+
+							new_y = new_y + 1
+							requested_y = 1
+							moving = true
+						elseif run.vars.enemy_move_timer >= 1.0 and run.vars.enemy_move_timer < 1.5 then
+							if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "idle") then
+								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
+								run.vars.level_actors[i].frame = 1
+							end
+							
+							moving = false
+						elseif run.vars.enemy_move_timer >= 1.5 then
+							if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "walk_up") then
+								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_up")
+								run.vars.level_actors[i].frame = 1
+							end
+							
+							new_y = new_y - 1
+							requested_y = -1
+							moving = true
+						end
+					elseif game_data.actors[actor_number].type.name == "sniper" then
+						
+					elseif game_data.actors[actor_number].type.name == "oscillate left-right" then
+
+					elseif game_data.actors[actor_number].type.name == "oscillate up_down" then
+
+					elseif game_data.actors[actor_number].type.name == "turn" then
+
+					elseif game_data.actors[actor_number].type.name == "seek 4 directions" then
+						local xa = run.vars.level_actors[1].x
+						local ya = run.vars.level_actors[1].y
+						local xe = run.vars.level_actors[i].x
+						local ye = run.vars.level_actors[i].y
+						local dir = 0
+						
+						-- seek
+						if run.vars.level_actors[i].param == ENEMY_SEEK_MODE then
+							if xe < xa then
+								dir = 0
+							elseif xe > xa then
+								dir = 180
+							elseif xe == xa then
+								dir = run.vars.level_actors[i].dir
+							end
+							
+							local dist = math.abs(xe - xa)
+							
+							if math.abs(ye - ya) > dist then
+								if ye > ya then
+									dir = 270
+								elseif ye < ya then
+									dir = 90
+								else
+									dir = run.vars.level_actors[i].dir
+								end
+							end
+							
+							-- switch to random mode
+							if math.random(1, 100) == 1 then
+								run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
+							end
+						elseif run.vars.level_actors[i].param == ENEMY_RANDOM_MODE then
+							dir = run.vars.level_actors[i].dir
+							
+							-- randomize
+							if math.random(1, 100) == 1 then
+								dir = math.random(0, 3) * 90
+							end
+
+							-- switch to seek mode
+							if math.random(1, 100) == 1 then
+								run.vars.level_actors[i].param = ENEMY_SEEK_MODE
+							end
 						end
 						
-						moving = false
-					elseif run.vars.enemy_move_timer >= 0.5 and run.vars.enemy_move_timer < 1.0 then
-						if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "walk_left") then
-							run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_left")
-							run.vars.level_actors[i].frame = 1
+						if dir == 0 then
+							new_x = new_x + game_data.vars.player_speed
+							requested_x = 1
+							requested_y = 0
+						elseif dir == 180 then
+							new_x = new_x - game_data.vars.player_speed
+							requested_x = -1
+							requested_y = 0
+						elseif dir == 90 then
+							new_y = new_y + game_data.vars.player_speed
+							requested_x = 0
+							requested_y = 1
+						elseif dir == 270 then
+							new_y = new_y - game_data.vars.player_speed
+							requested_x = 0
+							requested_y = -1
 						end
 
-						run.vars.level_actors[i].x = run.vars.level_actors[i].x - 0.5						
 						moving = true
-					elseif run.vars.enemy_move_timer >= 1.0 and run.vars.enemy_move_timer < 1.5 then
-						if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "idle") then
-							run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
-							run.vars.level_actors[i].frame = 1
+					elseif game_data.actors[actor_number].type.name == "seek 8 directions" then
+
+					elseif game_data.actors[actor_number].type.name == "random 4 directions" then
+						
+					elseif game_data.actors[actor_number].type.name == "random 8 directions" then
+
+					end
+
+					-- check for enemies collisions with blocks
+					if moving == true then
+						local requested_dir = 0
+
+						if requested_x > 0 and requested_y > 0 then
+							requested_dir = 45
+						elseif requested_x < 0 and requested_y > 0 then
+							requested_dir = 135
+						elseif requested_x < 0 and requested_y < 0 then
+							requested_dir = 225
+						elseif requested_x > 0 and requested_y < 0 then
+							requested_dir = 315
+						elseif requested_x > 0 and requested_y == 0 then
+							requested_dir = 0
+						elseif requested_x < 0 and requested_y == 0 then
+							requested_dir = 180
+						elseif requested_x == 0 and requested_y > 0 then
+							requested_dir = 90
+						elseif requested_x == 0 and requested_y < 0 then
+							requested_dir = 270
 						end
 						
-						moving = false
-					elseif run.vars.enemy_move_timer >= 1.5 then
-						if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "walk_right") then
-							run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_right")
-							run.vars.level_actors[i].frame = 1
+						-- check if the enemy can move or not on x axis
+						if requested_x ~= 0 then
+							local collision = false
+							
+							_, collision = SlidingCollisionX(
+								new_x,
+								old_y,
+								game_data.sprite_width,
+								game_data.sprite_height,
+								requested_dir,
+								game_data.levels[run.vars.level],
+								game_data.block_width,
+								game_data.block_height
+							)
+							
+							-- if the enemy collide, he do not move on x
+							if collision == true then
+								new_x = old_x
+								
+								-- collides ? get old dir
+								requested_dir = run.vars.level_actors[i].dir
+
+								-- change behaviour on collision
+								if run.vars.level_actors[i].param == ENEMY_SEEK_MODE then
+									run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
+								elseif run.vars.level_actors[i].param == ENEMY_RANDOM_MODE then
+									run.vars.level_actors[i].param = ENEMY_SEEK_MODE									
+								end
+							end
 						end
+
+						-- check if the enemy can move or not on y axis
+						if requested_y ~= 0 then
+							local collision = false
+							
+							_, collision = SlidingCollisionY(
+								old_x,
+								new_y,
+								game_data.sprite_width,
+								game_data.sprite_height,
+								requested_dir,
+								game_data.levels[run.vars.level],
+								game_data.block_width,
+								game_data.block_height
+							)
+							
+							-- if the enemy collide, he do not move on y
+							if collision == true then
+								new_y = old_y
+								
+								-- collides ? get old dir
+								requested_dir = run.vars.level_actors[i].dir
+
+								-- change behaviour on collision
+								if run.vars.level_actors[i].param == ENEMY_SEEK_MODE then
+									run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
+								elseif run.vars.level_actors[i].param == ENEMY_RANDOM_MODE then
+									run.vars.level_actors[i].param = ENEMY_SEEK_MODE									
+								end
+							end
+						end
+
+						-- collide with corners
+						new_x, new_y = SlidingCollisionZ(
+							new_x,
+							new_y,
+							game_data.sprite_width,
+							game_data.sprite_height,
+							requested_dir,
+							game_data.levels[run.vars.level],
+							game_data.block_width,
+							game_data.block_height
+						)
 						
-						run.vars.level_actors[i].x = run.vars.level_actors[i].x + 0.5
-						moving = true
+						-- change enemy coordinates
+						run.vars.level_actors[i].x = new_x
+						run.vars.level_actors[i].y = new_y
+						
+						-- change enemy direction
+						run.vars.level_actors[i].dir = requested_dir
+						
+						-- change enemy animation, depending on the type of enemy
+						if game_data.actors[actor_number].type.name == "seek 4 directions" then
+							if run.vars.level_actors[i].dir == 270 then
+								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_up")
+							elseif run.vars.level_actors[i].dir == 90 then
+								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_down")
+							elseif run.vars.level_actors[i].dir == 180 then
+								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_left")
+							elseif run.vars.level_actors[i].dir == 0 then
+								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_right")
+							end
+						end
+
 					end
 				end
-				
+		
 				-- it is time to animate enemies
 				if animations_tick == true then
 					-- animation not looping and ended ?
@@ -973,9 +1220,7 @@ function run.update(dt)
 				end
 			end
 		end
-		
-		-- check for enemies collisions with blocks
-		-- TODO!
+
 
 		-- check for player collisions with enemies
 		-- TODO!

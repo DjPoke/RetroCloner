@@ -149,6 +149,8 @@ function SaveGame(d, f, t)
 				ts = ts .. tostring(t.levels[i].actors[j].start_y) .. "\r\n"
 				ts = ts .. tostring(t.levels[i].actors[j].x) .. "\r\n"
 				ts = ts .. tostring(t.levels[i].actors[j].y) .. "\r\n"
+				ts = ts .. tostring(t.levels[i].actors[j].dir) .. "\r\n"
+				ts = ts .. tostring(t.levels[i].actors[j].param) .. "\r\n"
 				ts = ts .. tostring(t.levels[i].actors[j].animation) .. "\r\n"
 				ts = ts .. tostring(t.levels[i].actors[j].frame) .. "\r\n"
 				ts = ts .. tostring(t.levels[i].actors[j].hflip) .. "\r\n"

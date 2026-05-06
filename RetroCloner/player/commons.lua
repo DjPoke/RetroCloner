@@ -40,7 +40,7 @@ player_levels_max_size = {
 enemy_types = {
 	{name = "static", idle = 0, die = 0, health = 1, wound = 1},
 	{name = "moving left-right", idle = 0, walk_left = 0, walk_right = 0, die = 0, health = 1, wound = 1, gravity = false},
-	{name = "moving up_down", idle = 0, walk_up = 0, walk_down = 0, die = 0, health = 1, wound = 1},
+	{name = "moving up-down", idle = 0, walk_up = 0, walk_down = 0, die = 0, health = 1, wound = 1},
 	{name = "sniper", idle = 0, fire = 0, die = 0, direction = 180, health = 1, wound = 1},
 	{name = "oscillate left-right", idle = 0, walk = 0, fire = 0, die = 0, health = 1, wound = 1},
 	{name = "oscillate up_down", idle = 0, walk = 0, fire = 0, die = 0, health = 1, wound = 1},

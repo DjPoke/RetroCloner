@@ -2168,11 +2168,7 @@ function love.keypressed(key, scancode, isrepeat)
 				elseif current_entity_type == ENTITY_TYPE_ENEMY then
 					local anim = enemy_animations[current_enemy_type][current_property]
 					
-					if anim == "directions" then
-						if game_data.actors[current_actor].type.directions > 1 then
-							game_data.actors[current_actor].type.directions = math.floor(game_data.actors[current_actor].type.directions / 2)
-						end
-					elseif anim == "direction" then
+					if anim == "direction" then
 						if game_data.actors[current_actor].type.direction > 0 then
 							game_data.actors[current_actor].type.direction = game_data.actors[current_actor].type.direction - 90
 						end
@@ -2236,11 +2232,7 @@ function love.keypressed(key, scancode, isrepeat)
 				elseif current_entity_type == ENTITY_TYPE_ENEMY then
 					local anim = enemy_animations[current_enemy_type][current_property]
 					
-					if anim == "directions" then
-						if game_data.actors[current_actor].type.directions < 8 then
-							game_data.actors[current_actor].type.directions = game_data.actors[current_actor].type.directions * 2
-						end
-					elseif anim == "direction" then
+					if anim == "direction" then
 						if game_data.actors[current_actor].type.direction < 270 then
 							game_data.actors[current_actor].type.direction = game_data.actors[current_actor].type.direction + 90
 						end
@@ -2346,7 +2338,7 @@ function love.keypressed(key, scancode, isrepeat)
 					end
 					
 					-- add player actor to the level
-					table.insert(t.actors, {number = 1, start_x = 0, start_y = 0, x = 0, y = 0, animation = 0, frame = 0, hflip = false, vflip = false})
+					table.insert(t.actors, {number = 1, start_x = 0, start_y = 0, x = 0, y = 0, dir = 0, param = 0, animation = 0, frame = 0, hflip = false, vflip = false})
 
 					-- add new void level
 					table.insert(game_data.levels, t)
@@ -2735,7 +2727,7 @@ function love.mousepressed(x, y, button, istouch, presses)
 						x_pos = Quantize(x_pos, game_data.block_width)
 						y_pos = Quantize(y_pos, game_data.block_height)
 
-						table.insert(game_data.levels[current_level].actors, {number = current_level_selected_actor, start_x = x_pos, start_y = y_pos, x = x_pos, y = y_pos, animation = GetActorAnimationNumber(current_level_selected_actor, "idle"), frame = 1, hflip = false, vflip = false})
+						table.insert(game_data.levels[current_level].actors, {number = current_level_selected_actor, start_x = x_pos, start_y = y_pos, x = x_pos, y = y_pos, dir = 0, param = 0, animation = GetActorAnimationNumber(current_level_selected_actor, "idle"), frame = 1, hflip = false, vflip = false})
 					end
 				end
 			elseif current_level_actors_edit_mode == true then

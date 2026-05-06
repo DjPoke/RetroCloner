@@ -282,6 +282,12 @@ function LoadGame(d, f, t)
 			local y = tonumber(ts[cpt])
 
 			cpt = cpt + 1
+			local dir = tonumber(ts[cpt])
+
+			cpt = cpt + 1
+			local param = tonumber(ts[cpt])
+
+			cpt = cpt + 1
 			local animation = tonumber(ts[cpt])
 
 			cpt = cpt + 1
@@ -293,7 +299,7 @@ function LoadGame(d, f, t)
 			cpt = cpt + 1
 			local vflip = tonumber(ts[cpt])
 
-			table.insert(t2.actors, {number = number, start_x = start_x, start_y = start_y, x = x, y = y, animation = animation, frame = frame, hflip = hflip, vflip = vflip})
+			table.insert(t2.actors, {number = number, start_x = start_x, start_y = start_y, x = x, y = y, dir = dir, param = param, animation = animation, frame = frame, hflip = hflip, vflip = vflip})
 		end
 		
 		table.insert(t.levels, t2)
