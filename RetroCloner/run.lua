@@ -1527,7 +1527,7 @@ function run.update(dt)
 			if run.vars.musics.game_over:isPlaying() then
 				run.vars.musics.game_over:stop()
 			end
-		end	
+		end
 	end
 end
 
@@ -1638,6 +1638,36 @@ function run.draw()
 				love.graphics.rectangle("fill", ScaleX(game_data.areas[HEALTH_AREA].x, WINDOW_ZOOM), ScaleY(game_data.areas[HEALTH_AREA].y, WINDOW_ZOOM), ScaleWidth(health, WINDOW_ZOOM), ScaleHeight(game_data.areas[HEALTH_AREA].height, WINDOW_ZOOM))
 			end
 		end
+	elseif run.vars.game_mode == MODE_WINNER then
+		-- disable scissor
+		love.graphics.setScissor()
+
+		-- clear the background with game paper
+		r, g, b = GetPenRGB(game_data.game_paper)
+		love.graphics.clear(r, g, b)
+		
+		-- show intro image if it exists else show game title
+		if run.vars.images.winner ~= nil and run.vars.images.winner ~= "" then
+			-- show winner image
+			love.graphics.setColor(1, 1, 1)
+			love.graphics.draw(run.vars.images.winner, WINDOW_BORDER, WINDOW_BORDER, 0, game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM)
+		else
+			-- show 'you win'
+			local virtual_width = WINDOW_WIDTH + (WINDOW_BORDER * 2)
+			local virtual_height = WINDOW_HEIGHT + (WINDOW_BORDER * 2)
+			
+			love.graphics.setFont(GAME_TITLE_FONT)
+			r, g, b = GetPenRGB(1)
+			love.graphics.setColor(r, g, b)
+			
+			local scale = 1.0 / 16
+			love.graphics.printf("YOU WIN!", 0, virtual_height / 4, virtual_width / scale, "center", 0, scale, scale)
+
+			-- show press start to play again
+			love.graphics.setFont(GAME_FONT)
+			scale = 1.0 / 32
+			love.graphics.printf("PRESS START TO PLAY AGAIN!", 0, virtual_height * 80 / 100, virtual_width / scale, "center", 0, scale, scale)
+		end
 	end
 end
 
@@ -1660,6 +1690,20 @@ function run.keypressed(key, scancode, isrepeat)
 			
 			-- fire 2: "b"
 			Fire2(actor_number)
+		end
+	elseif run.vars.game_mode == MODE_WINNER then
+		-- space to restart the game
+		if key == "space" then
+			-- initialize game mode
+			run.vars.game_mode = MODE_INTRO
+
+			-- initialize player's data
+			run.vars.score = 0
+			run.vars.level = 1
+			run.vars.health = 100
+			
+			-- initialize all
+			CommonInit()
 		end
 	end
 end
@@ -1686,6 +1730,22 @@ function run.gamepadpressed(joystick, button)
 			
 				-- fire 2: "b"
 				Fire2(actor_number)
+			end
+		end
+	elseif run.vars.game_mode == MODE_WINNER then
+		if joy == joystick then
+			-- start to restart the game
+			if button == "start" then
+				-- initialize game mode
+				run.vars.game_mode = MODE_INTRO
+	
+				-- initialize player's data
+				run.vars.score = 0
+				run.vars.level = 1
+				run.vars.health = 100
+				
+				-- initialize all
+				CommonInit()
 			end
 		end
 	end
