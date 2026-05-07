@@ -22,7 +22,6 @@ local GOAL_TAKE_KEY_AND_EXIT = 5
 ENTITY_TYPE_PLAYER = 1
 ENTITY_TYPE_ENEMY = 2
 ENTITY_TYPE_BONUS = 3
-ENTITY_TYPE_PROJECTILE = 4
 
 -- run arrays
 run.vars = {
@@ -53,6 +52,8 @@ run.vars = {
 	invincible = false,
 	invincibility_duration = 0,
 	enemy_move_timer = 0.0,
+	projectile = {},
+	projectile_destroyed = {},
 	sounds = { player = {walk = "", run = "", jump = "", hit = "", fire1 = "", fire2 = ""},
 			   enemies = {},
 			   bonus = {}
@@ -1416,6 +1417,8 @@ function run.update(dt)
 								run.vars.dead_timer = 3.0
 								run.vars.level_actors[1].animation = GetActorAnimationNumber(player_number, "die")
 								run.vars.level_actors[1].frame = 1
+								
+								print("dead!")
 
 								-- play player die sound
 								-- TODO!
@@ -1564,6 +1567,159 @@ function run.update(dt)
 				end
 			end
 		end
+		
+		-- move projectiles
+		if game_speed_tick == true then
+			local limit_x = (game_data.levels_data.sw * game_data.levels_data.w * game_data.block_width)
+			local limit_y = (game_data.levels_data.sh * game_data.levels_data.h * game_data.block_height)
+
+			for i = #run.vars.projectile, 1, -1 do
+				local dir = run.vars.projectile[i].dir
+				local dir_x = 0
+				local dir_y = 0
+				
+				if dir == 0 or dir == 45 or dir == 315 then
+					dir_x = 1 -- TODO! set speed in the editor
+				elseif dir == 180 or dir == 135 or dir == 225 then
+					dir_x = -1 -- TODO! set speed in the editor
+				end
+
+				if dir == 90 or dir == 45 or dir == 135 then
+					dir_y = 1 -- TODO! set speed in the editor
+				elseif dir == 270 or dir == 225 or dir == 315 then
+					dir_y = -1 -- TODO! set speed in the editor
+				end
+				
+				if run.vars.projectile[i].actor == 1 then
+					run.vars.projectile[i].x = run.vars.projectile[i].x + (dir_x * 2 * game_data.vars.player_speed)
+					run.vars.projectile[i].y = run.vars.projectile[i].y + (dir_y * 2 * game_data.vars.player_speed)
+				end
+				
+				-- check collisions with blocks
+				local collision = false
+				
+				local px = run.vars.projectile[i].x
+				local py = run.vars.projectile[i].y
+				local pw = game_data.sprite_width
+				local ph = game_data.sprite_height
+				
+				local div = run.vars.projectile[i].collision_box
+
+				px = px + math.floor((pw - (pw / div)) / 2)
+				py = py + math.floor((ph - (ph / div)) / 2)
+
+				pw = pw / div
+				ph = ph / div
+				
+				if dir_x ~= 0 and collision == false then
+					-- TODO! add collision_box size
+					_, collision = SlidingCollisionX(
+						px,
+						py,
+						pw,
+						ph,
+						dir,
+						game_data.levels[run.vars.level],
+						game_data.block_width,
+						game_data.block_height
+					)
+				end
+
+				if dir_y ~= 0 and collision == false then
+					-- TODO! add collision_box size
+					_, collision = SlidingCollisionY(
+						px,
+						py,
+						pw,
+						ph,
+						dir,
+						game_data.levels[run.vars.level],
+						game_data.block_width,
+						game_data.block_height
+					)
+				end
+				
+				-- check projectile is not out of the map
+				if collision == true or run.vars.projectile[i].x < 0 or run.vars.projectile[i].y < 0 or run.vars.projectile[i].x > limit_x or run.vars.projectile[i].y > limit_y then
+					table.remove(run.vars.projectile, i)
+				end
+			end
+		end
+		
+		-- animate projectiles
+		if animations_tick == true then
+			for i = 1, #run.vars.projectile do
+				AnimateProjectile(i)
+				
+				-- TODO! check if it is working when not in loop mode
+			end
+		end
+		
+		-- check for projectiles collisions with player
+		-- TODO!
+
+		-- check for projectiles collisions with enemies
+		for i = #run.vars.level_actors, 1, -1 do
+			local actor_number = run.vars.level_actors[i].number
+			
+			if game_data.actors[actor_number].entity == ENTITY_TYPE_ENEMY then
+				if run.vars.enemy_health[i] > 0 then
+					for j = #run.vars.projectile, 1, -1 do
+						-- in case of collision
+						local ex = run.vars.level_actors[i].x
+						local ey = run.vars.level_actors[i].y
+						local ew = game_data.sprite_width
+						local eh = game_data.sprite_height
+						
+						local px = run.vars.projectile[j].x
+						local py = run.vars.projectile[j].y
+						local pw = game_data.sprite_width
+						local ph = game_data.sprite_height
+
+						local div = run.vars.projectile[j].collision_box
+
+						px = px + math.floor((pw - (pw / div)) / 2)
+						py = py + math.floor((ph - (ph / div)) / 2)
+
+						pw = pw / div
+						ph = ph / div
+						
+						-- it is a player projectile
+						if run.vars.projectile[j].actor == 1 then
+							-- collision ?
+							if Collision(ex, ey, ew, eh, px, py, pw, ph) == true then
+								-- pre-destroy the projectile
+								table.insert(run.vars.projectile_destroyed, j)
+							
+								-- destroy the enemy
+								run.vars.enemy_health[i] = run.vars.enemy_health[i] - run.vars.projectile[j].wound
+								
+								if run.vars.enemy_health[i] < 0 then run.vars.enemy_health[i] = 0 end
+								
+								if run.vars.enemy_health[i] == 0 then
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "die")
+									run.vars.level_actors[i].frame = 1
+								end
+								
+								-- play sound explosion
+								-- TODO!
+							end
+						end
+					end
+				end
+			end
+		end
+		
+		-- remove pre-destroyed projectiles
+		for i = 1, #run.vars.projectile_destroyed do
+			table.remove(run.vars.projectile, run.vars.projectile_destroyed[i])
+		end
+
+		for i = #run.vars.projectile_destroyed, 1, -1 do
+			table.remove(run.vars.projectile_destroyed, i)
+		end
+		
+		-- TODO!
 		
 		-- test victory
 		if game_data.vars.game_goal == GOAL_EXIT_RIGHT then
@@ -1854,17 +2010,19 @@ function run.keypressed(key, scancode, isrepeat)
 			run.vars.game_mode = MODE_INTERLUDE
 		end
 	elseif run.vars.game_mode == MODE_IN_GAME then
-		-- fire with keyboard
-		if key == "x" then
-			local actor_number = run.vars.level_actors[1].number
-			
-			-- fire 1: "a"
-			Fire1(actor_number)
-		elseif key == "c" then
-			local actor_number = run.vars.level_actors[1].number
-			
-			-- fire 2: "b"
-			Fire2(actor_number)
+		if run.vars.dead == false then
+			-- fire with keyboard
+			if key == "x" then
+				local actor_number = run.vars.level_actors[1].number
+				
+				-- fire 1: "a"
+				Fire1(actor_number)
+			elseif key == "c" then
+				local actor_number = run.vars.level_actors[1].number
+				
+				-- fire 2: "b"
+				Fire2(actor_number)
+			end
 		end
 	elseif run.vars.game_mode == MODE_WINNER then
 		-- space to restart the game
@@ -1936,18 +2094,20 @@ function run.gamepadpressed(joystick, button)
 			end
 		end
 	elseif run.vars.game_mode == MODE_IN_GAME then
-		if joy == joystick then
-			-- fire with keyboard
-			if button == "a" then
-				local actor_number = run.vars.level_actors[1].number
-			
-				-- fire 1: "a"
-				Fire1(actor_number)
-			elseif button == "b" then
-				local actor_number = run.vars.level_actors[1].number
-			
-				-- fire 2: "b"
-				Fire2(actor_number)
+		if run.vars.dead == false then
+			if joy == joystick then
+				-- fire with keyboard
+				if button == "a" then
+					local actor_number = run.vars.level_actors[1].number
+				
+					-- fire 1: "a"
+					Fire1(actor_number)
+				elseif button == "b" then
+					local actor_number = run.vars.level_actors[1].number
+				
+					-- fire 2: "b"
+					Fire2(actor_number)
+				end
 			end
 		end
 	elseif run.vars.game_mode == MODE_WINNER then
@@ -2002,6 +2162,37 @@ function Fire1(a)
 					-- TODO!
 				end
 			end
+		elseif game_data.actors[a].type.name == "beat'em up" then
+			-- TODO!
+		elseif game_data.actors[a].type.name == "run & gun (edge view)" then
+			-- TODO!
+		elseif game_data.actors[a].type.name == "run & gun (top view)" then
+			run.vars.level_actors[1].animation = GetActorAnimationNumber(a, "fire1")
+			run.vars.level_actors[1].frame = 1
+			
+			-- fire a projectile
+			local x = run.vars.level_actors[1].x
+			local y = run.vars.level_actors[1].y
+			local dir = run.vars.dir
+			local player_number = run.vars.level_actors[1].number
+			local collision_box = game_data.actors[player_number].type.collision_box1
+			local animation = game_data.actors[player_number].type.weapon1
+			local wound = game_data.actors[player_number].type.wound
+				
+			if animation > 0 then
+				table.insert(run.vars.projectile, {actor = 1, animation = animation, frame = 1, x = x, y = y, dir = dir, wound = wound, collision_box = collision_box})
+
+				-- play fire1 sound
+				-- TODO!
+			end
+		elseif game_data.actors[a].type.name == "maze & chase" then
+			-- TODO!
+		elseif game_data.actors[a].type.name == "fixed shooter" then
+			-- TODO!
+		elseif game_data.actors[a].type.name == "horizontal shooter" then
+			-- TODO!
+		elseif game_data.actors[a].type.name == "vertical shooter" then
+			-- TODO!
 		end
 	end
 end
@@ -2034,6 +2225,37 @@ function Fire2(a)
 					-- TODO!
 				end				
 			end
+		elseif game_data.actors[a].type.name == "beat'em up" then
+			-- TODO!
+		elseif game_data.actors[a].type.name == "run & gun (edge view)" then
+			-- TODO!
+		elseif game_data.actors[a].type.name == "run & gun (top view)" then
+			run.vars.level_actors[1].animation = GetActorAnimationNumber(a, "fire2")
+			run.vars.level_actors[1].frame = 1
+			
+			-- fire a projectile
+			local x = run.vars.level_actors[1].x
+			local y = run.vars.level_actors[1].y
+			local dir = run.vars.dir
+			local player_number = run.vars.level_actors[1].number
+			local collision_box = game_data.actors[player_number].type.collision_box2
+			local animation = game_data.actors[player_number].type.weapon2
+			local wound = game_data.actors[player_number].type.wound
+			
+			if animation > 0 then
+				table.insert(run.vars.projectile, {actor = 1, animation = animation, frame = 1, x = x, y = y, dir = dir, wound = wound, collision_box = collision_box})
+
+				-- play fire2 sound
+				-- TODO!
+			end
+		elseif game_data.actors[a].type.name == "maze & chase" then
+			-- TODO!
+		elseif game_data.actors[a].type.name == "fixed shooter" then
+			-- TODO!
+		elseif game_data.actors[a].type.name == "horizontal shooter" then
+			-- TODO!
+		elseif game_data.actors[a].type.name == "vertical shooter" then
+			-- TODO!
 		end
 	end
 end
@@ -2091,13 +2313,18 @@ function DrawGame()
 				end
 			end
 		end
+		
+		-- draw projectiles
+		for i = 1, #run.vars.projectile do
+			DrawProjectile(i, px, py)
+		end
 
 		-- draw player last
 		local actor_number = run.vars.level_actors[1].number
 			
 		if run.vars.entity_active[1] == true then
 			DrawActors(1, actor_number, px, py)
-		end
+		end		
 	end
 end
 
@@ -2145,6 +2372,27 @@ function DrawActors(i, actor_number, px, py)
 				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.dir), game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM, game_data.sprite_width / 2, game_data.sprite_height / 2)
 			end
 		end		
+	end
+end
+
+-- draw all projectiles
+function DrawProjectile(i, px, py)
+	local x = run.vars.projectile[i].x
+	local y = run.vars.projectile[i].y
+	local dir = run.vars.projectile[i].dir
+	local animation = run.vars.projectile[i].animation
+	local frame = run.vars.projectile[i].frame
+
+	if animation > 0 and frame > 0 then
+		local sprite = game_data.animations[animation][frame]
+		
+		local xc = ScaleWidth(x + run.vars.scrolling_x, WINDOW_ZOOM)
+		local yc = ScaleHeight(y + run.vars.scrolling_y, WINDOW_ZOOM)
+		
+		local flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) / 2
+		local flip_offset_y = ScaleHeight(game_data.sprite_height, WINDOW_ZOOM) / 2
+
+		love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(dir), game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM, game_data.sprite_width / 2, game_data.sprite_height / 2)
 	end
 end
 
@@ -2601,6 +2849,36 @@ function AnimateCharacter(i, moving)
 			elseif run.vars.level_actors[i].frame == v2 then
 				run.vars.level_actors[i].frame = v1
 			end
+		end
+	end
+	
+	return false
+end
+
+-- animate projectiles, return true if animation just ended
+function AnimateProjectile(i)
+	local animation = run.vars.projectile[i].animation
+
+	-- animation not configured ? exit
+	if animation == 0 then return false end
+	
+	local loop = game_data.animations_loop[animation].loop
+	local v1  = game_data.animations_loop[animation].v1
+	local v2  = game_data.animations_loop[animation].v2
+	
+	-- animation just ended
+	if loop == false then
+		if run.vars.projectile[i].frame < #game_data.animations[animation] then
+			run.vars.projectile[i].frame = run.vars.projectile[i].frame + 1
+		elseif run.vars.projectile[i].frame == #game_data.animations[animation] then
+			return true
+		end
+	elseif loop == true then
+		-- loop animation if it is idle in movement
+		if run.vars.projectile[i].frame < v2 then
+			run.vars.projectile[i].frame = run.vars.projectile[i].frame + 1
+		elseif run.vars.projectile[i].frame == v2 then
+			run.vars.projectile[i].frame = v1
 		end
 	end
 	

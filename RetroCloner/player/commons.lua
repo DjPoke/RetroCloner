@@ -5,23 +5,33 @@ blocks_types = {"background", "wall", "platform", "stairs", "death", "eatable"}
 player_types = {
 	{name = "platformer", idle = 0, walk = 0, jump = 0, climb = 0, hit = 0, die = 0, hflip = false, wound = 1},
 	{name = "beat'em up", idle = 0, walk = 0, jump = 0, punch = 0, kick = 0, jumping_kick = 0, wounded = 0, die = 0, hflip = false, wound = 1},
-	{name = "run & gun (edge view)", idle = 0, run = 0, jump = 0, fire = 0, crouch = 0, crouched_fire = 0, die = 0, hflip = false, wound = 1},
-	{name = "run & gun (top view)", idle = 0, run = 0, fire1 = 0, fire2 = 0, die = 0, directions = 8, wound = 1},
+	{name = "run & gun (edge view)", idle = 0, run = 0, jump = 0, fire1 = 0, fire2 = 0, crouch = 0, crouched_fire = 0, die = 0, hflip = false, wound = 1,
+		weapon1 = 0, collision_box1 = 2, weapon2 = 0, collision_box2 = 2},
+	{name = "run & gun (top view)", idle = 0, run = 0, fire1 = 0, fire2 = 0, die = 0, directions = 8, wound = 1,
+		weapon1 = 0, collision_box1 = 2, weapon2 = 0, collision_box2 = 2},
 	{name = "maze & chase", idle = 0, move = 0, die = 0, wound = 1},
-	{name = "fixed shooter", idle = 0, move = 0, die = 0, wound = 1},
-	{name = "horizontal shooter", idle = 0, move = 0, fire1 = 0, fire2 = 0, die = 0, hflip = false, wound = 1},
-	{name = "vertical shooter", idle = 0, move = 0, fire1 = 0, fire2 = 0, die = 0, vflip = false, wound = 1}
+	{name = "fixed shooter", idle = 0, move = 0, fire1 = 0, die = 0, wound = 1,
+		weapon1 = 0, collision_box1 = 2},
+	{name = "horizontal shooter", idle = 0, move = 0, fire1 = 0, fire2 = 0, die = 0, hflip = false, wound = 1,
+		weapon1 = 0, collision_box1 = 2, weapon2 = 0, collision_box2 = 2},
+	{name = "vertical shooter", idle = 0, move = 0, fire1 = 0, fire2 = 0, die = 0, vflip = false, wound = 1,
+		weapon1 = 0, collision_box1 = 2, weapon2 = 0, collision_box2 = 2}
 }
 
 player_animations = {
 	{"idle", "walk", "jump", "climb", "hit", "die", "hflip", "wound"},
 	{"idle", "walk", "jump", "punch", "kick", "jumping_kick", "wounded", "die", "hflip", "wound"},
-	{"idle", "run", "jump", "fire", "crouch", "crouched_fire", "die", "hflip", "wound"},
-	{"idle", "run", "fire1", "fire2", "die", "directions", "wound"},
+	{"idle", "run", "jump", "fire1", "fire2", "crouch", "crouched_fire", "die", "hflip", "wound",
+		"weapon1", "collision_box1", "weapon2", "collision_box2"},
+	{"idle", "run", "fire1", "fire2", "die", "directions", "wound",
+		"weapon1", "collision_box1", "weapon2", "collision_box2"},
 	{"idle", "move", "die", "wound"},
-	{"idle", "move", "die", "wound"},
-	{"idle", "move", "fire1", "fire2", "die", "wound"},
-	{"idle", "move", "fire1", "fire2", "die", "wound"}
+	{"idle", "move", "die", "wound",
+		"weapon1", "collision_box1"},
+	{"idle", "move", "fire1", "fire2", "die", "wound",
+		"weapon1", "collision_box1", "weapon2", "collision_box2"},
+	{"idle", "move", "fire1", "fire2", "die", "wound",
+		"weapon1", "collision_box1", "weapon2", "collision_box2"}
 }
 
 player_levels_max_size = {
@@ -92,21 +102,8 @@ bonus_animations = {
 	{"duration", "idle", "collision_box"}
 }
 
--- types of projectiles
-projectile_types = {
-	{name = "bullet", move = 0, explode = 0, wound = 1, collision_box = 1},
-	{name = "bomb", move = 0, explode = 0, wound = 2, collision_box = 1},
-	{name = "gravity_bomb", move = 0, explode = 0, wound = 2, collision_box = 1}
-}
-
-projectile_animations = {
-	{"move", "explode", "wound", "collision_box"},
-	{"move", "explode", "wound", "collision_box"},
-	{"move", "explode", "wound", "collision_box"}
-}
-
 -- types of entities
-entity_types = {"player", "enemy", "bonus", "projectile"}
+entity_types = {"player", "enemy", "bonus"}
 
 -- game goals
 game_goals = {"go to exit at right", "kill all enemies", "kill all enemies and exit at right", "take all bonus", "take a key and goto exit"}
@@ -179,13 +176,6 @@ function FindCurrentEntityType(t)
 		for i = 1, #bonus_types do
 			if t.actors[current_actor].type.name == bonus_types[i].name then
 				current_bonus_type = i
-				break
-			end
-		end
-	elseif current_entity_type == ENTITY_TYPE_PROJECTILE then
-		for i = 1, #projectile_types do
-			if t.actors[current_actor].type.name == projectile_types[i].name then
-				current_projectile_type = i
 				break
 			end
 		end

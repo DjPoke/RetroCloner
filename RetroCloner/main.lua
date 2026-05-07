@@ -201,7 +201,6 @@ current_entity_type = 0
 current_player_type = 0
 current_enemy_type = 0
 current_bonus_type = 0
-current_projectile_type = 0
 current_property = 0
 current_level = 0
 current_level_mode = 0
@@ -963,23 +962,6 @@ function love.draw()
 					if current_property == i then love.graphics.setColor(1, 1, 0) end
 
 					local k = bonus_animations[current_bonus_type][i]
-					local v = game_data.actors[current_actor].type[k]
-
-					if k ~= "collision_box" then
-						love.graphics.print(k .. ": " .. tostring(v), 440, 160 + ((i - 1) * 20))
-					elseif k == "collision_box" then
-						love.graphics.print(k .. ": 1/" .. tostring(v), 440, 160 + ((i - 1) * 20))
-					end
-				end
-			elseif game_data.actors[current_actor].entity == ENTITY_TYPE_PROJECTILE then
-				love.graphics.print("Projectile type " .. game_data.actors[current_actor].type.name, 440, 120)
-				
-				-- show animation's names list
-				for i = 1, #projectile_animations[current_projectile_type] do
-					love.graphics.setColor(0, 1, 1)
-					if current_property == i then love.graphics.setColor(1, 1, 0) end
-
-					local k = projectile_animations[current_projectile_type][i]
 					local v = game_data.actors[current_actor].type[k]
 
 					if k ~= "collision_box" then
@@ -2207,7 +2189,6 @@ function love.keypressed(key, scancode, isrepeat)
 					current_player_type = 0
 					current_enemy_type = 0
 					current_bonus_type = 0
-					current_projectile_type = 0
 					current_property = 0
 				else
 					current_entity_type = game_data.actors[current_actor].entity
@@ -2219,8 +2200,6 @@ function love.keypressed(key, scancode, isrepeat)
 						if current_enemy_type == 0 then current_enemy_type = 1 end
 					elseif current_entity_type == ENTITY_TYPE_BONUS then
 						if current_bonus_type == 0 then current_bonus_type = 1 end
-					elseif current_entity_type == ENTITY_TYPE_PROJECTILE then
-						if current_projectile_type == 0 then current_projectile_type = 1 end
 					end
 				end
 			end
@@ -2248,9 +2227,6 @@ function love.keypressed(key, scancode, isrepeat)
 				elseif current_entity_type == ENTITY_TYPE_BONUS then
 					if current_bonus_type == 0 then current_bonus_type = 1 end
 					game_data.actors[current_actor].type = DeepCopy(bonus_types[current_bonus_type])
-				elseif current_entity_type == ENTITY_TYPE_PROJECTILE then
-					if current_projectile_type == 0 then current_projectile_type = 1 end
-					game_data.actors[current_actor].type = DeepCopy(projectile_types[current_bonus_type])
 				end
 			end
 		elseif key == "t" then
@@ -2273,12 +2249,6 @@ function love.keypressed(key, scancode, isrepeat)
 					elseif current_bonus_type == #bonus_types then
 						current_bonus_type = 1
 					end
-				elseif current_entity_type == ENTITY_TYPE_PROJECTILE then
-					if current_projectile_type < #projectile_types then
-						current_projectile_type = current_projectile_type + 1
-					elseif current_projectile_type == #projectile_types then
-						current_projectile_type = 1
-					end
 				end
 				
 				game_data.actors[current_actor].type = {}
@@ -2289,8 +2259,6 @@ function love.keypressed(key, scancode, isrepeat)
 					game_data.actors[current_actor].type = DeepCopy(enemy_types[current_enemy_type])
 				elseif current_entity_type == ENTITY_TYPE_BONUS then
 					game_data.actors[current_actor].type = DeepCopy(bonus_types[current_bonus_type])
-				elseif current_entity_type == ENTITY_TYPE_PROJECTILE then
-					game_data.actors[current_actor].type = DeepCopy(projectile_types[current_projectile_type])
 				end
 			end
 		elseif key == "up" then
@@ -2319,12 +2287,6 @@ function love.keypressed(key, scancode, isrepeat)
 							current_property = current_property - 1
 						elseif current_property == 1 then
 							current_property = #bonus_animations[current_bonus_type]
-						end
-					elseif current_entity_type == ENTITY_TYPE_PROJECTILE then
-						if current_property > 1 then
-							current_property = current_property - 1
-						elseif current_property == 1 then
-							current_property = #projectile_animations[current_projectile_type]
 						end
 					end
 				end
@@ -2356,12 +2318,6 @@ function love.keypressed(key, scancode, isrepeat)
 						elseif current_property == #bonus_animations[current_bonus_type] then
 							current_property = 1
 						end
-					elseif current_entity_type == ENTITY_TYPE_PROJECTILE then
-						if current_property < #projectile_animations[current_projectile_type] then
-							current_property = current_property + 1
-						elseif current_property == #bonus_animations[current_projectile_type] then
-							current_property = 1
-						end
 					end
 				end
 			end
@@ -2388,6 +2344,14 @@ function love.keypressed(key, scancode, isrepeat)
 						elseif anim == "wound" then
 							if game_data.actors[current_actor].type.wound > 1 then
 								game_data.actors[current_actor].type.wound = game_data.actors[current_actor].type.wound - 1
+							end
+						elseif anim == "collision_box1" then
+							if game_data.actors[current_actor].type.collision_box1 > 1 then
+								game_data.actors[current_actor].type.collision_box1 = math.floor(game_data.actors[current_actor].type.collision_box1 / 2)
+							end
+						elseif anim == "collision_box2" then
+							if game_data.actors[current_actor].type.collision_box2 > 1 then
+								game_data.actors[current_actor].type.collision_box2 = math.floor(game_data.actors[current_actor].type.collision_box2 / 2)
 							end
 						elseif game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] > 0 then
 							game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] = game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] - 1
@@ -2444,24 +2408,6 @@ function love.keypressed(key, scancode, isrepeat)
 						elseif game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] == 0 then
 							game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] = game_data.max_animations
 						end
-					elseif current_entity_type == ENTITY_TYPE_PROJECTILE then
-						local anim = projectile_animations[current_projectile_type][current_property]
-						
-						if anim == "wound" then
-							if love.keyboard.isDown("lshift") == true then
-								game_data.actors[current_actor].type.wound = game_data.actors[current_actor].type.wound - 10
-							else
-								game_data.actors[current_actor].type.wound = game_data.actors[current_actor].type.wound - 1
-							end
-						elseif anim == "collision_box" then
-							if game_data.actors[current_actor].type.collision_box > 1 then
-								game_data.actors[current_actor].type.collision_box = math.floor(game_data.actors[current_actor].type.collision_box / 2)
-							end
-						elseif game_data.actors[current_actor].type[projectile_animations[current_projectile_type][current_property]] > 0 then
-							game_data.actors[current_actor].type[projectile_animations[current_projectile_type][current_property]] = game_data.actors[current_actor].type[projectile_animations[current_projectile_type][current_property]] - 1
-						elseif game_data.actors[current_actor].type[projectile_animations[current_projectile_type][current_property]] == 0 then
-							game_data.actors[current_actor].type[projectile_animations[current_projectile_type][current_property]] = game_data.max_animations
-						end
 					end
 				end
 			end
@@ -2488,6 +2434,14 @@ function love.keypressed(key, scancode, isrepeat)
 						elseif anim == "wound" then
 							if game_data.actors[current_actor].type.wound < 100 then
 								game_data.actors[current_actor].type.wound = game_data.actors[current_actor].type.wound + 1
+							end
+						elseif anim == "collision_box1" then
+							if game_data.actors[current_actor].type.collision_box1 < 4 then
+								game_data.actors[current_actor].type.collision_box1 = game_data.actors[current_actor].type.collision_box1 * 2
+							end
+						elseif anim == "collision_box2" then
+							if game_data.actors[current_actor].type.collision_box2 < 4 then
+								game_data.actors[current_actor].type.collision_box2 = game_data.actors[current_actor].type.collision_box2 * 2
 							end
 						elseif game_data.actors[current_actor].type[anim] < game_data.max_animations then
 							game_data.actors[current_actor].type[anim] = game_data.actors[current_actor].type[anim] + 1
@@ -2534,24 +2488,6 @@ function love.keypressed(key, scancode, isrepeat)
 								game_data.actors[current_actor].type.bonus = game_data.actors[current_actor].type.bonus + 10
 							else
 								game_data.actors[current_actor].type.bonus = game_data.actors[current_actor].type.bonus + 1
-							end
-						elseif anim == "collision_box" then
-							if game_data.actors[current_actor].type.collision_box < 4 then
-								game_data.actors[current_actor].type.collision_box = game_data.actors[current_actor].type.collision_box * 2
-							end
-						elseif game_data.actors[current_actor].type[anim] < game_data.max_animations then
-							game_data.actors[current_actor].type[anim] = game_data.actors[current_actor].type[anim] + 1
-						elseif game_data.actors[current_actor].type[anim] == game_data.max_animations then
-							game_data.actors[current_actor].type[anim] = 0
-						end
-					elseif current_entity_type == ENTITY_TYPE_PROJECTILE then
-						local anim = projectile_animations[current_projectile_type][current_property]
-						
-						if anim == "wound" then
-							if love.keyboard.isDown("lshift") == true then
-								game_data.actors[current_actor].type.wound = game_data.actors[current_actor].type.wound + 10
-							else
-								game_data.actors[current_actor].type.wound = game_data.actors[current_actor].type.wound + 1
 							end
 						elseif anim == "collision_box" then
 							if game_data.actors[current_actor].type.collision_box < 4 then
