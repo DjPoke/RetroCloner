@@ -920,10 +920,25 @@ function run.update(dt)
 		end
 		
 		-- check for player collision with death blocks
-		-- TODO!
+		if run.vars.dead == false then
+			if DeathBlockArea(run.vars.level_actors[1].x, run.vars.level_actors[1].y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height) == true then
+				-- the player die
+				local player_number = run.vars.level_actors[1].number
+
+				run.vars.dead = true
+				run.vars.dead_timer = 3.0
+				run.vars.level_actors[1].animation = GetActorAnimationNumber(player_number, "die")
+				run.vars.level_actors[1].frame = 1
+
+				-- play player die sound
+				-- TODO!
+			end
+		end
 
 		-- check for player collision with eatable blocks
-		-- TODO!
+		if run.vars.dead == false then
+			EatBlocks(run.vars.level_actors[1].x, run.vars.level_actors[1].y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+		end
 		
 		-- move enemies
 		for i = 2, #run.vars.level_actors do
@@ -1417,8 +1432,6 @@ function run.update(dt)
 								run.vars.dead_timer = 3.0
 								run.vars.level_actors[1].animation = GetActorAnimationNumber(player_number, "die")
 								run.vars.level_actors[1].frame = 1
-								
-								print("dead!")
 
 								-- play player die sound
 								-- TODO!
@@ -2458,6 +2471,44 @@ function StairsCollision(x, y, map)
 	return false
 end
 
+-- check death block collision
+function DeathCollision(x, y, map)
+	-- collisions with game limits
+	if x < 0 or x > (game_data.levels_data.sw * game_data.levels_data.w) - 1 then return true end
+	if y < 0 or y > (game_data.levels_data.sh * game_data.levels_data.h) - 1 then return true end
+	
+	-- is there a block ?
+	if map.blocks[x][y] > 0 then
+		local block_number = map.blocks[x][y]
+		
+		-- collision with a death block
+		if game_data.blocks_data[block_number].type == "death" then
+			return true
+		end
+	end
+	
+	return false
+end
+
+-- check eatable block collision
+function EatableCollision(x, y, map)
+	-- collisions with game limits
+	if x < 0 or x > (game_data.levels_data.sw * game_data.levels_data.w) - 1 then return true end
+	if y < 0 or y > (game_data.levels_data.sh * game_data.levels_data.h) - 1 then return true end
+	
+	-- is there a block ?
+	if map.blocks[x][y] > 0 then
+		local block_number = map.blocks[x][y]
+		
+		-- collision with an eatable block
+		if game_data.blocks_data[block_number].type == "eatable" then
+			return true
+		end
+	end
+	
+	return false
+end
+
 -- checking if the player is on the ground
 function GroundCollision(x1, y1, w1, h1, map, w2, h2, on_stairs, moving_down)
 	-- offset with hotspot
@@ -2666,6 +2717,58 @@ function CanClimb(x1, y1, w1, h1, map, w2, h2)
 	end
 	
 	return false
+end
+
+-- check if the player touch a death block area
+function DeathBlockArea(x1, y1, w1, h1, map, w2, h2)
+	-- offset with hotspot
+	local actor_number = run.vars.level_actors[1].number
+	
+	-- player's position, in blocks
+	local x3 = math.floor(x1 / w2)
+	local y3 = math.floor(y1 / h2)
+
+	-- how many blocks in the player's sprite ?
+	local w3 = math.floor(w1 / w2)
+	local h3 = math.floor(h1 / h2)
+	
+	if x3 * w2 ~= x1 then w3 = w3 + 1 end
+	if y3 * h2 ~= y1 then h3 = h3 + 1 end
+
+	for x = x3, x3 + w3 - 1 do
+		for y = y3, y3 + h3 - 1 do
+			if DeathCollision(x, y, map) == true then
+				return true
+			end
+		end
+	end
+	
+	return false
+end
+
+-- check if the player touch eatable blocks
+function EatBlocks(x1, y1, w1, h1, map, w2, h2)
+	-- offset with hotspot
+	local actor_number = run.vars.level_actors[1].number
+	
+	-- player's position, in blocks
+	local x3 = math.floor(x1 / w2)
+	local y3 = math.floor(y1 / h2)
+
+	-- how many blocks in the player's sprite ?
+	local w3 = math.floor(w1 / w2)
+	local h3 = math.floor(h1 / h2)
+	
+	if x3 * w2 ~= x1 then w3 = w3 + 1 end
+	if y3 * h2 ~= y1 then h3 = h3 + 1 end
+
+	for x = x3, x3 + w3 - 1 do
+		for y = y3, y3 + h3 - 1 do
+			if EatableCollision(x, y, map) == true then
+				-- TODO!
+			end
+		end
+	end
 end
 
 -- sliding collision between player's sprite and max 6 blocks inside the player

@@ -6,10 +6,9 @@ TODO
 	- Xanbot meurt sans jouer l'animation mort (rarement ou plus !)
 	
 * Terminer la partie jeu:
-	- Collision avec les block mortels tue le joueur
-	- Prendre les block bonus
-	- Ajouter un compteur de blocks bonus, si à 0, victoire possible
 	- Gérer les tirs ennemis
+	- Prendre les block bonus (wip)
+	- Ajouter un compteur de blocks bonus, si à 0, victoire possible
 	- Animer et déplacer les ennemis (wip)
 	- Ajouter un random bonus (1 bonus sur 3 au hasard) si on tue un ennemi, avec des chances qu'il y soit, et des chances que ce soit l'un plutôt que l'autre
 	- Déplacer le joueur en fonction de son type (wip)
