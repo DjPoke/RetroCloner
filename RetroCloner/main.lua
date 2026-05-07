@@ -2385,6 +2385,10 @@ function love.keypressed(key, scancode, isrepeat)
 							else
 								game_data.actors[current_actor].type.directions = 8
 							end
+						elseif anim == "wound" then
+							if game_data.actors[current_actor].type.wound > 1 then
+								game_data.actors[current_actor].type.wound = game_data.actors[current_actor].type.wound - 1
+							end
 						elseif game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] > 0 then
 							game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] = game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] - 1
 						elseif game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] == 0 then
@@ -2393,7 +2397,13 @@ function love.keypressed(key, scancode, isrepeat)
 					elseif current_entity_type == ENTITY_TYPE_ENEMY then
 						local anim = enemy_animations[current_enemy_type][current_property]
 						
-						if anim == "direction" then
+						if anim == "bonus" then
+							if love.keyboard.isDown("lshift") == true then
+								game_data.actors[current_actor].type.bonus = game_data.actors[current_actor].type.bonus - 10
+							else
+								game_data.actors[current_actor].type.bonus = game_data.actors[current_actor].type.bonus - 1
+							end
+						elseif anim == "direction" then
 							if game_data.actors[current_actor].type.direction > 0 then
 								game_data.actors[current_actor].type.direction = game_data.actors[current_actor].type.direction - 90
 							end
@@ -2475,6 +2485,10 @@ function love.keypressed(key, scancode, isrepeat)
 							else
 								game_data.actors[current_actor].type.directions = 8
 							end
+						elseif anim == "wound" then
+							if game_data.actors[current_actor].type.wound < 100 then
+								game_data.actors[current_actor].type.wound = game_data.actors[current_actor].type.wound + 1
+							end
 						elseif game_data.actors[current_actor].type[anim] < game_data.max_animations then
 							game_data.actors[current_actor].type[anim] = game_data.actors[current_actor].type[anim] + 1
 						elseif game_data.actors[current_actor].type[anim] == game_data.max_animations then
@@ -2483,7 +2497,13 @@ function love.keypressed(key, scancode, isrepeat)
 					elseif current_entity_type == ENTITY_TYPE_ENEMY then
 						local anim = enemy_animations[current_enemy_type][current_property]
 						
-						if anim == "direction" then
+						if anim == "bonus" then
+							if love.keyboard.isDown("lshift") == true then
+								game_data.actors[current_actor].type.bonus = game_data.actors[current_actor].type.bonus + 10
+							else
+								game_data.actors[current_actor].type.bonus = game_data.actors[current_actor].type.bonus + 1
+							end
+						elseif anim == "direction" then
 							if game_data.actors[current_actor].type.direction < 270 then
 								game_data.actors[current_actor].type.direction = game_data.actors[current_actor].type.direction + 90
 							end

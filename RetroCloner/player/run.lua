@@ -732,15 +732,27 @@ function run.update(dt)
 		end
 
 		if #game_data.levels > 0 then
-			local actor_number = run.vars.level_actors[1].number
-			
 			-- it is time to animate the player
 			if animations_tick == true then
-				-- animation not looping and ended ?
-				if AnimateCharacter(1, moving) == true then
-					if run.vars.dead == false then
-						run.vars.level_actors[1].animation = GetActorAnimationNumber(actor_number, "idle")
-						run.vars.level_actors[1].frame = 1
+				local actor_number = run.vars.level_actors[1].number
+			
+				if run.vars.dead == false then
+					-- animation not looping and ended ?
+					if AnimateCharacter(1, moving) == true then
+						if run.vars.dead == false then
+							run.vars.level_actors[1].animation = GetActorAnimationNumber(actor_number, "idle")
+							run.vars.level_actors[1].frame = 1
+						end
+					end
+				elseif run.vars.dead == true then
+					-- animation not looping and ended ?
+					if AnimateCharacter(1, moving) == true then
+						if run.vars.entity_active[1] == true then
+							if run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "die") then
+								-- remove the enemy from the level
+								run.vars.entity_active[1] = false
+							end
+						end
 					end
 				end
 			end
@@ -1106,6 +1118,11 @@ function run.update(dt)
 								run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
 							end
 							
+							-- player is dead
+							if run.vars.dead == true then
+								run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
+							end
+							
 							-- seek
 							if run.vars.level_actors[i].param == ENEMY_SEEK_MODE then
 								if xe < xa then
@@ -1310,23 +1327,25 @@ function run.update(dt)
 			for i = 2, #run.vars.level_actors do
 				local actor_number = run.vars.level_actors[i].number
 				
-				if run.vars.enemy_health[i] > 0 then
-					-- animation not looping and ended ?
-					if AnimateCharacter(i, moving) == true then
-						-- if animation is not 'die'
-						if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "die") then
-							-- reset to idle
-							run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
-							run.vars.level_actors[i].frame = 1
+				if game_data.actors[actor_number].entity == ENTITY_TYPE_ENEMY then
+					if run.vars.enemy_health[i] > 0 then
+						-- animation not looping and ended ?
+						if AnimateCharacter(i, moving) == true then
+							-- if animation is not 'die'
+							if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "die") then
+								-- reset to idle
+								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
+								run.vars.level_actors[i].frame = 1
+							end
 						end
-					end
-				elseif run.vars.enemy_health[i] == 0 then
-					-- animation not looping and ended ?
-					if AnimateCharacter(i, moving) == true then
-						if run.vars.entity_active[i] == true then
-							if run.vars.level_actors[i].animation == GetActorAnimationNumber(actor_number, "die") then
-								-- remove the enemy from the level
-								run.vars.entity_active[i] = false
+					elseif run.vars.enemy_health[i] == 0 then
+						-- animation not looping and ended ?
+						if AnimateCharacter(i, moving) == true then
+							if run.vars.entity_active[i] == true then
+								if run.vars.level_actors[i].animation == GetActorAnimationNumber(actor_number, "die") then
+									-- remove the enemy from the level
+									run.vars.entity_active[i] = false
+								end
 							end
 						end
 					end
@@ -1363,7 +1382,7 @@ function run.update(dt)
 								-- TODO!
 							elseif run.vars.level_actors[1].animation == GetActorAnimationNumber(player_number, "hit") then
 								-- kill the enemy
-								run.vars.enemy_health[i] = run.vars.enemy_health[i] - 1
+								run.vars.enemy_health[i] = run.vars.enemy_health[i] - game_data.actors[player_number].type.wound
 								
 								if run.vars.enemy_health[i] < 0 then run.vars.enemy_health[i] = 0 end
 								
@@ -1374,9 +1393,9 @@ function run.update(dt)
 									-- play enemy die sound
 									-- TODO!
 								end
-							else
+							elseif game_data.health_area == true then
 								-- kill the player
-								run.vars.health = run.vars.health - 1 -- TODO! replace me by the good value
+								run.vars.health = run.vars.health - game_data.actors[actor_number].type.wound
 								
 								if run.vars.health <= 0 then run.vars.health = 0 end
 
@@ -1392,6 +1411,14 @@ function run.update(dt)
 									-- play player die sound
 									-- TODO!
 								end
+							elseif game_data.health_area == false then
+								run.vars.dead = true
+								run.vars.dead_timer = 3.0
+								run.vars.level_actors[1].animation = GetActorAnimationNumber(player_number, "die")
+								run.vars.level_actors[1].frame = 1
+
+								-- play player die sound
+								-- TODO!
 							end
 						end
 					end
@@ -1400,13 +1427,13 @@ function run.update(dt)
 		end
 		
 		-- animate bonus
-		for i = 2, #run.vars.level_actors do
-			if run.vars.entity_active[i] == true then
-				local actor_number = run.vars.level_actors[i].number
+		if animations_tick == true then
+			for i = 2, #run.vars.level_actors do
+				if run.vars.entity_active[i] == true then
+					local actor_number = run.vars.level_actors[i].number
 				
-				if game_data.actors[actor_number].entity == ENTITY_TYPE_BONUS then
 					-- it is time to animate bonus
-					if animations_tick == true then
+					if game_data.actors[actor_number].entity == ENTITY_TYPE_BONUS then
 						-- animation not looping and ended ?
 						if AnimateCharacter(i, moving) == true then
 							run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
@@ -1550,7 +1577,9 @@ function run.update(dt)
 				local actor_number = run.vars.level_actors[i].number
 					
 				if game_data.actors[actor_number].entity == ENTITY_TYPE_ENEMY then
-					flag = true
+					if run.vars.entity_active[i] == true then
+						flag = true
+					end
 				end
 			end
 			
@@ -1565,7 +1594,9 @@ function run.update(dt)
 					local actor_number = run.vars.level_actors[i].number
 						
 					if game_data.actors[actor_number].entity == ENTITY_TYPE_ENEMY then
-						flag = true
+						if run.vars.entity_active[i] == true then
+							flag = true
+						end
 					end
 				end
 					
@@ -1580,7 +1611,9 @@ function run.update(dt)
 				local actor_number = run.vars.level_actors[i].number
 					
 				if game_data.actors[actor_number].entity == ENTITY_TYPE_BONUS then
-					flag = true
+					if run.vars.entity_active[i] == true then
+						flag = true
+					end
 				end
 			end
 				
@@ -1776,7 +1809,7 @@ function run.draw()
 			scale = 1.0 / 32
 
 			-- show press start to play
-			love.graphics.printf("PRESS START TO AGAIN!", 0, virtual_height * 80 / 100, virtual_width / scale, "center", 0, scale, scale)
+			love.graphics.printf("PRESS START TO PLAY AGAIN!", 0, virtual_height * 80 / 100, virtual_width / scale, "center", 0, scale, scale)
 		end
 	elseif run.vars.game_mode == MODE_INTERLUDE then
 		-- disable scissor
@@ -1852,6 +1885,7 @@ function run.keypressed(key, scancode, isrepeat)
 
 			-- initialize player's data
 			run.vars.score = 0
+			run.vars.lives = game_data.vars.lives
 			run.vars.level = 1
 			run.vars.health = 100
 			
@@ -1877,6 +1911,7 @@ function run.keypressed(key, scancode, isrepeat)
 
 			-- initialize player's data
 			run.vars.score = 0
+			run.vars.lives = game_data.vars.lives
 			run.vars.level = 1
 			run.vars.health = 100
 			
@@ -1927,9 +1962,10 @@ function run.gamepadpressed(joystick, button)
 
 				-- initialize game mode
 				run.vars.game_mode = MODE_INTRO
-	
+
 				-- initialize player's data
 				run.vars.score = 0
+				run.vars.lives = game_data.vars.lives
 				run.vars.level = 1
 				run.vars.health = 100
 				
@@ -1986,6 +2022,17 @@ function Fire2(a)
 					-- play hit sound
 					-- TODO!
 				end
+			elseif run.vars.on_stairs == true then
+				-- the player is idle or walking ?
+				if run.vars.level_actors[1].animation == GetActorAnimationNumber(a, "idle") or
+											run.vars.level_actors[1].animation == GetActorAnimationNumber(a, "walk") then
+					-- hit
+					run.vars.level_actors[1].animation = GetActorAnimationNumber(a, "hit")
+					run.vars.level_actors[1].frame = 1
+					
+					-- play hit sound
+					-- TODO!
+				end				
 			end
 		end
 	end
@@ -2048,7 +2095,9 @@ function DrawGame()
 		-- draw player last
 		local actor_number = run.vars.level_actors[1].number
 			
-		DrawActors(1, actor_number, px, py)
+		if run.vars.entity_active[1] == true then
+			DrawActors(1, actor_number, px, py)
+		end
 	end
 end
 
@@ -2075,25 +2124,27 @@ function DrawActors(i, actor_number, px, py)
 		local flip_offset_x = 0
 		local flip_offset_y = 0
 		
-		-- what kind of player ? (TODO!)
-		if game_data.actors[actor_number].type.name == "platformer" then
-			if hflip == -1 then flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) end
-			
-			love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM * hflip, WINDOW_ZOOM)
-		elseif game_data.actors[actor_number].type.name == "run & gun (top view)" then
-			flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) / 2
-			flip_offset_y = ScaleHeight(game_data.sprite_height, WINDOW_ZOOM) / 2
-			
-			love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.dir), game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM, game_data.sprite_width / 2, game_data.sprite_height / 2)
-		elseif game_data.actors[actor_number].type.name == "maze & chase" then
-			flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) / 2
-			flip_offset_y = ScaleHeight(game_data.sprite_height, WINDOW_ZOOM) / 2
-			
-			love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.dir), game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM, game_data.sprite_width / 2, game_data.sprite_height / 2)
-		else
+		if game_data.actors[actor_number].entity == ENTITY_TYPE_ENEMY or game_data.actors[actor_number].entity == ENTITY_TYPE_BONUS then
 			--draw monsters and bonus
 			love.graphics.draw(img_sprites[sprite], px + xc, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM)
-		end
+		else
+			-- what kind of player ? (TODO!)
+			if game_data.actors[actor_number].type.name == "platformer" then
+				if hflip == -1 then flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) end
+				
+				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM * hflip, WINDOW_ZOOM)
+			elseif game_data.actors[actor_number].type.name == "run & gun (top view)" then
+				flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) / 2
+				flip_offset_y = ScaleHeight(game_data.sprite_height, WINDOW_ZOOM) / 2
+				
+				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.dir), game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM, game_data.sprite_width / 2, game_data.sprite_height / 2)
+			elseif game_data.actors[actor_number].type.name == "maze & chase" then
+				flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) / 2
+				flip_offset_y = ScaleHeight(game_data.sprite_height, WINDOW_ZOOM) / 2
+				
+				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.dir), game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM, game_data.sprite_width / 2, game_data.sprite_height / 2)
+			end
+		end		
 	end
 end
 
@@ -2527,7 +2578,7 @@ end
 function AnimateCharacter(i, moving)
 	local actor_number = run.vars.level_actors[i].number
 	local animation = run.vars.level_actors[i].animation
-	
+
 	-- animation not configured ? exit
 	if animation == 0 then return false end
 	
@@ -2579,6 +2630,10 @@ function CommonInit()
 	run.vars.invincible = false
 	run.vars.invincibility_duration = 0
 	
+	-- player is no more dead
+	run.vars.dead = false
+	run.vars.dead_timer = 0.0
+	
 	-- enemy timer for movements and animations
 	run.vars.enemy_move_timer = 0.0
 	
@@ -2602,14 +2657,14 @@ function CommonInit()
 	for i = 1, #run.vars.level_actors do
 		local actor_number = run.vars.level_actors[i].number
 		
-		-- set enemy health
+		-- set enemy health, only for enemies
 		if game_data.actors[actor_number].entity == ENTITY_TYPE_ENEMY then	
 			table.insert(run.vars.enemy_health,game_data.actors[actor_number].type["health"])
 		else
 			table.insert(run.vars.enemy_health, 0)
 		end
 		
-		-- entity is active at start
+		-- all entities are active at start
 		table.insert(run.vars.entity_active, true)
 	end
 end

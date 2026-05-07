@@ -3,9 +3,7 @@ TODO
 ====
 
 * Bugs:
-	- Bugs de MicroPac: plus de commande durant le temps de mort
-	- Remettre à 3 les vies et à 0 le score
-	- Kurgan en bas de l'échelle ne frappe pas
+	- ...
 	
 * Terminer la partie jeu:
 	- Animer et déplacer les ennemis (wip)

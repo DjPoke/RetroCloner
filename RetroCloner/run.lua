@@ -1382,7 +1382,7 @@ function run.update(dt)
 								-- TODO!
 							elseif run.vars.level_actors[1].animation == GetActorAnimationNumber(player_number, "hit") then
 								-- kill the enemy
-								run.vars.enemy_health[i] = run.vars.enemy_health[i] - 1
+								run.vars.enemy_health[i] = run.vars.enemy_health[i] - game_data.actors[player_number].type.wound
 								
 								if run.vars.enemy_health[i] < 0 then run.vars.enemy_health[i] = 0 end
 								
@@ -1395,7 +1395,7 @@ function run.update(dt)
 								end
 							elseif game_data.health_area == true then
 								-- kill the player
-								run.vars.health = run.vars.health - 1 -- TODO! replace me by the good value
+								run.vars.health = run.vars.health - game_data.actors[actor_number].type.wound
 								
 								if run.vars.health <= 0 then run.vars.health = 0 end
 
@@ -1809,7 +1809,7 @@ function run.draw()
 			scale = 1.0 / 32
 
 			-- show press start to play
-			love.graphics.printf("PRESS START TO AGAIN!", 0, virtual_height * 80 / 100, virtual_width / scale, "center", 0, scale, scale)
+			love.graphics.printf("PRESS START TO PLAY AGAIN!", 0, virtual_height * 80 / 100, virtual_width / scale, "center", 0, scale, scale)
 		end
 	elseif run.vars.game_mode == MODE_INTERLUDE then
 		-- disable scissor
@@ -1885,6 +1885,7 @@ function run.keypressed(key, scancode, isrepeat)
 
 			-- initialize player's data
 			run.vars.score = 0
+			run.vars.lives = game_data.vars.lives
 			run.vars.level = 1
 			run.vars.health = 100
 			
@@ -1910,6 +1911,7 @@ function run.keypressed(key, scancode, isrepeat)
 
 			-- initialize player's data
 			run.vars.score = 0
+			run.vars.lives = game_data.vars.lives
 			run.vars.level = 1
 			run.vars.health = 100
 			
@@ -1960,9 +1962,10 @@ function run.gamepadpressed(joystick, button)
 
 				-- initialize game mode
 				run.vars.game_mode = MODE_INTRO
-	
+
 				-- initialize player's data
 				run.vars.score = 0
+				run.vars.lives = game_data.vars.lives
 				run.vars.level = 1
 				run.vars.health = 100
 				
@@ -2019,6 +2022,17 @@ function Fire2(a)
 					-- play hit sound
 					-- TODO!
 				end
+			elseif run.vars.on_stairs == true then
+				-- the player is idle or walking ?
+				if run.vars.level_actors[1].animation == GetActorAnimationNumber(a, "idle") or
+											run.vars.level_actors[1].animation == GetActorAnimationNumber(a, "walk") then
+					-- hit
+					run.vars.level_actors[1].animation = GetActorAnimationNumber(a, "hit")
+					run.vars.level_actors[1].frame = 1
+					
+					-- play hit sound
+					-- TODO!
+				end				
 			end
 		end
 	end
@@ -2615,6 +2629,10 @@ function CommonInit()
 	-- invincibility is false at beginning
 	run.vars.invincible = false
 	run.vars.invincibility_duration = 0
+	
+	-- player is no more dead
+	run.vars.dead = false
+	run.vars.dead_timer = 0.0
 	
 	-- enemy timer for movements and animations
 	run.vars.enemy_move_timer = 0.0
