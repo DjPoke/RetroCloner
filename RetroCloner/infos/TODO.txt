@@ -3,22 +3,28 @@ TODO
 ====
 
 * Bugs:
-	- Xanbot meurt sans jouer l'animation mort (rarement ou plus !)
+	- ...
 	
 * Terminer la partie jeu:
+	- Les ennemis haut-bas et gauche-droite doivent voir leur mouvement refait, avec un paramètres de nombre de pas, positif ou négatif, plutôt que basés sur un timer
 	- Gérer les tirs ennemis
+	- Ajouter un bonus au hasard parmi ceux créés, si on tue un ennemi, avec des chances qu'il y soit et des chances que ce soit l'un plutôt que l'autre, sleon le type
+	- Faire le controle joueur beat'em up
+	- Si z-order non actif, afficher les bonus en 1er, puis les monstres, puis le joueur. Sinon, afficher ce qui est au dessus du joueur, le joueur, et ce qui est en dessous.
+	- Ajouter des acteurs boss avec la possibilité de les scaler en x1, x2 ou x3, et un comportement distinct des ennemis
+	- Faire un jeu test beat'em up
+	- Faire le controle joueur run & gun (edge view), inspiré du platformer
+	- Faire le controle joueur fixed shooter
+	- Faire le controle joueur horizontal shooter
+	- Faire le controle joueur vertical shooter	
+	- Animer et déplacer les autres types d'ennemis (wip)
 	- Prendre les block bonus (wip)
 	- Ajouter un compteur de blocks bonus, si à 0, victoire possible
-	- Animer et déplacer les ennemis (wip)
-	- Ajouter un random bonus (1 bonus sur 3 au hasard) si on tue un ennemi, avec des chances qu'il y soit, et des chances que ce soit l'un plutôt que l'autre
-	- Déplacer le joueur en fonction de son type (wip)
-	- Créer une variable pour activer le z-order sur le joueur/ennemis/bonus
-	- Si z-order non actif, Afficher les bonus en 1er, puis les monstres, puis le joueur
-	- Ajouter la possibilité de scaler les acteurs en x1, x2 ou x3, pour obtenir des boss
+	- Faire des acteurs clés et portes numérotés, dont les numéros peuvent correspondre pour ouvrir la porte
 	- Traiter les cas où les animations des acteurs sont à 0. Si certaines animations restent à zéro, le mouvement sera ignoré.
 
 * Faire l'import de sons
-	- Lister les différents types de sons qui peuvent être importés, en fonction du type de player des monstres/bonus
+	- Lister les différents types de sons qui peuvent être importés, en fonction du type de player et des monstres/bonus
 	- Importer et pouvoir jouer des wav
 
 * Tests:

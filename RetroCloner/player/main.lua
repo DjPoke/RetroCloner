@@ -86,7 +86,8 @@ game_data = {
 		scroll_backward = false,
 		gravity = 0,
 		jump_power = 0,
-		automove = false
+		automove = false,
+		z_order = false
 	},
 	sounds = { player = {walk = "", run = "", jump = "", hit = "", fire1 = "", fire2 = ""},
 			   enemies = {},

@@ -140,7 +140,8 @@ game_data = {
 		scroll_backward = false,
 		gravity = 0,
 		jump_power = 0,
-		automove = false
+		automove = false,
+		z_order = false
 	},
 	sounds = { player = {walk = "", run = "", jump = "", hit = "", fire1 = "", fire2 = ""},
 			   enemies = {},
@@ -164,7 +165,8 @@ vars_values = {
 	{name = "scroll_backward", min_value = false, max_value = true, step_value = 1, default_value = true},
 	{name = "gravity", min_value = 1, max_value = 20, step_value = 1, default_value = 8},
 	{name = "jump_power", min_value = 1, max_value = 20, step_value = 1, default_value = 10},
-	{name = "automove", min_value = false, max_value = true, step_value = 1, default_value = false}
+	{name = "automove", min_value = false, max_value = true, step_value = 1, default_value = false},
+	{name = "z_order", min_value = false, max_value = true, step_value = 1, default_value = false}
 }
 
 -- blocks & sprites, converted to images
@@ -1112,9 +1114,10 @@ function love.draw()
 
 		-- draw shortcuts
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("[A]dd a level - [Del]ete level - [W]idth - [H]eight - [L][Shift] Set level", 10, 700)
-		love.graphics.print("[S]wap blocks/actors - [Tab][Shift] Change block/actor - [M]emo. scrolling", 10, 720)
-		love.graphics.print("[R]emember scrolling - [F]ill blocks - [E]dit actor - [Del] actor", 10, 740)
+		love.graphics.print("[A]dd a level - [Del]ete level - [W]idth - [H]eight - [F]ill blocks", 10, 680)
+		love.graphics.print("[PageUp][PageDown] Change level to edit - [S]wap between blocks and actors", 10, 700)
+		love.graphics.print("[Tab][Shift] Change block or actor - [E]dit actor - [Del] actor", 10, 720)
+		love.graphics.print("[M]emorize scrolling - [R]emember scrolling", 10, 740)
 		love.graphics.print("[Esc] Back", 10, 760)
 	elseif mode == MODE_EDIT_GAMES_DATA then
 		-- draw title
@@ -2625,24 +2628,30 @@ function love.keypressed(key, scancode, isrepeat)
 				end
 			end
 			
-			if key == "l" then
+			if key == "pageup" then
 				-- change level to edit
 				if current_level > 0 then
 					-- disable edit mode
 					current_level_actors_edit_mode = false
 					
-					if love.keyboard.isDown("lshift") then
-						if current_level > 1 then
-							current_level = current_level - 1
-						else
-							current_level = #game_data.levels
-						end
+					if current_level < #game_data.levels then
+						current_level = current_level + 1
+					elseif current_level == #game_data.levels then
+						current_level = 1
+					end
+				end
+			end
+
+			if key == "pagedown" then
+				-- change level to edit
+				if current_level > 0 then
+					-- disable edit mode
+					current_level_actors_edit_mode = false
+					
+					if current_level > 1 then
+						current_level = current_level - 1
 					else
-						if current_level < #game_data.levels then
-							current_level = current_level + 1
-						elseif current_level == #game_data.levels then
-							current_level = 1
-						end
+						current_level = #game_data.levels
 					end
 				end
 			end

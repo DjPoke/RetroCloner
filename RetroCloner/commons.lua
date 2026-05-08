@@ -118,7 +118,9 @@ image_types = {"intro", "interface", "winner", "game_over", "interlude"}
 music_types = {"intro", "in_game", "winner", "game_over"}
 
 -- types of sounds to import
-player_sound_types = {"walk", "run", "jump", "hit", "fire1", "fire2"}
+player_sound_types = {"walk", "run", "jump", "hit", "fire1", "fire2", "punch", "kick", "jumping_kick", "wounded", "die"}
+enemies_sound_types = {"walk", "fire", "wounded", "die"}
+bonus_sound_types = {"points", "lives", "health", "invincible"}
 
 -- convert blocks to images
 function ConvertBlocksToImages()

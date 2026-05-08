@@ -574,6 +574,17 @@ function LoadGame(d, f, t)
 		return nil
 	end
 	
+	-- z-order
+	cpt = cpt + 1
+	
+	if ts[cpt] == "true" then
+		t.vars.z_order = true
+	elseif ts[cpt] == "false" then
+		t.vars.z_order = false
+	else
+		return nil
+	end
+	
 	-- music names
 	for i = 1, #music_types do
 		cpt = cpt + 1

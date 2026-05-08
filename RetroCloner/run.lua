@@ -12,6 +12,7 @@ local SCROLLING_SLOW_DOWN = 4
 
 local ENEMY_SEEK_MODE = 0
 local ENEMY_RANDOM_MODE = 1
+local ENEMY_AFFRAID_MODE = 2
 
 local GOAL_EXIT_RIGHT = 1
 local GOAL_KILL_ALL_ENEMIES = 2
@@ -43,7 +44,6 @@ run.vars = {
 	interlude_timer = 0.0,
 	jump_power = 0,
 	fall_power = 0,
-	dir = 0,
 	dir_x = 0,
 	dir_y = 0,
 	requested_dir = 0,
@@ -264,7 +264,7 @@ function run.update(dt)
 						end
 					end
 					
-					-- (TODO! set all player's type gameplay)
+					-- control each type of player (TODO! finish me!)
 					if game_data.actors[actor_number].type.name == "platformer" then
 						moving = false
 						moving_down = false
@@ -281,7 +281,7 @@ function run.update(dt)
 															run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "jump") or 
 															run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "climb") then						
 								run.vars.level_actors[1].hflip = true
-								run.vars.dir = 180
+								run.vars.level_actors[1].dir = 180
 								moving = true
 								
 								-- change animation if needed
@@ -299,7 +299,7 @@ function run.update(dt)
 															run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "jump") or 
 															run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "climb") then						
 								run.vars.level_actors[1].hflip = false
-								run.vars.dir = 0
+								run.vars.level_actors[1].dir = 0
 								moving = true
 								
 								-- change animation if needed
@@ -313,7 +313,7 @@ function run.update(dt)
 							end
 						elseif joy_up == true then
 							-- climb up
-							run.vars.dir = 270
+							run.vars.level_actors[1].dir = 270
 							moving = true
 
 							if run.vars.on_stairs == true then
@@ -327,7 +327,7 @@ function run.update(dt)
 							end
 						elseif joy_down == true then
 							-- climb down
-							run.vars.dir = 90
+							run.vars.level_actors[1].dir = 90
 							moving = true
 							moving_down = true
 
@@ -422,70 +422,70 @@ function run.update(dt)
 						-- automove
 						if game_data.vars.automove == false then
 							if joy_up == false and joy_down == false and joy_left == false and joy_right == false then
-								run.vars.dir_x = 0
-								run.vars.dir_y = 0
+								run.vars.level_actors[1].dir_x = 0
+								run.vars.level_actors[1].dir_y = 0
 							end
 						end
 						
 						if joy_up == true then
 							if joy_left == true then
-								run.vars.dir = 225
-								run.vars.dir_x = -1
-								run.vars.dir_y = -1
+								run.vars.level_actors[1].dir = 225
+								run.vars.level_actors[1].dir_x = -1
+								run.vars.level_actors[1].dir_y = -1
 							elseif joy_right == true then
-								run.vars.dir = 315
-								run.vars.dir_x = 1
-								run.vars.dir_y = -1
+								run.vars.level_actors[1].dir = 315
+								run.vars.level_actors[1].dir_x = 1
+								run.vars.level_actors[1].dir_y = -1
 							else
-								run.vars.dir = 270
-								run.vars.dir_x = 0
-								run.vars.dir_y = -1
+								run.vars.level_actors[1].dir = 270
+								run.vars.level_actors[1].dir_x = 0
+								run.vars.level_actors[1].dir_y = -1
 							end
 						elseif joy_down == true then
 							if joy_left == true then
-								run.vars.dir = 135
-								run.vars.dir_x = -1
-								run.vars.dir_y = 1
+								run.vars.level_actors[1].dir = 135
+								run.vars.level_actors[1].dir_x = -1
+								run.vars.level_actors[1].dir_y = 1
 							elseif joy_right == true then
-								run.vars.dir = 45
-								run.vars.dir_x = 1
-								run.vars.dir_y = 1
+								run.vars.level_actors[1].dir = 45
+								run.vars.level_actors[1].dir_x = 1
+								run.vars.level_actors[1].dir_y = 1
 							else
-								run.vars.dir = 90
-								run.vars.dir_x = 0
-								run.vars.dir_y = 1
+								run.vars.level_actors[1].dir = 90
+								run.vars.level_actors[1].dir_x = 0
+								run.vars.level_actors[1].dir_y = 1
 							end
 						elseif joy_left == true then
 							if joy_up == true then
-								run.vars.dir = 225						
-								run.vars.dir_x = -1
-								run.vars.dir_y = -1
+								run.vars.level_actors[1].dir = 225						
+								run.vars.level_actors[1].dir_x = -1
+								run.vars.level_actors[1].dir_y = -1
 							elseif joy_down == true then
-								run.vars.dir = 135
-								run.vars.dir_x = -1
-								run.vars.dir_y = 1
+								run.vars.level_actors[1].dir = 135
+								run.vars.level_actors[1].dir_x = -1
+								run.vars.level_actors[1].dir_y = 1
 							else
-								run.vars.dir = 180
-								run.vars.dir_x = -1
-								run.vars.dir_y = 0
+								run.vars.level_actors[1].dir = 180
+								run.vars.level_actors[1].dir_x = -1
+								run.vars.level_actors[1].dir_y = 0
 							end
 						elseif joy_right == true then
 							if joy_up == true then
-								run.vars.dir = 315
-								run.vars.dir_x = 1
-								run.vars.dir_y = -1
+								run.vars.level_actors[1].dir = 315
+								run.vars.level_actors[1].dir_x = 1
+								run.vars.level_actors[1].dir_y = -1
 							elseif joy_down == true then
-								run.vars.dir = 45
-								run.vars.dir_x = 1
-								run.vars.dir_y = 1
+								run.vars.level_actors[1].dir = 45
+								run.vars.level_actors[1].dir_x = 1
+								run.vars.level_actors[1].dir_y = 1
 							else
-								run.vars.dir = 0
-								run.vars.dir_x = 1
-								run.vars.dir_y = 0
+								run.vars.level_actors[1].dir = 0
+								run.vars.level_actors[1].dir_x = 1
+								run.vars.level_actors[1].dir_y = 0
 							end
 						end
 						
-						if run.vars.dir_x == -1 then
+						if run.vars.level_actors[1].dir_x == -1 then
 							moving = true
 							
 							-- change animation if needed
@@ -497,7 +497,7 @@ function run.update(dt)
 
 							-- walk left
 							new_x = new_x - game_data.vars.player_speed
-						elseif run.vars.dir_x == 1 then
+						elseif run.vars.level_actors[1].dir_x == 1 then
 							moving = true
 							
 							-- change animation if needed
@@ -510,7 +510,7 @@ function run.update(dt)
 							new_x = new_x + game_data.vars.player_speed
 						end
 							
-						if run.vars.dir_y == -1 then
+						if run.vars.level_actors[1].dir_y == -1 then
 							moving = true
 							
 							-- change animation if needed
@@ -522,7 +522,7 @@ function run.update(dt)
 
 							-- walk left
 							new_y = new_y - game_data.vars.player_speed
-						elseif run.vars.dir_y == 1 then
+						elseif run.vars.level_actors[1].dir_y == 1 then
 							moving = true
 							
 							-- change animation if needed
@@ -536,12 +536,14 @@ function run.update(dt)
 						end
 						
 						-- check for player's collisions with blocks, because may be he has moved
-						new_x, collision = SlidingCollisionX(new_x, old_y, game_data.sprite_width, game_data.sprite_height, run.vars.dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
-						new_y, collision = SlidingCollisionY(old_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
-						new_x, new_y = SlidingCollisionZ(new_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
-					elseif game_data.actors[actor_number].type.name == "maze & chase" then
+						new_x, collision = SlidingCollisionX(new_x, old_y, game_data.sprite_width, game_data.sprite_height, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+						new_y, collision = SlidingCollisionY(old_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+						new_x, new_y = SlidingCollisionZ(new_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+					elseif game_data.actors[actor_number].type.name == "maze & chase" then						
 						-- get inputs
-						if run.vars.dir == 0 then
+						run.vars.requested_dir = run.vars.level_actors[1].dir
+						
+						if run.vars.level_actors[1].dir == 0 then
 							if joy_up == true then
 								run.vars.requested_dir = 270
 							elseif joy_down == true then
@@ -551,7 +553,7 @@ function run.update(dt)
 							elseif joy_left == true then
 								run.vars.requested_dir = 180
 							end
-						elseif run.vars.dir == 90 then
+						elseif run.vars.level_actors[1].dir == 90 then
 							if joy_left == true then
 								run.vars.requested_dir = 180
 							elseif joy_right == true then
@@ -561,7 +563,7 @@ function run.update(dt)
 							elseif joy_up == true then
 								run.vars.requested_dir = 270
 							end
-						elseif run.vars.dir == 180 then
+						elseif run.vars.level_actors[1].dir == 180 then
 							if joy_up == true then
 								run.vars.requested_dir = 270
 							elseif joy_down == true then
@@ -571,7 +573,7 @@ function run.update(dt)
 							elseif joy_right == true then
 								run.vars.requested_dir = 0
 							end
-						elseif run.vars.dir == 270 then
+						elseif run.vars.level_actors[1].dir == 270 then
 							if joy_left == true then
 								run.vars.requested_dir = 180
 							elseif joy_right == true then
@@ -627,32 +629,32 @@ function run.update(dt)
 
 						-- appliquer le turn si possible
 						if can_turn == true then
-							run.vars.dir = run.vars.requested_dir
+							run.vars.level_actors[1].dir = run.vars.requested_dir
 						end
 
 						-- calculate movements
 						local target_x = old_x
 						local target_y = old_y
 
-						if run.vars.dir == 180 then
+						if run.vars.level_actors[1].dir == 180 then
 							if joy_left == true or game_data.vars.automove == true then
 								moving = true
 								target_x = target_x - game_data.vars.player_speed
 							end
 
-						elseif run.vars.dir == 0 then
+						elseif run.vars.level_actors[1].dir == 0 then
 							if joy_right == true or game_data.vars.automove == true then
 								moving = true
 								target_x = target_x + game_data.vars.player_speed
 							end
 
-						elseif run.vars.dir == 270 then
+						elseif run.vars.level_actors[1].dir == 270 then
 							if joy_up == true or game_data.vars.automove == true then
 								moving = true
 								target_y = target_y - game_data.vars.player_speed
 							end
 
-						elseif run.vars.dir == 90 then
+						elseif run.vars.level_actors[1].dir == 90 then
 							if joy_down == true or game_data.vars.automove == true then
 								moving = true
 								target_y = target_y + game_data.vars.player_speed
@@ -670,26 +672,26 @@ function run.update(dt)
 						-- collision after movements
 						local collision = false
 
-						if run.vars.dir == 0 or run.vars.dir == 180 then
+						if run.vars.level_actors[1].dir == 0 or run.vars.level_actors[1].dir == 180 then
 							new_x, collision = SlidingCollisionX(
 								target_x,
 								old_y,
 								game_data.sprite_width,
 								game_data.sprite_height,
-								run.vars.dir,
+								run.vars.level_actors[1].dir,
 								game_data.levels[run.vars.level],
 								game_data.block_width,
 								game_data.block_height
 							)
 							new_y = old_y
 
-						elseif run.vars.dir == 90 or run.vars.dir == 270 then
+						elseif run.vars.level_actors[1].dir == 90 or run.vars.level_actors[1].dir == 270 then
 							new_y, collision = SlidingCollisionY(
 								old_x,
 								target_y,
 								game_data.sprite_width,
 								game_data.sprite_height,
-								run.vars.dir,
+								run.vars.level_actors[1].dir,
 								game_data.levels[run.vars.level],
 								game_data.block_width,
 								game_data.block_height
@@ -953,6 +955,9 @@ function run.update(dt)
 						local new_x = old_x
 						local new_y = old_y
 
+						local old_dir = 0
+						local requested_dir = 0
+
 						-- move left to right
 						if game_data.actors[actor_number].type.name == "moving left-right" then
 							if run.vars.enemy_move_timer < 0.5 then
@@ -1126,57 +1131,100 @@ function run.update(dt)
 							local ya = run.vars.level_actors[1].y
 							local xe = run.vars.level_actors[i].x
 							local ye = run.vars.level_actors[i].y
-							
-							requested_dir = 0
-							
+
 							-- affraid mode
 							if run.vars.invincible == true and run.vars.invincibility_duration > 0.0 then
-								run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
-							end
-							
-							-- player is dead
-							if run.vars.dead == true then
+								run.vars.level_actors[i].param = ENEMY_AFFRAID_MODE
+							elseif run.vars.invincible == false and run.vars.level_actors[i].param == ENEMY_AFFRAID_MODE then
+								run.vars.level_actors[i].param = ENEMY_SEEK_MODE
+							elseif run.vars.dead == true then
+								-- player is dead ?
 								run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
 							end
 							
 							-- seek
+							old_dir = run.vars.level_actors[i].dir
+							requested_dir = old_dir
+
 							if run.vars.level_actors[i].param == ENEMY_SEEK_MODE then
+								local td = GetAvailableDirections(xe, ye, old_dir)
+								
+								-- try to seek
 								if xe < xa then
-									requested_dir = 0
+									if HasValue(td, 0) == true then
+										requested_dir = 0
+									else
+										-- switch to random mode
+										run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
+									end
 								elseif xe > xa then
-									requested_dir = 180
-								elseif xe == xa then
-									requested_dir = run.vars.level_actors[i].dir
-								end
-								
-								local dist = math.abs(xe - xa)
-								
-								if math.abs(ye - ya) > dist then
-									if ye > ya then
+									if HasValue(td, 180) == true then
+										requested_dir = 180
+									else
+										-- switch to random mode
+										run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
+									end
+								elseif ye > ya then
+									if HasValue(td, 270) == true then
 										requested_dir = 270
-									elseif ye < ya then
+									else
+										-- switch to random mode
+										run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
+									end
+								elseif ye < ya then
+									if HasValue(td, 90) == true then
 										requested_dir = 90
 									else
-										requested_dir = run.vars.level_actors[i].dir
+										-- switch to random mode
+										run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
 									end
+								else
+									-- switch to random mode
+									run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
 								end
-								
-								-- switch to random mode
-								if math.random(1, 100) == 1 then
+							elseif run.vars.level_actors[i].param == ENEMY_AFFRAID_MODE then
+								local td = GetAvailableDirections(xe, ye, old_dir)
+
+								if xe < xa then
+									if HasValue(td, 180) == true then
+										requested_dir = 180
+									else
+										-- switch to random mode
+										run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
+									end
+								elseif xe > xa then
+									if HasValue(td, 0) == true then
+										requested_dir = 0
+									else
+										-- switch to random mode
+										run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
+									end
+								elseif ye > ya then
+									if HasValue(td, 90) == true then
+										requested_dir = 90
+									else
+										-- switch to random mode
+										run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
+									end
+								elseif ye < ya then
+									if HasValue(td, 270) == true then
+										requested_dir = 270
+									else
+										-- switch to random mode
+										run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
+									end
+								else
+									-- switch to random mode
 									run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
 								end
 							elseif run.vars.level_actors[i].param == ENEMY_RANDOM_MODE then
-								requested_dir = run.vars.level_actors[i].dir
+								local td = GetAvailableDirections(xe, ye, old_dir)
 								
-								-- randomize
-								if math.random(1, 50) == 1 then
-									requested_dir = math.random(0, 3) * 90
-								end
+								-- randomize rotation
+								if #td > 0 then requested_dir = td[math.random(1, #td)] end
 
 								-- switch to seek mode
-								if math.random(1, 100) == 1 then
-									run.vars.level_actors[i].param = ENEMY_SEEK_MODE
-								end
+								run.vars.level_actors[i].param = ENEMY_SEEK_MODE
 							end
 							
 							if requested_dir == 0 then
@@ -1188,18 +1236,94 @@ function run.update(dt)
 							elseif requested_dir == 270 then
 								new_y = new_y - game_data.vars.player_speed
 							end
-
+							
 							moving = true
 						elseif game_data.actors[actor_number].type.name == "seek 8 directions" then
 							-- TODO!
 						elseif game_data.actors[actor_number].type.name == "random 4 directions" then
-							-- TODO!						
+							local xa = run.vars.level_actors[1].x
+							local ya = run.vars.level_actors[1].y
+							local xe = run.vars.level_actors[i].x
+							local ye = run.vars.level_actors[i].y
+
+							-- affraid mode
+							if run.vars.invincible == true and run.vars.invincibility_duration > 0.0 then
+								run.vars.level_actors[i].param = ENEMY_AFFRAID_MODE
+							elseif run.vars.invincible == false and run.vars.level_actors[i].param == ENEMY_AFFRAID_MODE then
+								run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
+							end
+							
+							-- player is dead
+							if run.vars.dead == true then
+								run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
+							end
+							
+							-- seek
+							old_dir = run.vars.level_actors[i].dir
+							requested_dir = old_dir
+							
+							if run.vars.level_actors[i].param == ENEMY_AFFRAID_MODE then
+								local td = GetAvailableDirections(xe, ye, old_dir)
+								
+								if xe < xa then
+									if HasValue(td, 180) == true then
+										requested_dir = 180
+									else
+										-- switch to random mode
+										run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
+									end
+								elseif xe > xa then
+									if HasValue(td, 0) == true then
+										requested_dir = 0
+									else
+										-- switch to random mode
+										run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
+									end
+								elseif ye > ya then
+									if HasValue(td, 90) == true then
+										requested_dir = 90
+									else
+										-- switch to random mode
+										run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
+									end
+								elseif ye < ya then
+									if HasValue(td, 270) == true then
+										requested_dir = 270
+									else
+										-- switch to random mode
+										run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
+									end
+								else
+									-- switch to random mode
+									run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
+								end
+							elseif run.vars.level_actors[i].param == ENEMY_RANDOM_MODE then
+								local td = GetAvailableDirections(xe, ye, old_dir)
+								
+								-- randomize rotation
+								if #td > 0 then requested_dir = td[math.random(1, #td)] end
+								
+								-- switch to seek mode
+								run.vars.level_actors[i].param = ENEMY_SEEK_MODE
+							end
+							
+							if requested_dir == 0 then
+								new_x = new_x + game_data.vars.player_speed
+							elseif requested_dir == 180 then
+								new_x = new_x - game_data.vars.player_speed
+							elseif requested_dir == 90 then
+								new_y = new_y + game_data.vars.player_speed
+							elseif requested_dir == 270 then
+								new_y = new_y - game_data.vars.player_speed
+							end
+							
+							moving = true
 						elseif game_data.actors[actor_number].type.name == "random 8 directions" then
 							-- TODO!
 						end
 
 						-- check for enemies collisions with blocks
-						if moving == true then						
+						if moving == true then
 							local quantized_dir = math.floor(requested_dir / 45) * 45
 							local move_x = 0
 							local move_y = 0
@@ -1218,9 +1342,7 @@ function run.update(dt)
 
 							-- check if the enemy can move or not on x axis
 							if move_x ~= 0 then
-								local collision = false
-								
-								_, collision = SlidingCollisionX(
+								local _, collision = SlidingCollisionX(
 									new_x,
 									old_y,
 									game_data.sprite_width,
@@ -1233,29 +1355,18 @@ function run.update(dt)
 								
 								-- if the enemy collide, he do not move on x
 								if collision == true then
+									collision_horizontal = true
+									
 									new_x = old_x
 									
-									-- collides ? get old dir
-									requested_dir = run.vars.level_actors[i].dir
-
-									-- change behaviour on collision
-									if run.vars.invincible == false then
-										if run.vars.level_actors[i].param == ENEMY_SEEK_MODE then
-											run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
-										elseif run.vars.level_actors[i].param == ENEMY_RANDOM_MODE then
-											run.vars.level_actors[i].param = ENEMY_SEEK_MODE
-										end
-									else
-										requested_dir = (requested_dir + 90) % 360
-									end
+									-- collides ? choose an other direction
+									requested_dir = 90 + (math.random(0, 1) * 180)
 								end
 							end
 
 							-- check if the enemy can move or not on y axis
 							if move_y ~= 0 then
-								local collision = false
-								
-								_, collision = SlidingCollisionY(
+								local _, collision = SlidingCollisionY(
 									old_x,
 									new_y,
 									game_data.sprite_width,
@@ -1268,21 +1379,12 @@ function run.update(dt)
 								
 								-- if the enemy collide, he do not move on y
 								if collision == true then
+									collision_vertical = true
+
 									new_y = old_y
 									
-									-- collides ? get old dir
-									requested_dir = run.vars.level_actors[i].dir
-
-									-- change behaviour on collision
-									if run.vars.invincible == false then
-										if run.vars.level_actors[i].param == ENEMY_SEEK_MODE then
-											run.vars.level_actors[i].param = ENEMY_RANDOM_MODE
-										elseif run.vars.level_actors[i].param == ENEMY_RANDOM_MODE then
-											run.vars.level_actors[i].param = ENEMY_SEEK_MODE
-										end
-									else
-										requested_dir = (requested_dir + 90) % 360
-									end
+									-- collides ? choose an other direction
+									requested_dir = (math.random(0, 1) * 180)
 								end
 							end
 
@@ -1394,6 +1496,9 @@ function run.update(dt)
 								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "die")
 								run.vars.level_actors[i].frame = 1
 								
+								-- add bonus to score
+								run.vars.score = run.vars.score + game_data.actors[actor_number].type.bonus
+								
 								-- play enemy die sound
 								-- TODO!
 							elseif run.vars.level_actors[1].animation == GetActorAnimationNumber(player_number, "hit") then
@@ -1405,6 +1510,9 @@ function run.update(dt)
 								if run.vars.enemy_health[i] == 0 then
 									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "die")
 									run.vars.level_actors[i].frame = 1
+
+									-- add bonus to score
+									run.vars.score = run.vars.score + game_data.actors[actor_number].type.bonus
 									
 									-- play enemy die sound
 									-- TODO!
@@ -1796,7 +1904,7 @@ function run.update(dt)
 
 	elseif run.vars.game_mode == MODE_GAME_OVER then
 
-	elseif run.vars.game_mode == MODE_INTERLUDE then		
+	elseif run.vars.game_mode == MODE_INTERLUDE then
 		-- count time
 		run.vars.interlude_timer = run.vars.interlude_timer + dt
 		
@@ -2020,6 +2128,7 @@ function run.keypressed(key, scancode, isrepeat)
 				run.vars.musics.intro:stop()
 			end
 
+			run.vars.interlude_timer = 0.0
 			run.vars.game_mode = MODE_INTERLUDE
 		end
 	elseif run.vars.game_mode == MODE_IN_GAME then
@@ -2102,7 +2211,8 @@ function run.gamepadpressed(joystick, button)
 				if run.vars.musics.intro ~= nil then
 					run.vars.musics.intro:stop()
 				end
-
+				
+				run.vars.interlude_timer = 0.0
 				run.vars.game_mode = MODE_INTERLUDE
 			end
 		end
@@ -2186,7 +2296,7 @@ function Fire1(a)
 			-- fire a projectile
 			local x = run.vars.level_actors[1].x
 			local y = run.vars.level_actors[1].y
-			local dir = run.vars.dir
+			local dir = run.vars.level_actors[1].dir
 			local player_number = run.vars.level_actors[1].number
 			local collision_box = game_data.actors[player_number].type.collision_box1
 			local animation = game_data.actors[player_number].type.weapon1
@@ -2249,7 +2359,7 @@ function Fire2(a)
 			-- fire a projectile
 			local x = run.vars.level_actors[1].x
 			local y = run.vars.level_actors[1].y
-			local dir = run.vars.dir
+			local dir = run.vars.level_actors[1].dir
 			local player_number = run.vars.level_actors[1].number
 			local collision_box = game_data.actors[player_number].type.collision_box2
 			local animation = game_data.actors[player_number].type.weapon2
@@ -2377,12 +2487,12 @@ function DrawActors(i, actor_number, px, py)
 				flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) / 2
 				flip_offset_y = ScaleHeight(game_data.sprite_height, WINDOW_ZOOM) / 2
 				
-				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.dir), game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM, game_data.sprite_width / 2, game_data.sprite_height / 2)
+				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.level_actors[1].dir), game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM, game_data.sprite_width / 2, game_data.sprite_height / 2)
 			elseif game_data.actors[actor_number].type.name == "maze & chase" then
 				flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) / 2
 				flip_offset_y = ScaleHeight(game_data.sprite_height, WINDOW_ZOOM) / 2
 				
-				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.dir), game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM, game_data.sprite_width / 2, game_data.sprite_height / 2)
+				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.level_actors[1].dir), game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM, game_data.sprite_width / 2, game_data.sprite_height / 2)
 			end
 		end		
 	end
@@ -2925,6 +3035,59 @@ function SlidingCollisionZ(x1, y1, w1, h1, d1, map, w2, h2)
 	return x1, y1
 end
 
+-- get available directions
+function GetAvailableDirections(x, y, current_dir)
+    local dirs = {}
+
+    local possible = {0, 90, 180, 270}
+
+    for _, dir in ipairs(possible) do
+        -- don't go back
+        if dir ~= (current_dir + 180) % 360 then
+            local test_x = x
+            local test_y = y
+
+            if dir == 0 then
+                test_x = test_x + game_data.vars.player_speed
+            elseif dir == 180 then
+                test_x = test_x - game_data.vars.player_speed
+            elseif dir == 90 then
+                test_y = test_y + game_data.vars.player_speed
+            elseif dir == 270 then
+                test_y = test_y - game_data.vars.player_speed
+            end
+
+            local _, collision_x = SlidingCollisionX(
+				test_x,
+				test_y,
+				game_data.sprite_width,
+				game_data.sprite_height,
+				dir,
+				game_data.levels[run.vars.level],
+				game_data.block_width,
+				game_data.block_height
+			)
+
+            local _, collision_y = SlidingCollisionY(
+				test_x,
+				test_y,
+				game_data.sprite_width,
+				game_data.sprite_height,
+				dir,
+				game_data.levels[run.vars.level],
+				game_data.block_width,
+				game_data.block_height
+			)
+
+            if collision_x == false and collision_y == false then
+                table.insert(dirs, dir)
+            end
+        end
+    end
+
+    return dirs
+end
+
 -- animate characters, return true if animation just ended
 function AnimateCharacter(i, moving)
 	local actor_number = run.vars.level_actors[i].number
@@ -2990,9 +3153,6 @@ end
 
 -- common initialization
 function CommonInit()
-	run.vars.dir = 0
-	run.vars.dir_x = 1
-	run.vars.dir_y = 0
 	run.vars.jump_power = 0
 	run.vars.fall_power = 0
 	run.vars.on_the_ground = false
@@ -3031,6 +3191,11 @@ function CommonInit()
 	-- create a copy of the current level
 	run.vars.level_actors = DeepCopy(game_data.levels[run.vars.level].actors)
 
+	-- reset direction
+	run.vars.level_actors[1].dir = 0
+	run.vars.level_actors[1].dir_x = 1
+	run.vars.level_actors[1].dir_y = 0
+	
 	-- get a copy of health points and wound points for each creature
 	run.vars.enemy_health = {}
 	run.vars.entity_active = {}
@@ -3078,7 +3243,28 @@ function GotoNextLevel()
 	
 	-- initialize all
 	CommonInit()
+	
+	-- stop game music
+	if run.vars.musics.in_game ~= nil then
+		run.vars.musics.in_game:stop()
+	end
+
+	-- interlude
+	run.vars.interlude_timer = 0.0
+	run.vars.game_mode = MODE_INTERLUDE
+end
+
+-- check if a value is in a table
+function HasValue(t, value)
+    for _, v in ipairs(t) do
+        if v == value then
+            return true
+        end
+    end
+
+    return false
 end
 
 return run
+
 
