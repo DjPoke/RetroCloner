@@ -49,8 +49,8 @@ player_levels_max_size = {
 -- types of enemies
 enemy_types = {
 	{name = "static", idle = 0, affraid = 0, die = 0, health = 1, wound = 1, bonus = 20},
-	{name = "moving left-right", idle = 0, walk_left = 0, walk_right = 0, affraid_left = 0, affraid_right = 0, die = 0, health = 1, wound = 1, gravity = false, bonus = 20},
-	{name = "moving up-down", idle = 0, walk_up = 0, walk_down = 0, affraid_up = 0, affraid_down = 0, die = 0, health = 1, wound = 1, bonus = 20},
+	{name = "moving left-right", idle = 0, walk_left = 0, walk_right = 0, affraid_left = 0, affraid_right = 0, die = 0, health = 1, wound = 1, gravity = false, steps = 32, bonus = 20},
+	{name = "moving up-down", idle = 0, walk_up = 0, walk_down = 0, affraid_up = 0, affraid_down = 0, die = 0, health = 1, wound = 1, steps = 32, bonus = 20},
 	{name = "sniper", idle = 0, fire = 0, affraid = 0, die = 0, direction = 180, health = 1, wound = 1, bonus = 20},
 	{name = "oscillate left-right", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1, bonus = 20},
 	{name = "oscillate up-down", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1, bonus = 20},
@@ -69,8 +69,8 @@ enemy_types = {
 
 enemy_animations = {
 	{"idle", "affraid", "die", "health", "wound", "bonus"},
-	{"idle", "walk_left", "walk_right", "affraid_left", "affraid_right", "die", "health", "wound", "gravity", "bonus"},
-	{"idle", "walk_up", "walk_down", "affraid_up", "affraid_down", "die", "health", "wound", "bonus"},
+	{"idle", "walk_left", "walk_right", "affraid_left", "affraid_right", "die", "health", "wound", "gravity", "steps", "bonus"},
+	{"idle", "walk_up", "walk_down", "affraid_up", "affraid_down", "die", "health", "wound", "steps", "bonus"},
 	{"idle", "fire", "affraid", "die", "direction", "health", "wound", "bonus"},
 	{"idle", "walk", "fire", "affraid", "die", "health", "wound", "bonus"},
 	{"idle", "walk", "fire", "affraid", "die", "health", "wound", "bonus"},

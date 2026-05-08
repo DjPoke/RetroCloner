@@ -2388,6 +2388,10 @@ function love.keypressed(key, scancode, isrepeat)
 							elseif game_data.actors[current_actor].type.gravity == true then
 								game_data.actors[current_actor].type.gravity = false
 							end
+						elseif anim == "steps" then
+							if game_data.actors[current_actor].type.steps > 1 then
+								game_data.actors[current_actor].type.steps = game_data.actors[current_actor].type.steps - 1
+							end
 						elseif game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] > 0 then
 							game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] = game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] - 1
 						elseif game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] == 0 then
@@ -2478,6 +2482,8 @@ function love.keypressed(key, scancode, isrepeat)
 							elseif game_data.actors[current_actor].type.gravity == true then
 								game_data.actors[current_actor].type.gravity = false
 							end
+						elseif anim == "steps" then
+							game_data.actors[current_actor].type.steps = game_data.actors[current_actor].type.steps + 1
 						elseif game_data.actors[current_actor].type[anim] < game_data.max_animations then
 							game_data.actors[current_actor].type[anim] = game_data.actors[current_actor].type[anim] + 1
 						elseif game_data.actors[current_actor].type[anim] == game_data.max_animations then

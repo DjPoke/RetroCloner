@@ -6,7 +6,6 @@ TODO
 	- ...
 	
 * Terminer la partie jeu:
-	- Les ennemis haut-bas et gauche-droite doivent voir leur mouvement refait, avec un paramètres de nombre de pas, positif ou négatif, plutôt que basés sur un timer
 	- Gérer les tirs ennemis
 	- Ajouter un bonus au hasard parmi ceux créés, si on tue un ennemi, avec des chances qu'il y soit et des chances que ce soit l'un plutôt que l'autre, sleon le type
 	- Faire le controle joueur beat'em up

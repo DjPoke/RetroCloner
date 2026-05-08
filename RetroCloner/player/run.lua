@@ -51,7 +51,6 @@ run.vars = {
 	on_stairs = false,
 	invincible = false,
 	invincibility_duration = 0,
-	enemy_move_timer = 0.0,
 	projectile = {},
 	projectile_destroyed = {},
 	sounds = { player = {walk = "", run = "", jump = "", hit = "", fire1 = "", fire2 = ""},
@@ -144,7 +143,6 @@ function run.update(dt)
 		-- update timers
 		run.vars.game_speed_timer = run.vars.game_speed_timer + dt
 		run.vars.animations_timer = run.vars.animations_timer + dt
-		run.vars.enemy_move_timer = run.vars.enemy_move_timer + dt
 
 		if run.vars.invincibility_duration > 0.0 then
 			run.vars.invincibility_duration = run.vars.invincibility_duration - dt
@@ -173,10 +171,6 @@ function run.update(dt)
 		if run.vars.animations_timer >= max_animations_timer then
 			run.vars.animations_timer = run.vars.animations_timer - max_animations_timer
 			animations_tick = true
-		end
-		
-		if run.vars.enemy_move_timer >= 2.0 then
-			run.vars.enemy_move_timer = 0.0
 		end
 		
 		if run.vars.dead_timer > 0.0 then
@@ -264,7 +258,7 @@ function run.update(dt)
 						end
 					end
 					
-					-- (TODO! set all player's type gameplay)
+					-- control each type of player (TODO! finish me!)
 					if game_data.actors[actor_number].type.name == "platformer" then
 						moving = false
 						moving_down = false
@@ -960,7 +954,13 @@ function run.update(dt)
 
 						-- move left to right
 						if game_data.actors[actor_number].type.name == "moving left-right" then
-							if run.vars.enemy_move_timer < 0.5 then
+							-- movement just ended ?
+							if run.vars.level_actors[i].param == 0 then
+								run.vars.level_actors[i].dir = (run.vars.level_actors[i].dir + 90) % 360
+								run.vars.level_actors[i].param = game_data.actors[actor_number].type.steps
+							end
+
+							if run.vars.level_actors[i].dir == 90 then
 								if run.vars.invincible == false then
 									if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "idle") then
 										run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
@@ -977,7 +977,7 @@ function run.update(dt)
 								end
 								
 								moving = false
-							elseif run.vars.enemy_move_timer >= 0.5 and run.vars.enemy_move_timer < 1.0 then
+							elseif run.vars.level_actors[i].dir == 180 then
 								if run.vars.invincible == false then
 									if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "walk_left") then
 										run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_left")
@@ -993,7 +993,7 @@ function run.update(dt)
 								new_x = new_x - 1
 								requested_dir = 180
 								moving = true
-							elseif run.vars.enemy_move_timer >= 1.0 and run.vars.enemy_move_timer < 1.5 then
+							elseif run.vars.level_actors[i].dir == 270 then
 								if run.vars.invincible == false then
 									if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "idle") then
 										run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
@@ -1010,7 +1010,7 @@ function run.update(dt)
 								end
 								
 								moving = false
-							elseif run.vars.enemy_move_timer >= 1.5 then
+							elseif run.vars.level_actors[i].dir == 0 then
 								if run.vars.invincible == false then
 									if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "walk_right") then
 										run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_right")
@@ -1027,8 +1027,16 @@ function run.update(dt)
 								requested_dir = 0
 								moving = true
 							end
+							
+							-- deduce done step
+							run.vars.level_actors[i].param = run.vars.level_actors[i].param - 1
 						elseif game_data.actors[actor_number].type.name == "moving up-down" then
-							if run.vars.enemy_move_timer < 0.5 then
+							if run.vars.level_actors[i].param == 0 then
+								run.vars.level_actors[i].dir = (run.vars.level_actors[i].dir + 90) % 360
+								run.vars.level_actors[i].param = game_data.actors[actor_number].type.steps
+							end
+							
+							if run.vars.level_actors[i].dir == 0 then
 								if run.vars.invincible == false then
 									if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "idle") then
 										run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
@@ -1045,7 +1053,7 @@ function run.update(dt)
 								end
 								
 								moving = false
-							elseif run.vars.enemy_move_timer >= 0.5 and run.vars.enemy_move_timer < 1.0 then
+							elseif run.vars.level_actors[i].dir == 90 then
 								if run.vars.invincible == false then
 									if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "walk_down") then
 										run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_down")
@@ -1061,7 +1069,7 @@ function run.update(dt)
 								new_y = new_y + 1
 								requested_dir = 90
 								moving = true
-							elseif run.vars.enemy_move_timer >= 1.0 and run.vars.enemy_move_timer < 1.5 then
+							elseif run.vars.level_actors[i].dir == 180 then
 								if run.vars.invincible == false then
 									if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "idle") then
 										run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "idle")
@@ -1078,7 +1086,7 @@ function run.update(dt)
 								end
 								
 								moving = false
-							elseif run.vars.enemy_move_timer >= 1.5 then
+							elseif run.vars.level_actors[i].dir == 270 then
 								if run.vars.invincible == false then
 									if run.vars.level_actors[i].animation ~= GetActorAnimationNumber(actor_number, "walk_up") then
 										run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "walk_up")
@@ -1095,6 +1103,9 @@ function run.update(dt)
 								requested_dir = 270
 								moving = true
 							end
+							
+							-- deduce done step
+							run.vars.level_actors[i].param = run.vars.level_actors[i].param - 1
 						elseif game_data.actors[actor_number].type.name == "sniper" then
 							-- TODO!
 						elseif game_data.actors[actor_number].type.name == "oscillate left-right" then
@@ -1355,12 +1366,13 @@ function run.update(dt)
 								
 								-- if the enemy collide, he do not move on x
 								if collision == true then
-									collision_horizontal = true
-									
+									-- restore x
 									new_x = old_x
 									
 									-- collides ? choose an other direction
-									requested_dir = 90 + (math.random(0, 1) * 180)
+									if game_data.actors[actor_number].type.name ~= "moving left-right" and game_data.actors[actor_number].type.name ~= "moving up-down" then
+										requested_dir = 90 + (math.random(0, 1) * 180)
+									end
 								end
 							end
 
@@ -1379,12 +1391,13 @@ function run.update(dt)
 								
 								-- if the enemy collide, he do not move on y
 								if collision == true then
-									collision_vertical = true
-
+									-- restore y
 									new_y = old_y
 									
 									-- collides ? choose an other direction
-									requested_dir = (math.random(0, 1) * 180)
+									if game_data.actors[actor_number].type.name ~= "moving left-right" and game_data.actors[actor_number].type.name ~= "moving up-down" then
+										requested_dir = (math.random(0, 1) * 180)
+									end
 								end
 							end
 
