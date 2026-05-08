@@ -6,7 +6,8 @@ TODO
 	- ...
 	
 * Terminer la partie jeu:
-	- Gérer les tirs ennemis
+	- Gérer les tirs ennemis, pour ceux qui tirent (wip)
+	- Animer et déplacer les autres types d'ennemis (wip)
 	- Ajouter un bonus au hasard parmi ceux créés, si on tue un ennemi, avec des chances qu'il y soit et des chances que ce soit l'un plutôt que l'autre, sleon le type
 	- Faire le controle joueur beat'em up
 	- Si z-order non actif, afficher les bonus en 1er, puis les monstres, puis le joueur. Sinon, afficher ce qui est au dessus du joueur, le joueur, et ce qui est en dessous.
@@ -16,7 +17,6 @@ TODO
 	- Faire le controle joueur fixed shooter
 	- Faire le controle joueur horizontal shooter
 	- Faire le controle joueur vertical shooter	
-	- Animer et déplacer les autres types d'ennemis (wip)
 	- Prendre les block bonus (wip)
 	- Ajouter un compteur de blocks bonus, si à 0, victoire possible
 	- Faire des acteurs clés et portes numérotés, dont les numéros peuvent correspondre pour ouvrir la porte
