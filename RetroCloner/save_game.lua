@@ -221,8 +221,6 @@ function SaveGame(d, f, t)
 		ts = ts .. tostring(t.vars.scroll_backward) .. "\r\n"			-- scroll backward
 		ts = ts .. tostring(t.vars.gravity) .. "\r\n"					-- gravity
 		ts = ts .. tostring(t.vars.jump_power) .. "\r\n"				-- jump power
-		ts = ts .. tostring(t.vars.automove) .. "\r\n"					-- automove
-		ts = ts .. tostring(t.vars.z_order) .. "\r\n"					-- z-order
 
 		-- save music names
 		for i = 1, #music_types do

@@ -562,29 +562,7 @@ function LoadGame(d, f, t)
 	-- jump power
 	cpt = cpt + 1
 	t.vars.jump_power = tonumber(ts[cpt])
-	
-	-- automove
-	cpt = cpt + 1
-	
-	if ts[cpt] == "true" then
-		t.vars.automove = true
-	elseif ts[cpt] == "false" then
-		t.vars.automove = false
-	else
-		return nil
-	end
-	
-	-- z-order
-	cpt = cpt + 1
-	
-	if ts[cpt] == "true" then
-		t.vars.z_order = true
-	elseif ts[cpt] == "false" then
-		t.vars.z_order = false
-	else
-		return nil
-	end
-	
+
 	-- music names
 	for i = 1, #music_types do
 		cpt = cpt + 1

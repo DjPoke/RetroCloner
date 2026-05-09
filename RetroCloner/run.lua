@@ -406,14 +406,11 @@ function run.update(dt)
 							end
 						end
 					elseif game_data.actors[actor_number].type.name == "beat'em up" then
-						-- automove disabled
-						if game_data.vars.automove == false then
-							if joy_up == false and joy_down == false and joy_left == false and joy_right == false then
-								run.vars.level_actors[1].dir_x = 0
-								run.vars.level_actors[1].dir_y = 0
-							end
-						end
+						-- no movement
+						run.vars.level_actors[1].dir_x = 0
+						run.vars.level_actors[1].dir_y = 0
 						
+						-- choose movement
 						if joy_up == true then
 							if joy_left == true then
 								run.vars.level_actors[1].dir = 225
@@ -538,14 +535,11 @@ function run.update(dt)
 					elseif game_data.actors[actor_number].type.name == "run & gun (edge view)" then
 						-- TODO!				
 					elseif game_data.actors[actor_number].type.name == "run & gun (top view)" then
-						-- automove disabled
-						if game_data.vars.automove == false then
-							if joy_up == false and joy_down == false and joy_left == false and joy_right == false then
-								run.vars.level_actors[1].dir_x = 0
-								run.vars.level_actors[1].dir_y = 0
-							end
-						end
+						-- no movement
+						run.vars.level_actors[1].dir_x = 0
+						run.vars.level_actors[1].dir_y = 0
 						
+						-- choose movement
 						if joy_up == true then
 							if joy_left == true then
 								run.vars.level_actors[1].dir = 225
@@ -668,12 +662,10 @@ function run.update(dt)
 						new_y, collision = SlidingCollisionY(old_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
 						new_x, new_y = SlidingCollisionZ(new_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
 					elseif game_data.actors[actor_number].type.name == "maze & chase" then						
-						-- automove disabled
-						if game_data.vars.automove == false then
-							if joy_up == false and joy_down == false and joy_left == false and joy_right == false then
-								run.vars.level_actors[1].dir_x = 0
-								run.vars.level_actors[1].dir_y = 0
-							end
+						-- automove
+						if joy_up == false and joy_down == false and joy_left == false and joy_right == false then
+							run.vars.level_actors[1].dir_x = 0
+							run.vars.level_actors[1].dir_y = 0
 						end
 						
 						-- get inputs
@@ -806,28 +798,17 @@ function run.update(dt)
 						local target_y = old_y
 
 						if run.vars.level_actors[1].dir == 180 then
-							if joy_left == true or game_data.vars.automove == true then
-								moving = true
-								target_x = target_x - game_data.vars.player_speed
-							end
-
+							moving = true
+							target_x = target_x - game_data.vars.player_speed
 						elseif run.vars.level_actors[1].dir == 0 then
-							if joy_right == true or game_data.vars.automove == true then
-								moving = true
-								target_x = target_x + game_data.vars.player_speed
-							end
-
+							moving = true
+							target_x = target_x + game_data.vars.player_speed
 						elseif run.vars.level_actors[1].dir == 270 then
-							if joy_up == true or game_data.vars.automove == true then
-								moving = true
-								target_y = target_y - game_data.vars.player_speed
-							end
-
+							moving = true
+							target_y = target_y - game_data.vars.player_speed
 						elseif run.vars.level_actors[1].dir == 90 then
-							if joy_down == true or game_data.vars.automove == true then
-								moving = true
-								target_y = target_y + game_data.vars.player_speed
-							end
+							moving = true
+							target_y = target_y + game_data.vars.player_speed
 						end
 
 						-- animating

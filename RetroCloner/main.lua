@@ -139,9 +139,7 @@ game_data = {
 		scrolling_vertically = false,
 		scroll_backward = false,
 		gravity = 0,
-		jump_power = 0,
-		automove = false,
-		z_order = false
+		jump_power = 0
 	},
 	sounds = { player = {walk = "-", run = "-", jump = "-", hit = "-", fire1 = "-", fire2 = "-", jump = "-", kick = "-", jumping_kick = "-", wounded = "-", die = "-"},
 			   enemies = {walk = "-", fire = "-", wounded ="-", die = "-"},
@@ -164,9 +162,7 @@ vars_values = {
 	{name = "scrolling_vertically", min_value = false, max_value = true, step_value = 1, default_value = false},
 	{name = "scroll_backward", min_value = false, max_value = true, step_value = 1, default_value = true},
 	{name = "gravity", min_value = 1, max_value = 20, step_value = 1, default_value = 8},
-	{name = "jump_power", min_value = 1, max_value = 20, step_value = 1, default_value = 10},
-	{name = "automove", min_value = false, max_value = true, step_value = 1, default_value = false},
-	{name = "z_order", min_value = false, max_value = true, step_value = 1, default_value = false}
+	{name = "jump_power", min_value = 1, max_value = 20, step_value = 1, default_value = 10}
 }
 
 -- blocks & sprites, converted to images

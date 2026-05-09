@@ -1659,8 +1659,6 @@ true
 256
 1
 1
-jump
-0
 kick
 0
 jumping_kick
@@ -1669,18 +1667,20 @@ name
 beat'em up
 die
 0
+punch
+0
+walk
+2
 idle
 1
-wounded
+jump
 0
 wound
 1
-punch
+wounded
 0
 hflip
 true
-walk
-2
 END
 256
 1
@@ -7906,8 +7906,6 @@ false
 false
 8
 10
-false
-true
 -
 -
 -

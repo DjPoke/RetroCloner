@@ -6,7 +6,7 @@ TODO
 	- Pac sans automove n'arrête pas son anim walk
 	
 * Terminer la partie jeu:
-	- Supprimer automove et zorder du menu m, intégrer l'automove seulement dans le maze & chase, et le z-order seulement dans le beat'em up et pour les ennemis
+	- Intégrer le z-order seulement dans le mode beat'em up, pour le jouer et les ennemis
 	- Faire le controle joueur beat'em up (wip)
 	- Ajouter un ennemi 'fighter'
 	- Si z-order non actif, afficher les bonus en 1er, puis les monstres, puis le joueur. Sinon, afficher ce qui est au dessus du joueur, le joueur, et ce qui est en dessous.
