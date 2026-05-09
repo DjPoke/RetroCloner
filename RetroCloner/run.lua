@@ -53,12 +53,9 @@ run.vars = {
 	invincibility_duration = 0,
 	projectile = {},
 	projectile_destroyed = {},
-	sounds = { player = {walk = "", run = "", jump = "", hit = "", fire1 = "", fire2 = ""},
-			   enemies = {},
-			   bonus = {}
-	},
-	musics = { intro = "", ingame = "", winner = "", game_over = "" },
-	images = { intro = "", interface = "", winner = "", game_over = "" }
+	sounds = {},
+	musics = {},
+	images = {}
 }
 
 -- run vars
@@ -409,11 +406,7 @@ function run.update(dt)
 							end
 						end
 					elseif game_data.actors[actor_number].type.name == "beat'em up" then
-						-- TODO!
-					elseif game_data.actors[actor_number].type.name == "run & gun (edge view)" then
-						-- TODO!				
-					elseif game_data.actors[actor_number].type.name == "run & gun (top view)" then
-						-- automove
+						-- automove disabled
 						if game_data.vars.automove == false then
 							if joy_up == false and joy_down == false and joy_left == false and joy_right == false then
 								run.vars.level_actors[1].dir_x = 0
@@ -479,7 +472,148 @@ function run.update(dt)
 							end
 						end
 						
-						if run.vars.level_actors[1].dir_x == -1 then
+						if run.vars.level_actors[1].dir_x == 0 and run.vars.level_actors[1].dir_y == 0 then
+							moving = false
+							
+							-- change animation if needed
+							if run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "walk") then
+								run.vars.level_actors[1].animation = GetActorAnimationNumber(actor_number, "idle")
+								run.vars.level_actors[1].frame = 1
+								
+							end
+						elseif run.vars.level_actors[1].dir_x == -1 then
+							moving = true
+							
+							-- change animation if needed
+							if run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
+								run.vars.level_actors[1].animation = GetActorAnimationNumber(actor_number, "walk")
+								run.vars.level_actors[1].frame = 1
+								
+							end
+
+							-- walk left
+							new_x = new_x - game_data.vars.player_speed
+						elseif run.vars.level_actors[1].dir_x == 1 then
+							moving = true
+							
+							-- change animation if needed
+							if run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
+								run.vars.level_actors[1].animation = GetActorAnimationNumber(actor_number, "walk")
+								run.vars.level_actors[1].frame = 1
+							end
+							
+							-- walk right
+							new_x = new_x + game_data.vars.player_speed
+						end
+							
+						if run.vars.level_actors[1].dir_y == -1 then
+							moving = true
+							
+							-- change animation if needed
+							if run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
+								run.vars.level_actors[1].animation = GetActorAnimationNumber(actor_number, "walk")
+								run.vars.level_actors[1].frame = 1
+								
+							end
+
+							-- walk left
+							new_y = new_y - game_data.vars.player_speed
+						elseif run.vars.level_actors[1].dir_y == 1 then
+							moving = true
+							
+							-- change animation if needed
+							if run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
+								run.vars.level_actors[1].animation = GetActorAnimationNumber(actor_number, "walk")
+								run.vars.level_actors[1].frame = 1
+							end
+							
+							-- walk right
+							new_y = new_y + game_data.vars.player_speed
+						end
+						
+						-- check for player's collisions with blocks, because may be he has moved
+						new_x, collision = SlidingCollisionX(new_x, old_y, game_data.sprite_width, game_data.sprite_height, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+						new_y, collision = SlidingCollisionY(old_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+						new_x, new_y = SlidingCollisionZ(new_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+					elseif game_data.actors[actor_number].type.name == "run & gun (edge view)" then
+						-- TODO!				
+					elseif game_data.actors[actor_number].type.name == "run & gun (top view)" then
+						-- automove disabled
+						if game_data.vars.automove == false then
+							if joy_up == false and joy_down == false and joy_left == false and joy_right == false then
+								run.vars.level_actors[1].dir_x = 0
+								run.vars.level_actors[1].dir_y = 0
+							end
+						end
+						
+						if joy_up == true then
+							if joy_left == true then
+								run.vars.level_actors[1].dir = 225
+								run.vars.level_actors[1].dir_x = -1
+								run.vars.level_actors[1].dir_y = -1
+							elseif joy_right == true then
+								run.vars.level_actors[1].dir = 315
+								run.vars.level_actors[1].dir_x = 1
+								run.vars.level_actors[1].dir_y = -1
+							else
+								run.vars.level_actors[1].dir = 270
+								run.vars.level_actors[1].dir_x = 0
+								run.vars.level_actors[1].dir_y = -1
+							end
+						elseif joy_down == true then
+							if joy_left == true then
+								run.vars.level_actors[1].dir = 135
+								run.vars.level_actors[1].dir_x = -1
+								run.vars.level_actors[1].dir_y = 1
+							elseif joy_right == true then
+								run.vars.level_actors[1].dir = 45
+								run.vars.level_actors[1].dir_x = 1
+								run.vars.level_actors[1].dir_y = 1
+							else
+								run.vars.level_actors[1].dir = 90
+								run.vars.level_actors[1].dir_x = 0
+								run.vars.level_actors[1].dir_y = 1
+							end
+						elseif joy_left == true then
+							if joy_up == true then
+								run.vars.level_actors[1].dir = 225						
+								run.vars.level_actors[1].dir_x = -1
+								run.vars.level_actors[1].dir_y = -1
+							elseif joy_down == true then
+								run.vars.level_actors[1].dir = 135
+								run.vars.level_actors[1].dir_x = -1
+								run.vars.level_actors[1].dir_y = 1
+							else
+								run.vars.level_actors[1].dir = 180
+								run.vars.level_actors[1].dir_x = -1
+								run.vars.level_actors[1].dir_y = 0
+							end
+						elseif joy_right == true then
+							if joy_up == true then
+								run.vars.level_actors[1].dir = 315
+								run.vars.level_actors[1].dir_x = 1
+								run.vars.level_actors[1].dir_y = -1
+							elseif joy_down == true then
+								run.vars.level_actors[1].dir = 45
+								run.vars.level_actors[1].dir_x = 1
+								run.vars.level_actors[1].dir_y = 1
+							else
+								run.vars.level_actors[1].dir = 0
+								run.vars.level_actors[1].dir_x = 1
+								run.vars.level_actors[1].dir_y = 0
+							end
+						end
+						
+						if run.vars.level_actors[1].dir_x == 0 and run.vars.level_actors[1].dir_y == 0 then
+							moving = false
+							
+							-- change animation if needed
+							if run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "run") then
+								run.vars.level_actors[1].animation = GetActorAnimationNumber(actor_number, "idle")
+								run.vars.level_actors[1].frame = 1
+								
+							end
+						elseif run.vars.level_actors[1].dir_x == -1 then
 							moving = true
 							
 							-- change animation if needed
@@ -534,55 +668,95 @@ function run.update(dt)
 						new_y, collision = SlidingCollisionY(old_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
 						new_x, new_y = SlidingCollisionZ(new_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
 					elseif game_data.actors[actor_number].type.name == "maze & chase" then						
+						-- automove disabled
+						if game_data.vars.automove == false then
+							if joy_up == false and joy_down == false and joy_left == false and joy_right == false then
+								run.vars.level_actors[1].dir_x = 0
+								run.vars.level_actors[1].dir_y = 0
+							end
+						end
+						
 						-- get inputs
 						run.vars.requested_dir = run.vars.level_actors[1].dir
 						
 						if run.vars.level_actors[1].dir == 0 then
 							if joy_up == true then
 								run.vars.requested_dir = 270
+								run.vars.level_actors[1].dir_x = 0
+								run.vars.level_actors[1].dir_y = -1
 							elseif joy_down == true then
 								run.vars.requested_dir = 90
+								run.vars.level_actors[1].dir_x = 0
+								run.vars.level_actors[1].dir_y = 1
 							elseif joy_right == true then
 								run.vars.requested_dir = 0
+								run.vars.level_actors[1].dir_x = 1
+								run.vars.level_actors[1].dir_y = 0
 							elseif joy_left == true then
 								run.vars.requested_dir = 180
+								run.vars.level_actors[1].dir_x = -1
+								run.vars.level_actors[1].dir_y = 0
 							end
 						elseif run.vars.level_actors[1].dir == 90 then
 							if joy_left == true then
 								run.vars.requested_dir = 180
+								run.vars.level_actors[1].dir_x = -1
+								run.vars.level_actors[1].dir_y = 0
 							elseif joy_right == true then
 								run.vars.requested_dir = 0
+								run.vars.level_actors[1].dir_x = 1
+								run.vars.level_actors[1].dir_y = 0
 							elseif joy_down == true then
 								run.vars.requested_dir = 90
+								run.vars.level_actors[1].dir_x = 0
+								run.vars.level_actors[1].dir_y = 1
 							elseif joy_up == true then
 								run.vars.requested_dir = 270
+								run.vars.level_actors[1].dir_x = 0
+								run.vars.level_actors[1].dir_y = -1
 							end
 						elseif run.vars.level_actors[1].dir == 180 then
 							if joy_up == true then
 								run.vars.requested_dir = 270
+								run.vars.level_actors[1].dir_x = 0
+								run.vars.level_actors[1].dir_y = -1
 							elseif joy_down == true then
 								run.vars.requested_dir = 90
+								run.vars.level_actors[1].dir_x = 0
+								run.vars.level_actors[1].dir_y = 1
 							elseif joy_left == true then
 								run.vars.requested_dir = 180
+								run.vars.level_actors[1].dir_x = -1
+								run.vars.level_actors[1].dir_y = 0
 							elseif joy_right == true then
 								run.vars.requested_dir = 0
+								run.vars.level_actors[1].dir_x = 1
+								run.vars.level_actors[1].dir_y = 0
 							end
 						elseif run.vars.level_actors[1].dir == 270 then
 							if joy_left == true then
 								run.vars.requested_dir = 180
+								run.vars.level_actors[1].dir_x = -1
+								run.vars.level_actors[1].dir_y = 0
 							elseif joy_right == true then
 								run.vars.requested_dir = 0
+								run.vars.level_actors[1].dir_x = 1
+								run.vars.level_actors[1].dir_y = 0
 							elseif joy_up == true then
 								run.vars.requested_dir = 270
+								run.vars.level_actors[1].dir_x = 0
+								run.vars.level_actors[1].dir_y = -1
 							elseif joy_down == true then
 								run.vars.requested_dir = 90
+								run.vars.level_actors[1].dir_x = 0
+								run.vars.level_actors[1].dir_y = 1
 							end
 						end
 
 						-- can we turn ?
 						local can_turn = false
 
-						if run.vars.requested_dir == 0 or run.vars.requested_dir == 180 then
+						if run.vars.level_actors[1].dir_x ~= 0 then
 							local dir_sign = (run.vars.requested_dir == 0) and 1 or -1
 							local test_x = old_x + dir_sign * game_data.vars.player_speed
 
@@ -600,8 +774,9 @@ function run.update(dt)
 							if collision == false then
 								can_turn = true
 							end
+						end
 
-						elseif run.vars.requested_dir == 90 or run.vars.requested_dir == 270 then
+						if run.vars.level_actors[1].dir_y ~= 0 then
 							local dir_sign = (run.vars.requested_dir == 90) and 1 or -1
 							local test_y = old_y + dir_sign * game_data.vars.player_speed
 
@@ -1130,6 +1305,22 @@ function run.update(dt)
 
 										run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "fire")
 										run.vars.level_actors[i].frame = 1
+										
+										-- fire a projectile
+										local x = run.vars.level_actors[i].x
+										local y = run.vars.level_actors[i].y
+										local dir = run.vars.level_actors[i].dir
+										local actor_number = run.vars.level_actors[i].number
+										local collision_box = game_data.actors[actor_number].type.collision_box
+										local animation = game_data.actors[actor_number].type.weapon
+										local wound = game_data.actors[actor_number].type.wound
+											
+										if animation > 0 then
+											table.insert(run.vars.projectile, {actor = i, animation = animation, frame = 1, x = x, y = y, dir = dir, wound = wound, collision_box = collision_box})
+
+											-- play fire sound
+											-- TODO!
+										end
 									end
 								end
 							end
@@ -1751,25 +1942,14 @@ function run.update(dt)
 
 			for i = #run.vars.projectile, 1, -1 do
 				local dir = run.vars.projectile[i].dir
-				local dir_x = 0
-				local dir_y = 0
+				local speed_mult = 2
 				
-				if dir == 0 or dir == 45 or dir == 315 then
-					dir_x = 1 -- TODO! set speed in the editor
-				elseif dir == 180 or dir == 135 or dir == 225 then
-					dir_x = -1 -- TODO! set speed in the editor
-				end
-
-				if dir == 90 or dir == 45 or dir == 135 then
-					dir_y = 1 -- TODO! set speed in the editor
-				elseif dir == 270 or dir == 225 or dir == 315 then
-					dir_y = -1 -- TODO! set speed in the editor
+				if run.vars.projectile[i].actor > 1 then
+					speed_mult = 1
 				end
 				
-				if run.vars.projectile[i].actor == 1 then
-					run.vars.projectile[i].x = run.vars.projectile[i].x + (dir_x * 2 * game_data.vars.player_speed)
-					run.vars.projectile[i].y = run.vars.projectile[i].y + (dir_y * 2 * game_data.vars.player_speed)
-				end
+				run.vars.projectile[i].x = run.vars.projectile[i].x + (speed_mult * game_data.vars.player_speed * math.cos(math.rad(dir)))
+				run.vars.projectile[i].y = run.vars.projectile[i].y + (speed_mult * game_data.vars.player_speed * math.sin(math.rad(dir)))
 				
 				-- check collisions with blocks
 				local collision = false
@@ -1838,7 +2018,65 @@ function run.update(dt)
 		for i = #run.vars.level_actors, 1, -1 do
 			local actor_number = run.vars.level_actors[i].number
 			
-			if game_data.actors[actor_number].entity == ENTITY_TYPE_ENEMY then
+			if game_data.actors[actor_number].entity == ENTITY_TYPE_PLAYER then
+				if run.vars.health > 0 then
+					for j = #run.vars.projectile, 1, -1 do
+						-- in case of collision
+						local ex = run.vars.level_actors[i].x
+						local ey = run.vars.level_actors[i].y
+						local ew = game_data.sprite_width
+						local eh = game_data.sprite_height
+						
+						local px = run.vars.projectile[j].x
+						local py = run.vars.projectile[j].y
+						local pw = game_data.sprite_width
+						local ph = game_data.sprite_height
+
+						local div = run.vars.projectile[j].collision_box
+
+						px = px + math.floor((pw - (pw / div)) / 2)
+						py = py + math.floor((ph - (ph / div)) / 2)
+
+						pw = pw / div
+						ph = ph / div
+						
+						-- it is an enemy projectile
+						if run.vars.projectile[j].actor > 1 then
+							-- collision ?
+							if Collision(ex, ey, ew, eh, px, py, pw, ph) == true then
+								-- pre-destroy the projectile
+								table.insert(run.vars.projectile_destroyed, j)
+							
+								-- destroy the player
+								if game_data.health_area == true then
+									run.vars.health = run.vars.health - run.vars.projectile[j].wound
+									
+									if run.vars.health < 0 then run.vars.health = 0 end
+									
+									if run.vars.health == 0 then
+										run.vars.dead = true
+										run.vars.dead_timer = 3.0
+										run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "die")
+										run.vars.level_actors[i].frame = 1
+
+										-- play player die sound
+										-- TODO!
+									end
+								elseif game_data.health_area == false then
+									run.vars.health = 0
+									run.vars.dead = true
+									run.vars.dead_timer = 3.0
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "die")
+									run.vars.level_actors[i].frame = 1
+
+									-- play player die sound
+									-- TODO!
+								end
+							end
+						end
+					end
+				end
+			elseif game_data.actors[actor_number].entity == ENTITY_TYPE_ENEMY then
 				if run.vars.enemy_health[i] > 0 then
 					for j = #run.vars.projectile, 1, -1 do
 						-- in case of collision
@@ -1875,6 +2113,8 @@ function run.update(dt)
 								if run.vars.enemy_health[i] == 0 then
 									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "die")
 									run.vars.level_actors[i].frame = 1
+									
+									run.vars.score = run.vars.score + game_data.actors[actor_number].type.bonus
 								end
 								
 								-- play sound explosion
@@ -2538,6 +2778,14 @@ function DrawActors(i, actor_number, px, py)
 				if hflip == -1 then flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) end
 				
 				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM * hflip, WINDOW_ZOOM)
+			elseif game_data.actors[actor_number].type.name == "beat'em up" then
+				if hflip == -1 then flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) end
+				
+				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM * hflip, WINDOW_ZOOM)
+			elseif game_data.actors[actor_number].type.name == "run & gun (edge view)" then
+				if hflip == -1 then flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) end
+				
+				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM * hflip, WINDOW_ZOOM)
 			elseif game_data.actors[actor_number].type.name == "run & gun (top view)" then
 				flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) / 2
 				flip_offset_y = ScaleHeight(game_data.sprite_height, WINDOW_ZOOM) / 2
@@ -2548,6 +2796,12 @@ function DrawActors(i, actor_number, px, py)
 				flip_offset_y = ScaleHeight(game_data.sprite_height, WINDOW_ZOOM) / 2
 				
 				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.level_actors[1].dir), game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM, game_data.sprite_width / 2, game_data.sprite_height / 2)
+			elseif game_data.actors[actor_number].type.name == "fixed shooter" then
+				-- TODO!
+			elseif game_data.actors[actor_number].type.name == "horizontal shooter" then
+				-- TODO!
+			elseif game_data.actors[actor_number].type.name == "vertical shooter" then
+				-- TODO!
 			end
 		end		
 	end

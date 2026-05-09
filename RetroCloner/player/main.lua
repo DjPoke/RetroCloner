@@ -89,12 +89,12 @@ game_data = {
 		automove = false,
 		z_order = false
 	},
-	sounds = { player = {walk = "", run = "", jump = "", hit = "", fire1 = "", fire2 = ""},
-			   enemies = {},
-			   bonus = {}
+	sounds = { player = {walk = "-", run = "-", jump = "-", hit = "-", fire1 = "-", fire2 = "-", jump = "-", kick = "-", jumping_kick = "-", wounded = "-", die = "-"},
+			   enemies = {walk = "-", fire = "-", wounded ="-", die = "-"},
+			   bonus = {points = "-", lives = "-", health = "-", invincible = "-"}
 	},
-	musics = { intro = "", in_game = "", winner = "", game_over = "" },
-	images = { intro = "", interface = "", winner = "", game_over = "" }
+	musics = { intro = "-", in_game = "-", winner = "-", game_over = "-" },
+	images = { intro = "-", interface = "-", winner = "-", game_over = "-", interlude = "-" }
 }
 
 img_blocks = {}

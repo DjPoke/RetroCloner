@@ -143,12 +143,12 @@ game_data = {
 		automove = false,
 		z_order = false
 	},
-	sounds = { player = {walk = "", run = "", jump = "", hit = "", fire1 = "", fire2 = ""},
-			   enemies = {},
-			   bonus = {}
+	sounds = { player = {walk = "-", run = "-", jump = "-", hit = "-", fire1 = "-", fire2 = "-", jump = "-", kick = "-", jumping_kick = "-", wounded = "-", die = "-"},
+			   enemies = {walk = "-", fire = "-", wounded ="-", die = "-"},
+			   bonus = {points = "-", lives = "-", health = "-", invincible = "-"}
 	},
-	musics = { intro = "", in_game = "", winner = "", game_over = "" },
-	images = { intro = "", interface = "", winner = "", game_over = "" }
+	musics = { intro = "-", in_game = "-", winner = "-", game_over = "-" },
+	images = { intro = "-", interface = "-", winner = "-", game_over = "-", interlude = "-" }
 }
 
 -- Game Data limits
@@ -1282,43 +1282,48 @@ function love.keypressed(key, scancode, isrepeat)
 			end
 		elseif key == "e" then
 			if project_name ~= "" then
-				-- set game window size
-				WINDOW_WIDTH = game_data.screen_width * game_data.pixel_size * WINDOW_ZOOM
-				WINDOW_HEIGHT = game_data.screen_height * WINDOW_ZOOM
-	
-				WINDOW_BORDER = math.floor(WINDOW_WIDTH / 8)
-				if not game_data.border then WINDOW_BORDER = 0 end
-	
-				love.window.setMode(WINDOW_WIDTH + (WINDOW_BORDER * 2), WINDOW_HEIGHT + (WINDOW_BORDER * 2), {fullscreen = false, resizable = true, vsync = 1})
-				
-				-- set window title
-				love.window.setTitle("Game test")
-	
-					-- load fonts
-				GAME_TITLE_FONT = love.graphics.newFont("fonts/" .. game_data.fonts, GAME_TITLE_FONT_SIZE * FONT_DOWN_SCALE)
-				GAME_FONT = love.graphics.newFont("fonts/" .. game_data.fonts, GAME_FONT_SIZE * FONT_DOWN_SCALE)
-				
-				-- set fonts filter
-				GAME_TITLE_FONT:setFilter("nearest", "nearest")
-				GAME_FONT:setFilter("nearest", "nearest")
+				if #game_data.actors > 0 then
+					-- set game window size
+					WINDOW_WIDTH = game_data.screen_width * game_data.pixel_size * WINDOW_ZOOM
+					WINDOW_HEIGHT = game_data.screen_height * WINDOW_ZOOM
+		
+					WINDOW_BORDER = math.floor(WINDOW_WIDTH / 8)
+					if not game_data.border then WINDOW_BORDER = 0 end
+		
+					love.window.setMode(WINDOW_WIDTH + (WINDOW_BORDER * 2), WINDOW_HEIGHT + (WINDOW_BORDER * 2), {fullscreen = false, resizable = true, vsync = 1})
+					
+					-- set window title
+					love.window.setTitle("Game test")
+		
+						-- load fonts
+					GAME_TITLE_FONT = love.graphics.newFont("fonts/" .. game_data.fonts, GAME_TITLE_FONT_SIZE * FONT_DOWN_SCALE)
+					GAME_FONT = love.graphics.newFont("fonts/" .. game_data.fonts, GAME_FONT_SIZE * FONT_DOWN_SCALE)
+					
+					-- set fonts filter
+					GAME_TITLE_FONT:setFilter("nearest", "nearest")
+					GAME_FONT:setFilter("nearest", "nearest")
 
-				-- reset actors positions
-				for i = 1, #game_data.levels do
-					for j = 1, #game_data.levels[i].actors do
-						game_data.levels[i].actors[j].x = game_data.levels[i].actors[j].start_x
-						game_data.levels[i].actors[j].y = game_data.levels[i].actors[j].start_y
-						game_data.levels[i].actors[j].animation = GetActorAnimationNumber(game_data.levels[i].actors[j].number, "idle")
-						game_data.levels[i].actors[j].frame = 1
+					-- reset actors positions
+					for i = 1, #game_data.levels do
+						for j = 1, #game_data.levels[i].actors do
+							game_data.levels[i].actors[j].x = game_data.levels[i].actors[j].start_x
+							game_data.levels[i].actors[j].y = game_data.levels[i].actors[j].start_y
+							game_data.levels[i].actors[j].animation = GetActorAnimationNumber(game_data.levels[i].actors[j].number, "idle")
+							game_data.levels[i].actors[j].frame = 1
+						end
 					end
-				end
-				
-				-- initialize the game
-				run.load()
-				
-				-- hide mouse
-				love.mouse.setVisible(false)
+					
+					-- initialize the game
+					run.load()
+					
+					-- hide mouse
+					love.mouse.setVisible(false)
 
-				mode = MODE_TEST_GAME
+					mode = MODE_TEST_GAME
+				else
+					beep:stop()
+					beep:play()
+				end
 			else
 				beep:stop()
 				beep:play()
@@ -1326,8 +1331,15 @@ function love.keypressed(key, scancode, isrepeat)
 		elseif key == "f" then
 			if project_name ~= "" then
 				if game_data.editable_palette == true then
-					maxx = ((game_data.max_pens - 1) % 16) + 1
-					maxy = math.floor(game_data.max_pens / 16)
+					-- max 16 colors by row
+					maxx = game_data.max_pens
+					maxy = 1
+					
+					-- number of pens must be multiples of 2
+					while maxx > 16 do
+						maxx = maxx - 16
+						maxy = maxy + 1
+					end
 	
 					mode = MODE_EDIT_PALETTE
 				else
@@ -2010,6 +2022,18 @@ function love.keypressed(key, scancode, isrepeat)
 				if #game_data.animations[current_animation] > 1 then
 					table.remove(game_data.animations[current_animation], #game_data.animations[current_animation])
 					current_frame = #game_data.animations[current_animation]
+				
+					if game_data.animations_loop[current_animation].v1 > #game_data.animations[current_animation] then
+						game_data.animations_loop[current_animation].v1 = #game_data.animations[current_animation]
+					end
+				
+					if game_data.animations_loop[current_animation].v2 > #game_data.animations[current_animation] then
+						game_data.animations_loop[current_animation].v2 = #game_data.animations[current_animation]
+					end
+
+					animation_playing = game_data.animations_loop[current_animation].loop
+					animation_frame = 1
+					animation_timer = 0.0
 				end
 			end
 		elseif key == "l" then

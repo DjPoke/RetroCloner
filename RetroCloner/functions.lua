@@ -67,13 +67,12 @@ function ResetAll()
 	block_too_many_color = false
 	sprite_too_many_color = false
 	
-	game_data.sounds = {
-		player = {walk = "-", run = "-", jump = "-", hit = "-", fire1 = "-", fire2 = "-"},
-		enemies = {},
-		bonus = {}
+	game_data.sounds = {player = {walk = "-", run = "-", jump = "-", hit = "-", fire1 = "-", fire2 = "-", jump = "-", kick = "-", jumping_kick = "-", wounded = "-", die = "-"},
+			   enemies = {walk = "-", fire = "-", wounded ="-", die = "-"},
+			   bonus = {points = "-", lives = "-", health = "-", invincible = "-"}
 	}
-	game_data.musics = { intro = "-", in_game = "-", winner = "-", game_over = "-" }
-	game_data.images = { intro = "-", interface = "-", winner = "-", game_over = "-" }
+	game_data.musics = {intro = "-", in_game = "-", winner = "-", game_over = "-"}
+	game_data.images = {intro = "-", interface = "-", winner = "-", game_over = "-", interlude = "-"}
 end
 
 -- load a preset

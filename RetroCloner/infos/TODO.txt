@@ -3,14 +3,16 @@ TODO
 ====
 
 * Bugs:
-	- ...
+	- Pac sans automove n'arrête pas son anim walk
 	
 * Terminer la partie jeu:
-	- Gérer les tirs ennemis, pour ceux qui tirent (wip)
-	- Animer et déplacer les autres types d'ennemis (wip)
-	- Ajouter un bonus au hasard parmi ceux créés, si on tue un ennemi, avec des chances qu'il y soit et des chances que ce soit l'un plutôt que l'autre, sleon le type
-	- Faire le controle joueur beat'em up
+	- Faire le controle joueur beat'em up (wip)
+	- Intégrer le zorder
+	- Ajouter un ennemi 'fighter'
 	- Si z-order non actif, afficher les bonus en 1er, puis les monstres, puis le joueur. Sinon, afficher ce qui est au dessus du joueur, le joueur, et ce qui est en dessous.
+	- Ajouter un bonus au hasard parmi ceux créés, si on tue un ennemi, avec des chances qu'il y soit et des chances que ce soit l'un plutôt que l'autre, sleon le type
+	- Faire des acteurs clés et portes numérotés, dont les numéros peuvent correspondre pour ouvrir la porte
+	- Animer et déplacer les autres types d'ennemis (wip)
 	- Ajouter des acteurs boss avec la possibilité de les scaler en x1, x2 ou x3, et un comportement distinct des ennemis
 	- Faire un jeu test beat'em up
 	- Faire le controle joueur run & gun (edge view), inspiré du platformer
@@ -19,7 +21,6 @@ TODO
 	- Faire le controle joueur vertical shooter	
 	- Prendre les block bonus (wip)
 	- Ajouter un compteur de blocks bonus, si à 0, victoire possible
-	- Faire des acteurs clés et portes numérotés, dont les numéros peuvent correspondre pour ouvrir la porte
 	- Traiter les cas où les animations des acteurs sont à 0. Si certaines animations restent à zéro, le mouvement sera ignoré.
 
 * Faire l'import de sons

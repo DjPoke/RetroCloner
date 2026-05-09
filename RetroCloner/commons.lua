@@ -51,40 +51,32 @@ enemy_types = {
 	{name = "static", idle = 0, affraid = 0, die = 0, health = 1, wound = 1, bonus = 20},
 	{name = "moving left-right", idle = 0, walk_left = 0, walk_right = 0, affraid_left = 0, affraid_right = 0, die = 0, health = 1, wound = 1, gravity = false, steps = 32, bonus = 20},
 	{name = "moving up-down", idle = 0, walk_up = 0, walk_down = 0, affraid_up = 0, affraid_down = 0, die = 0, health = 1, wound = 1, steps = 32, bonus = 20},
-	{name = "sniper", idle = 0, fire = 0, affraid = 0, die = 0, direction = 180, health = 1, wound = 1, bonus = 20},
-	{name = "oscillate left-right", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1, bonus = 20},
-	{name = "oscillate up-down", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1, bonus = 20},
-	{name = "turn", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1, bonus = 20},
-	{name = "seek 4 directions", idle = 0, walk_up = 0, walk_down = 0, walk_left = 0, walk_right = 0,
-		fire_up = 0, fire_down = 0, fire_left = 0, fire_right = 0,
-		affraid_up = 0, affraid_down = 0, affraid_left = 0, affraid_right = 0,
-		die = 0, health = 1, wound = 1, bonus = 20},
-	{name = "seek 8 directions", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1, bonus = 20},
-	{name = "random 4 directions", idle = 0, walk_up = 0, walk_down = 0, walk_left = 0, walk_right = 0,
-		fire_up = 0, fire_down = 0, fire_left = 0, fire_right = 0,
-		affraid_up = 0, affraid_down = 0, affraid_left = 0, affraid_right = 0,
-		die = 0, health = 1, wound = 1, bonus = 20},
-	{name = "random 8 directions", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1, bonus = 20}
+	{name = "sniper", idle = 0, fire = 0, affraid = 0, die = 0, direction = 180, health = 1, wound = 1, bonus = 20, weapon = 0, collision_box = 1},
+	{name = "oscillate left-right", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1, bonus = 20, weapon = 0, collision_box = 1},
+	{name = "oscillate up-down", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1, bonus = 20, weapon = 0, collision_box = 1},
+	{name = "turn", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1, bonus = 20, weapon = 0, collision_box = 1},
+	{name = "seek 4 directions", idle = 0, walk_up = 0, walk_down = 0, walk_left = 0, walk_right = 0, fire_up = 0, fire_down = 0, fire_left = 0, fire_right = 0,
+		affraid_up = 0, affraid_down = 0, affraid_left = 0, affraid_right = 0, die = 0, health = 1, wound = 1, bonus = 20, weapon = 0, collision_box = 1},
+	{name = "seek 8 directions", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1, bonus = 20, weapon = 0, collision_box = 1},
+	{name = "random 4 directions", idle = 0, walk_up = 0, walk_down = 0, walk_left = 0, walk_right = 0, fire_up = 0, fire_down = 0, fire_left = 0, fire_right = 0,
+		affraid_up = 0, affraid_down = 0, affraid_left = 0, affraid_right = 0, die = 0, health = 1, wound = 1, bonus = 20, weapon = 0, collision_box = 1},
+	{name = "random 8 directions", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1, bonus = 20, weapon = 0, collision_box = 1}
 }
 
 enemy_animations = {
 	{"idle", "affraid", "die", "health", "wound", "bonus"},
 	{"idle", "walk_left", "walk_right", "affraid_left", "affraid_right", "die", "health", "wound", "gravity", "steps", "bonus"},
 	{"idle", "walk_up", "walk_down", "affraid_up", "affraid_down", "die", "health", "wound", "steps", "bonus"},
-	{"idle", "fire", "affraid", "die", "direction", "health", "wound", "bonus"},
-	{"idle", "walk", "fire", "affraid", "die", "health", "wound", "bonus"},
-	{"idle", "walk", "fire", "affraid", "die", "health", "wound", "bonus"},
-	{"idle", "walk", "fire", "affraid", "die", "health", "wound", "bonus"},
-	{"idle", "walk_up", "walk_down", "walk_left", "walk_right",
-		"fire_up", "fire_down", "fire_left", "fire_right",
-		"affraid_up", "affraid_down", "affraid_left", "affraid_right", 
-		"die", "health", "wound", "bonus"},
-	{"idle", "walk", "fire", "affraid", "die", "health", "wound", "bonus"},
-	{"idle", "walk_up", "walk_down", "walk_left", "walk_right",
-		"fire_up", "fire_down", "fire_left", "fire_right",
-		"affraid_up", "affraid_down", "affraid_left", "affraid_right", 
-		"die", "health", "wound", "bonus"},
-	{"idle", "walk", "fire", "affraid", "die", "health", "wound", "bonus"}
+	{"idle", "fire", "affraid", "die", "direction", "health", "wound", "bonus", "weapon", "collision_box"},
+	{"idle", "walk", "fire", "affraid", "die", "health", "wound", "bonus", "weapon", "collision_box"},
+	{"idle", "walk", "fire", "affraid", "die", "health", "wound", "bonus", "weapon", "collision_box"},
+	{"idle", "walk", "fire", "affraid", "die", "health", "wound", "bonus", "weapon", "collision_box"},
+	{"idle", "walk_up", "walk_down", "walk_left", "walk_right", "fire_up", "fire_down", "fire_left", "fire_right",
+		"affraid_up", "affraid_down", "affraid_left", "affraid_right", "die", "health", "wound", "bonus", "weapon", "collision_box"},
+	{"idle", "walk", "fire", "affraid", "die", "health", "wound", "bonus", "weapon", "collision_box"},
+	{"idle", "walk_up", "walk_down", "walk_left", "walk_right", "fire_up", "fire_down", "fire_left", "fire_right",
+		"affraid_up", "affraid_down", "affraid_left", "affraid_right", "die", "health", "wound", "bonus", "weapon", "collision_box"},
+	{"idle", "walk", "fire", "affraid", "die", "health", "wound", "bonus", "weapon", "collision_box"}
 }
 
 -- types of bonus-malus
@@ -111,16 +103,16 @@ game_goals = {"go to exit at right", "kill all enemies", "kill all enemies and e
 -- types of scrollings
 scrolling_types = {"no scrolling", "scroll from screen's middle", "auto-scroll", "scroll screen by screen"}
 
--- types of images to import
-image_types = {"intro", "interface", "winner", "game_over", "interlude"}
-
--- types of musics to import
-music_types = {"intro", "in_game", "winner", "game_over"}
-
 -- types of sounds to import
 player_sound_types = {"walk", "run", "jump", "hit", "fire1", "fire2", "punch", "kick", "jumping_kick", "wounded", "die"}
 enemies_sound_types = {"walk", "fire", "wounded", "die"}
 bonus_sound_types = {"points", "lives", "health", "invincible"}
+
+-- types of musics to import
+music_types = {"intro", "in_game", "winner", "game_over"}
+
+-- types of images to import
+image_types = {"intro", "interface", "winner", "game_over", "interlude"}
 
 -- convert blocks to images
 function ConvertBlocksToImages()
