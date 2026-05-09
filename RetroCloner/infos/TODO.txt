@@ -6,6 +6,7 @@ TODO
 	- Pac sans automove n'arrête pas son anim walk
 	
 * Terminer la partie jeu:
+	- Intégrer l'automove seulement dans le maze & chase, et le z-order seulement dans le beat'em up et pour les ennemis
 	- Faire le controle joueur beat'em up (wip)
 	- Intégrer le zorder
 	- Ajouter un ennemi 'fighter'
