@@ -92,6 +92,31 @@ presets = {
 
 preset_data = {}
 
+menu = {
+	"New Project",
+	"Load Project",
+	"Save Project",
+	"Export Executable Game",
+	"Test Game",
+	"------------------------------",
+	"Edit Palette",
+	"Edit Screen",
+	"Edit Blocks",
+	"Edit Sprites",
+	"Edit Animations",
+	"Edit Actors",
+	"Edit Actor's Collision Boxes",
+	"------------------------------",
+	"Edit Levels",
+	"Edit Game Data",
+	"------------------------------",
+	"Import Sounds",
+	"Import Musics",
+	"Import Images",
+	"------------------------------",
+	"Quit"
+}
+
 -- shared game's data
 game_data = {
 	game_name = "",
@@ -184,6 +209,8 @@ sprite_copy = {}
 frame_copy = {}
 
 -- vars
+selected_menu = 0
+
 old_project_name = ""
 project_name = ""
 new_project_mode = NEW_PROJECT_MODE
@@ -278,7 +305,27 @@ function love.load()
 end
 
 function love.update(dt)
-	if mode == MODE_LOAD_PROJECT then
+	if mode == MODE_MENU then
+		local mx = love.mouse.getX()
+		local my = love.mouse.getY()
+		
+		if mx >= 400 and mx <= 880 then
+			selected_menu = math.floor((my - 120) / 20)
+		else
+			selected_menu = 0
+		end
+	elseif mode == MODE_NEW_PROJECT then
+		if new_project_mode == NEW_PROJECT_MODE_CHOOSE_PRESET then
+			local mx = love.mouse.getX()
+			local my = love.mouse.getY()
+		
+			if mx >= 400 and mx <= 880 then
+				selected_preset = math.floor((my - 140) / 20)
+			else
+				selected_preset = 0
+			end
+		end
+	elseif mode == MODE_LOAD_PROJECT then
 		if file_number == 0 then
 			old_project_name = project_name
 			project_name = ""
@@ -534,67 +581,31 @@ function love.draw()
 
 		-- draw menu
 		love.graphics.setFont(EDITOR_FONT)
-		love.graphics.setColor(1, 1, 1)
-		love.graphics.print("a", 440, 120)
-		love.graphics.print("b", 440, 140)
-		love.graphics.print("c", 440, 160)
-		love.graphics.print("d", 440, 180)
-		love.graphics.print("e", 440, 200)
-		love.graphics.print("f", 440, 240)
-		love.graphics.print("g", 440, 260)
-		love.graphics.print("h", 440, 280)
-		love.graphics.print("i", 440, 300)
-		love.graphics.print("j", 440, 320)
-		love.graphics.print("k", 440, 340)
-		love.graphics.print("l", 440, 380)
-		love.graphics.print("m", 440, 400)
-		love.graphics.print("n", 440, 440)
-		love.graphics.print("o", 440, 460)
-		love.graphics.print("p", 440, 480)
-		love.graphics.print("q", 440, 520)
-
-		love.graphics.setColor(0, 0, 1)
-		love.graphics.print(")", 456, 120)
-		love.graphics.print(")", 456, 140)
-		love.graphics.print(")", 456, 160)
-		love.graphics.print(")", 456, 180)
-		love.graphics.print(")", 456, 200)
-		love.graphics.print(")", 456, 240)
-		love.graphics.print(")", 456, 260)
-		love.graphics.print(")", 456, 280)
-		love.graphics.print(")", 456, 300)
-		love.graphics.print(")", 456, 320)
-		love.graphics.print(")", 456, 340)
-		love.graphics.print(")", 456, 380)
-		love.graphics.print(")", 456, 400)
-		love.graphics.print(")", 456, 440)
-		love.graphics.print(")", 456, 460)
-		love.graphics.print(")", 456, 480)
-		love.graphics.print(")", 456, 520)
-
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("New Project", 490, 120)
-		love.graphics.print("Load Project", 490, 140)
-		
-		if project_name == "" then love.graphics.setColor(1, 0, 0) end
-		
-		love.graphics.print("Save Project", 490, 160)
-		love.graphics.print("Export Executable Game", 490, 180)
-		love.graphics.print("Test Game", 490, 200)
-		love.graphics.print("Edit Palette", 490, 240)
-		love.graphics.print("Edit Screen", 490, 260)
-		love.graphics.print("Edit Blocks", 490, 280)
-		love.graphics.print("Edit Sprites", 490, 300)
-		love.graphics.print("Edit Animations", 490, 320)
-		love.graphics.print("Edit Actors", 490, 340)
-		love.graphics.print("Edit Levels", 490, 380)
-		love.graphics.print("Edit Game Data", 490, 400)
-		love.graphics.print("Import Sounds", 490, 440)
-		love.graphics.print("Import Musics", 490, 460)
-		love.graphics.print("Import Images", 490, 480)
 
-		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("Quit", 490, 520)
+		for i = 1, #menu do
+			local pen = "blue"
+			
+			if i > 2 and project_name == "" then pen = "red" end
+			if i == #menu then pen = "blue" end
+			if string.sub(menu[i], 1, 1) == "-" then pen = "white" end
+			
+			if pen == "blue" and selected_menu == i then
+				pen = "yellow"
+			end
+			
+			if pen == "blue" then
+				love.graphics.setColor(0, 1, 1)
+			elseif pen == "red" then
+				love.graphics.setColor(1, 0, 0)
+			elseif pen == "white" then
+				love.graphics.setColor(1, 1, 1)
+			elseif pen == "yellow" then
+				love.graphics.setColor(1, 1, 0)
+			end
+			
+			love.graphics.print(menu[i], 400, 120 + (i * 20))
+		end
 		
 		love.graphics.setColor(0, 0, 0.5)
 		love.graphics.rectangle("line", 16, 16, EDITOR_WINDOW_WIDTH - 32, EDITOR_WINDOW_HEIGHT - 32)
@@ -606,20 +617,21 @@ function love.draw()
 			-- show project name
 			love.graphics.setFont(EDITOR_FONT)
 			love.graphics.setColor(0, 1, 1)
-			love.graphics.print("Project name: " .. project_name, 440, 120)
+			love.graphics.print("Project name: " .. project_name, 400, 120)
 		elseif new_project_mode == NEW_PROJECT_MODE_CHOOSE_PRESET then
 			-- draw presets selection
 			love.graphics.setFont(EDITOR_FONT)
 			love.graphics.setColor(0, 1, 1)
-			love.graphics.print("Please choose a game preset:", 440, 120)
+			love.graphics.print("Please choose a game preset:", 400, 120)
 			
 			for i = 1, #presets do
-				love.graphics.setColor(1, 1, 1)
-				love.graphics.print(string.char(96 + i), 440, 160 + ((i - 1) * 20))
-				love.graphics.setColor(0, 0, 1)
-				love.graphics.print(")", 456, 160 + ((i - 1) * 20))
-				love.graphics.setColor(0, 1, 1)
-				love.graphics.print(presets[i], 490, 160 + ((i - 1) * 20))
+				if i == selected_preset then
+					love.graphics.setColor(1, 1, 0)
+				else
+					love.graphics.setColor(0, 1, 1)
+				end
+				
+				love.graphics.print(presets[i], 400, 160 + ((i - 1) * 20))
 			end
 		end
 	elseif mode == MODE_LOAD_PROJECT then
@@ -630,7 +642,7 @@ function love.draw()
 		love.graphics.setFont(EDITOR_FONT)
 		love.graphics.setColor(0, 1, 1)
 		love.graphics.print("Project name: " .. project_name, 440, 120)
-		love.graphics.print("[Tab] to change...", 440, 140)
+		love.graphics.print("[Wheel] to change, then left-click...", 300, 160)
 	elseif mode == MODE_SAVE_PROJECT then
 		-- draw title
 		DrawTitleCentered("SAVE PROJECT", EDITOR_WINDOW_WIDTH, 32)
@@ -646,11 +658,11 @@ function love.draw()
 		-- draw message
 		love.graphics.setFont(EDITOR_FONT)
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("Your .love file has been created in your save folder:", 50, 100)
-		love.graphics.print(love.filesystem.getSaveDirectory() .. "/games/", 50, 120)
-		love.graphics.print("Or create an executable file with LoveExport:", 50, 160)
-		love.graphics.print("https://raphytator.itch.io/love2d-export", 50, 180)
-		love.graphics.print("Press ESCAPE!", 50, 220)
+		love.graphics.print("Your .love file has been created in your save folder:", 200, 100)
+		love.graphics.print(love.filesystem.getSaveDirectory() .. "/games/", 200, 120)
+		love.graphics.print("Or create an executable file with LoveExport:", 200, 160)
+		love.graphics.print("https://raphytator.itch.io/love2d-export", 200, 180)
+		love.graphics.print("Press ESCAPE!", 200, 220)
 	elseif mode == MODE_TEST_GAME then
 		run.draw()
 	elseif mode == MODE_EDIT_PALETTE then
@@ -1229,11 +1241,7 @@ end
 
 function love.textinput(t)
 	if mode == MODE_NEW_PROJECT then
-		if new_project_mode == NEW_PROJECT_MODE then
-			old_project_name = project_name
-			project_name = ""
-			new_project_mode = NEW_PROJECT_MODE_INPUT
-		elseif new_project_mode == NEW_PROJECT_MODE_INPUT then
+		if new_project_mode == NEW_PROJECT_MODE_INPUT then
 			if (t >= "A" and t <= "Z") or (t >= "a" and t <= "z") or (t >= "0" and t <= "9") or t == "_" or t == "-" then
 				if #project_name < 16 then
 					project_name = project_name .. t
@@ -1250,219 +1258,7 @@ function love.textinput(t)
 end
 
 function love.keypressed(key, scancode, isrepeat)
-	if mode == MODE_MENU then
-		if key == "a" then
-			mode = MODE_NEW_PROJECT
-		elseif key == "b" then
-			mode = MODE_LOAD_PROJECT
-		elseif key == "c" then
-			if project_name ~= "" then
-				game_data.game_name = project_name
-
-				SaveGame(project_name, "game.txt", game_data)
-
-				text_message = "Project ".. project_name .. " saved!"
-
-				mode = MODE_SAVE_PROJECT
-			else
-				beep:stop()
-				beep:play()
-			end
-		elseif key == "d" then
-			if project_name ~= "" then
-				-- copy the player to the save folder
-				CopyPlayerToSaveFolder()
-				
-				-- zip the player
-				local zip = love.zip:newZip()
-				local compress, err = zip:compress("games/" .. project_name, "games/" .. project_name ..  ".love")
-				assert(compress == true)
-
-				-- rename .zip file to .love file
-				
-				mode = MODE_EXPORT_EXECUTABLE_GAME
-			else
-				beep:stop()
-				beep:play()
-			end
-		elseif key == "e" then
-			if project_name ~= "" then
-				if #game_data.actors > 0 then
-					-- set game window size
-					WINDOW_WIDTH = game_data.screen_width * game_data.pixel_size * WINDOW_ZOOM
-					WINDOW_HEIGHT = game_data.screen_height * WINDOW_ZOOM
-		
-					WINDOW_BORDER = math.floor(WINDOW_WIDTH / 8)
-					if not game_data.border then WINDOW_BORDER = 0 end
-		
-					love.window.setMode(WINDOW_WIDTH + (WINDOW_BORDER * 2), WINDOW_HEIGHT + (WINDOW_BORDER * 2), {fullscreen = false, resizable = true, vsync = 1})
-					
-					-- set window title
-					love.window.setTitle("Game test")
-		
-						-- load fonts
-					GAME_TITLE_FONT = love.graphics.newFont("fonts/" .. game_data.fonts, GAME_TITLE_FONT_SIZE * FONT_DOWN_SCALE)
-					GAME_FONT = love.graphics.newFont("fonts/" .. game_data.fonts, GAME_FONT_SIZE * FONT_DOWN_SCALE)
-					
-					-- set fonts filter
-					GAME_TITLE_FONT:setFilter("nearest", "nearest")
-					GAME_FONT:setFilter("nearest", "nearest")
-
-					-- reset actors positions
-					for i = 1, #game_data.levels do
-						for j = 1, #game_data.levels[i].actors do
-							game_data.levels[i].actors[j].x = game_data.levels[i].actors[j].start_x
-							game_data.levels[i].actors[j].y = game_data.levels[i].actors[j].start_y
-							game_data.levels[i].actors[j].animation = GetActorAnimationNumber(game_data.levels[i].actors[j].number, "idle")
-							game_data.levels[i].actors[j].frame = 1
-						end
-					end
-					
-					-- initialize the game
-					run.load()
-					
-					-- hide mouse
-					love.mouse.setVisible(false)
-
-					mode = MODE_TEST_GAME
-				else
-					beep:stop()
-					beep:play()
-				end
-			else
-				beep:stop()
-				beep:play()
-			end
-		elseif key == "f" then
-			if project_name ~= "" then
-				if game_data.editable_palette == true then
-					-- max 16 colors by row
-					maxx = game_data.max_pens
-					maxy = 1
-					
-					-- number of pens must be multiples of 2
-					while maxx > 16 do
-						maxx = maxx - 16
-						maxy = maxy + 1
-					end
-	
-					mode = MODE_EDIT_PALETTE
-				else
-					beep:stop()
-					beep:play()
-				end
-			else
-				beep:stop()
-				beep:play()
-			end
-		elseif key == "g" then
-			if project_name ~= "" then
-				-- load fonts
-				GAME_TITLE_FONT = love.graphics.newFont("fonts/" .. game_data.fonts, GAME_TITLE_FONT_SIZE * FONT_DOWN_SCALE)
-				GAME_FONT = love.graphics.newFont("fonts/" .. game_data.fonts, GAME_FONT_SIZE * FONT_DOWN_SCALE)
-		
-				-- set fonts filter
-				GAME_TITLE_FONT:setFilter("nearest", "nearest")
-				GAME_FONT:setFilter("nearest", "nearest")
-				
-				-- initialize player's data
-				run.vars.score = 0
-				game_data.vars.lives = 3
-				run.vars.level = 1
-	
-				mode = MODE_EDIT_SCREEN
-			else
-				beep:stop()
-				beep:play()
-			end			
-		elseif key == "h" then
-			if project_name ~= "" then
-				mode = MODE_EDIT_BLOCKS
-			else
-				beep:stop()
-				beep:play()
-			end			
-		elseif key == "i" then
-			if project_name ~= "" then
-				mode = MODE_EDIT_SPRITES
-			else
-				beep:stop()
-				beep:play()
-			end			
-		elseif key == "j" then
-			if project_name ~= "" then
-				if current_animation > 0 then
-					animation_playing = true
-					animation_frame = 1
-					animation_timer = 0.0
-				end
-				
-				mode = MODE_EDIT_ANIMATIONS
-			else
-				beep:stop()
-				beep:play()
-			end			
-		elseif key == "k" then
-			if project_name ~= "" then
-				current_property = 1
-				
-				mode = MODE_EDIT_ACTORS
-			else
-				beep:stop()
-				beep:play()
-			end			
-		elseif key == "l" then
-			if project_name ~= "" then
-				mode = MODE_EDIT_LEVELS
-			else
-				beep:stop()
-				beep:play()
-			end			
-		elseif key == "m" then
-			if project_name ~= "" then
-				if current_parameter == 0 then
-					current_parameter = 1
-					current_page = 1
-					
-					parameters_list = GetParametersPage(current_page)
-				end
-
-				mode = MODE_EDIT_GAMES_DATA
-			else
-				beep:stop()
-				beep:play()
-			end			
-		elseif key == "n" then
-			if project_name ~= "" then
-				current_sound = 1
-
-				mode = MODE_IMPORT_SOUNDS
-			else
-				beep:stop()
-				beep:play()
-			end			
-		elseif key == "o" then
-			if project_name ~= "" then
-				current_music = 1
-
-				mode = MODE_IMPORT_MUSICS
-			else
-				beep:stop()
-				beep:play()
-			end			
-		elseif key == "p" then
-			if project_name ~= "" then
-				current_image = 1
-
-				mode = MODE_IMPORT_IMAGES
-			else
-				beep:stop()
-				beep:play()
-			end			
-		elseif key == "q" then
-			love.event.quit(0)
-		end
-	elseif mode == MODE_NEW_PROJECT then
+	if mode == MODE_NEW_PROJECT then
 		if new_project_mode == NEW_PROJECT_MODE_INPUT then
 			if key == "backspace" then
 				if #project_name > 0 then
@@ -1478,26 +1274,6 @@ function love.keypressed(key, scancode, isrepeat)
 				mode = MODE_MENU
 			end
 		elseif new_project_mode == NEW_PROJECT_MODE_CHOOSE_PRESET then
-			for i = 1, #presets do
-				if key == string.char(96 + i) then
-					selected_preset = i
-	
-					LoadPreset("presets/" .. presets[selected_preset] .. ".txt")
-					
-					-- update level's data
-					UpdateLevelsData()
-					
-					-- set default game data
-					SetDefaultGameData()
-					
-					-- set project name
-					game_data.game_name = project_name
-					
-					new_project_mode = NEW_PROJECT_MODE
-					mode = MODE_MENU
-				end
-			end
-
 			if key == "escape" then
 				project_name = old_project_name
 				new_project_mode = NEW_PROJECT_MODE
@@ -1505,32 +1281,6 @@ function love.keypressed(key, scancode, isrepeat)
 			end
 		end
 	elseif mode == MODE_LOAD_PROJECT then
-		if key == "tab" then
-			if file_number < #file_list then
-				file_number = file_number + 1
-			else
-				file_number = 1
-			end
-			
-			project_name = file_list[file_number]
-		end
-		
-		if key == "return" then
-			if project_name ~= "" then
-				file_number = 0
-				file_list = {}
-				
-				ResetAll()
-				
-				game_data = LoadGame(project_name, "game.txt", game_data)
-				
-				ConvertBlocksToImages()
-				ConvertSpritesToImages()
-
-				mode = MODE_MENU
-			end
-		end
-
 		if key == "escape" then
 			file_number = 0
 			file_list = {}
@@ -3054,8 +2804,315 @@ function love.gamepadpressed(joystick, button)
 	run.gamepadpressed(joystick, button)
 end
 
+function love.wheelmoved(x, y)
+	if mode == MODE_LOAD_PROJECT then
+		if y > 0 then
+			if file_number < #file_list then
+				file_number = file_number + 1
+			else
+				file_number = 1
+			end
+				
+			project_name = file_list[file_number]
+		elseif y < 0 then
+			if file_number > 1 then
+				file_number = file_number - 1
+			else
+				file_number = #file_list
+			end
+				
+			project_name = file_list[file_number]
+		end
+	end
+end
+
 function love.mousepressed(x, y, button, istouch, presses)
-	if mode == MODE_TEST_GAME then
+	if mode == MODE_MENU then
+		if button == 1 then
+			if selected_menu < 1 then
+				beep:stop()
+				beep:play()
+			elseif selected_menu == 1 then
+				-- new project
+				if new_project_mode == NEW_PROJECT_MODE then
+					old_project_name = project_name
+					project_name = ""
+					new_project_mode = NEW_PROJECT_MODE_INPUT
+				end
+
+				mode = MODE_NEW_PROJECT
+			elseif selected_menu == 2 then
+				-- load project
+				mode = MODE_LOAD_PROJECT
+			elseif selected_menu == 3 then
+				-- save project
+				if project_name ~= "" then
+					game_data.game_name = project_name
+
+					SaveGame(project_name, "game.txt", game_data)
+
+					text_message = "Project ".. project_name .. " saved!"
+
+					mode = MODE_SAVE_PROJECT
+				else
+					beep:stop()
+					beep:play()
+				end
+			elseif selected_menu == 4 then
+				-- export executable game
+				if project_name ~= "" then
+					-- copy the player to the save folder
+					CopyPlayerToSaveFolder()
+					
+					-- zip the player
+					local zip = love.zip:newZip()
+					local compress, err = zip:compress("games/" .. project_name, "games/" .. project_name ..  ".love")
+					assert(compress == true)
+
+					-- rename .zip file to .love file
+					
+					mode = MODE_EXPORT_EXECUTABLE_GAME
+				else
+					beep:stop()
+					beep:play()
+				end
+			elseif selected_menu == 5 then
+				-- test game
+				if project_name ~= "" then
+					if #game_data.actors > 0 then
+						-- set game window size
+						WINDOW_WIDTH = game_data.screen_width * game_data.pixel_size * WINDOW_ZOOM
+						WINDOW_HEIGHT = game_data.screen_height * WINDOW_ZOOM
+			
+						WINDOW_BORDER = math.floor(WINDOW_WIDTH / 8)
+						if not game_data.border then WINDOW_BORDER = 0 end
+			
+						love.window.setMode(WINDOW_WIDTH + (WINDOW_BORDER * 2), WINDOW_HEIGHT + (WINDOW_BORDER * 2), {fullscreen = false, resizable = true, vsync = 1})
+						
+						-- set window title
+						love.window.setTitle("Game test")
+			
+							-- load fonts
+						GAME_TITLE_FONT = love.graphics.newFont("fonts/" .. game_data.fonts, GAME_TITLE_FONT_SIZE * FONT_DOWN_SCALE)
+						GAME_FONT = love.graphics.newFont("fonts/" .. game_data.fonts, GAME_FONT_SIZE * FONT_DOWN_SCALE)
+						
+						-- set fonts filter
+						GAME_TITLE_FONT:setFilter("nearest", "nearest")
+						GAME_FONT:setFilter("nearest", "nearest")
+
+						-- reset actors positions
+						for i = 1, #game_data.levels do
+							for j = 1, #game_data.levels[i].actors do
+								game_data.levels[i].actors[j].x = game_data.levels[i].actors[j].start_x
+								game_data.levels[i].actors[j].y = game_data.levels[i].actors[j].start_y
+								game_data.levels[i].actors[j].animation = GetActorAnimationNumber(game_data.levels[i].actors[j].number, "idle")
+								game_data.levels[i].actors[j].frame = 1
+							end
+						end
+						
+						-- initialize the game
+						run.load()
+						
+						-- hide mouse
+						love.mouse.setVisible(false)
+
+						mode = MODE_TEST_GAME
+					else
+						beep:stop()
+						beep:play()
+					end
+				else
+					beep:stop()
+					beep:play()
+				end
+			elseif selected_menu == 7 then
+				-- edit palette
+				if project_name ~= "" then
+					if game_data.editable_palette == true then
+						-- max 16 colors by row
+						maxx = game_data.max_pens
+						maxy = 1
+						
+						-- number of pens must be multiples of 2
+						while maxx > 16 do
+							maxx = maxx - 16
+							maxy = maxy + 1
+						end
+		
+						mode = MODE_EDIT_PALETTE
+					else
+						beep:stop()
+						beep:play()
+					end
+				else
+					beep:stop()
+					beep:play()
+				end
+			elseif selected_menu == 8 then
+				-- edit screen
+				if project_name ~= "" then
+					-- load fonts
+					GAME_TITLE_FONT = love.graphics.newFont("fonts/" .. game_data.fonts, GAME_TITLE_FONT_SIZE * FONT_DOWN_SCALE)
+					GAME_FONT = love.graphics.newFont("fonts/" .. game_data.fonts, GAME_FONT_SIZE * FONT_DOWN_SCALE)
+			
+					-- set fonts filter
+					GAME_TITLE_FONT:setFilter("nearest", "nearest")
+					GAME_FONT:setFilter("nearest", "nearest")
+					
+					-- initialize player's data
+					run.vars.score = 0
+					game_data.vars.lives = 3
+					run.vars.level = 1
+		
+					mode = MODE_EDIT_SCREEN
+				else
+					beep:stop()
+					beep:play()
+				end
+			elseif selected_menu == 9 then
+				-- edit blocks
+				if project_name ~= "" then
+					mode = MODE_EDIT_BLOCKS
+				else
+					beep:stop()
+					beep:play()
+				end
+			elseif selected_menu == 10 then
+				-- edit sprites
+				if project_name ~= "" then
+					mode = MODE_EDIT_SPRITES
+				else
+					beep:stop()
+					beep:play()
+				end
+			elseif selected_menu == 11 then
+				-- edit animations
+				if project_name ~= "" then
+					if current_animation > 0 then
+						animation_playing = true
+						animation_frame = 1
+						animation_timer = 0.0
+					end
+					
+					mode = MODE_EDIT_ANIMATIONS
+				else
+					beep:stop()
+					beep:play()
+				end
+			elseif selected_menu == 12 then
+				-- edit actors
+				if project_name ~= "" then
+					current_property = 1
+					
+					mode = MODE_EDIT_ACTORS
+				else
+					beep:stop()
+					beep:play()
+				end
+			elseif selected_menu == 13 then
+				-- edit actor's collision boxes
+				-- TODO!
+			elseif selected_menu == 15 then
+				-- edit levels
+				if project_name ~= "" then
+					mode = MODE_EDIT_LEVELS
+				else
+					beep:stop()
+					beep:play()
+				end
+			elseif selected_menu == 16 then
+				-- edit games data
+				if project_name ~= "" then
+					if current_parameter == 0 then
+						current_parameter = 1
+						current_page = 1
+						
+						parameters_list = GetParametersPage(current_page)
+					end
+
+					mode = MODE_EDIT_GAMES_DATA
+				else
+					beep:stop()
+					beep:play()
+				end
+			elseif selected_menu == 18 then
+				-- import sounds
+				if project_name ~= "" then
+					current_sound = 1
+
+					mode = MODE_IMPORT_SOUNDS
+				else
+					beep:stop()
+					beep:play()
+				end
+			elseif selected_menu == 19 then
+				-- import musics
+				if project_name ~= "" then
+					current_music = 1
+
+					mode = MODE_IMPORT_MUSICS
+				else
+					beep:stop()
+					beep:play()
+				end
+			elseif selected_menu == 20 then
+				-- import images
+				if project_name ~= "" then
+					current_image = 1
+
+					mode = MODE_IMPORT_IMAGES
+				else
+					beep:stop()
+					beep:play()
+				end
+			elseif selected_menu == 22 then
+				love.event.quit(0)
+			elseif selected_menu > 22 then
+				beep:stop()
+				beep:play()
+			end
+		end
+	elseif mode == MODE_NEW_PROJECT then
+		if new_project_mode == NEW_PROJECT_MODE_CHOOSE_PRESET then
+			if button == 1 then
+				if selected_preset >= 1 and selected_preset <= #presets then
+					-- load selected preset
+					LoadPreset("presets/" .. presets[selected_preset] .. ".txt")
+						
+					-- update level's data
+					UpdateLevelsData()
+						
+					-- set default game data
+					SetDefaultGameData()
+						
+					-- set project name
+					game_data.game_name = project_name
+						
+					new_project_mode = NEW_PROJECT_MODE
+					mode = MODE_MENU
+				else
+					beep:stop()
+					beep:play()
+				end
+			end
+		end
+	elseif mode == MODE_LOAD_PROJECT then
+		if button == 1 then
+			if project_name ~= "" then
+				file_number = 0
+				file_list = {}
+				
+				ResetAll()
+				
+				game_data = LoadGame(project_name, "game.txt", game_data)
+				
+				ConvertBlocksToImages()
+				ConvertSpritesToImages()
+
+				mode = MODE_MENU
+			end
+		end
+	elseif mode == MODE_TEST_GAME then
 		run.keypressed(key, scancode, isrepeat)
 	elseif mode == MODE_EDIT_LEVELS then
 		-- position actors
