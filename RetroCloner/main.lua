@@ -80,7 +80,16 @@ MID_BLINK_TIME = 0.25
 PARAMETERS_BY_PAGE = 16
 
 -- arrays
-presets = { "CPC-Mode0", "CPC-Mode1", "C64", "ZX-Spectrum" }
+presets = {
+	"CPC Mode 0 (16x16 sprites)",
+	"CPC Mode 1 (16x16 sprites)",
+	"Commodore 64 (16x16 sprites)",
+	"ZX-Spectrum (16x16 sprites)",
+	"Commodore 64 (24x24 sprites)",
+	"Atari ST (24x24 sprites)",
+	"Amiga (24x24 sprites)"
+}
+
 preset_data = {}
 
 -- shared game's data

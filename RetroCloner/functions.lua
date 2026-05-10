@@ -128,10 +128,32 @@ function LoadPreset(path)
 	if n > 0 then
 		-- clear old full palette
 		game_data.inks_palette = {}
-		
-		-- fill new full palette
-		for i = 2, #preset_data[n] do
-			table.insert(game_data.inks_palette, preset_data[n][i])
+
+		if game_data.max_inks == 512 then
+			for r = 0, 7 do
+				for g = 0, 7 do
+					for b = 0, 7 do
+						local hex = string.format("%02X%02X%02X", r * 32, g * 32, b * 32)
+						
+						table.insert(game_data.inks_palette, hex)
+					end
+				end
+			end
+		elseif game_data.max_inks == 4096 then
+			for r = 0, 15 do
+				for g = 0, 15 do
+					for b = 0, 15 do
+						local hex = string.format("%02X%02X%02X", r * 16, g * 16, b * 16)
+						
+						table.insert(game_data.inks_palette, hex)
+					end
+				end
+			end
+		else
+			-- fill new full palette
+			for i = 2, #preset_data[n] do
+				table.insert(game_data.inks_palette, preset_data[n][i])
+			end
 		end
 	else
 		print("InksPalette missing!")
