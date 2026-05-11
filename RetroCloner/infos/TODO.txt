@@ -4,12 +4,13 @@ TODO
 
 * Bugs:
 	- Pac sans automove n'arrête pas son anim walk
+	- KFight ne flip pas horizontalement
 	- Certains menus s'affichent sur les sprites/blocks
 	- Lorsqu'on a modifié la palette et qu'on la quitte, redessiner les sprites et les blocks avec les nouvelles couleurs
 
 * Améliorations:
 	- Modifier les menus pour tout faire à la souris
-	- Faire le menu "actor's collision boxes"
+	- Faire le menu "actor's collision boxes", et supprimer les collisions box des acteurs actuelles
 
 * Terminer la partie jeu:
 	- Intégrer le z-order seulement dans le mode beat'em up, pour le jouer et les ennemis

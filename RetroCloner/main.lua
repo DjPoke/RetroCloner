@@ -218,7 +218,7 @@ new_project_mode = NEW_PROJECT_MODE
 selected_preset = 1
 mode = MODE_MENU
 
-area_selected = GAME_AREA
+area_selected = 0
 
 pen_color = 1
 selected_color = 0
@@ -271,6 +271,9 @@ animation_frame = 0
 animation_timer = 0.0
 
 blink_timer = 0.0
+
+left_click = false
+ok = false
 
 -- requires
 require("tools")
@@ -326,6 +329,7 @@ function love.update(dt)
 			end
 		end
 	elseif mode == MODE_LOAD_PROJECT then
+		-- get file list
 		if file_number == 0 then
 			old_project_name = project_name
 			project_name = ""
@@ -354,45 +358,57 @@ function love.update(dt)
 				project_name = file_list[file_number]
 			end
 		end
+		
+		-- lit ok button
+		local mx = love.mouse.getX()
+		local my = love.mouse.getY()
+
+		ok = false
+		
+		if mx >= 580 and mx <= 680 and my >= 200 and my <= 216 then
+			ok = true
+		end
 	elseif mode == MODE_TEST_GAME then
 		-- update the game test
 		run.update(dt)
 	elseif mode == MODE_EDIT_SCREEN then
-		-- move or resize the selected area
-		if love.keyboard.isDown("up") then
-			if love.keyboard.isDown("lshift")  then
-				game_data.areas[area_selected].height = game_data.areas[area_selected].height - 1
+		local x = love.mouse.getX()
+		local y = love.mouse.getY()
+
+		if love.mouse.isDown(1) then
+			if area_selected > 0 then
+				-- move the selected area
+				local screen_x = math.floor((EDITOR_WINDOW_WIDTH - game_data.screen_width * game_data.pixel_size * SCREEN_ZOOM) / 2)
+				local screen_y = 75
+				local mx = x - screen_x
+				local my = y - screen_y
 				
-				if area_selected == GAME_AREA then UpdateLevelsData() end
-			else
-				game_data.areas[area_selected].y = game_data.areas[area_selected].y - 1
+				game_data.areas[area_selected].x = math.floor(mx / (game_data.pixel_size * SCREEN_ZOOM))
+				game_data.areas[area_selected].y = math.floor(my / SCREEN_ZOOM)
+				
+				if game_data.areas[area_selected].x < 0 then game_data.areas[area_selected].x = 0 end
+				if game_data.areas[area_selected].y < 0 then game_data.areas[area_selected].y = 0 end
+				if game_data.areas[area_selected].x + game_data.areas[area_selected].width - 1 >= game_data.screen_width then game_data.areas[area_selected].x = game_data.screen_width - game_data.areas[area_selected].width end
+				if game_data.areas[area_selected].y + game_data.areas[area_selected].height - 1 >= game_data.screen_height then game_data.areas[area_selected].y = game_data.screen_height - game_data.areas[area_selected].height end
 			end
+		elseif love.mouse.isDown(2) then
+			if area_selected > 0 then
+				-- resize the selected area
+				local screen_x = math.floor((EDITOR_WINDOW_WIDTH - game_data.screen_width * game_data.pixel_size * SCREEN_ZOOM) / 2)
+				local screen_y = 75
+				local mx = x - screen_x
+				local my = y - screen_y
 				
-		elseif love.keyboard.isDown("down") then
-			if love.keyboard.isDown("lshift") then
-				game_data.areas[area_selected].height = game_data.areas[area_selected].height + 1
+				game_data.areas[area_selected].width = math.floor(mx / (game_data.pixel_size * SCREEN_ZOOM)) - game_data.areas[area_selected].x + 1
+				game_data.areas[area_selected].height = math.floor(my / SCREEN_ZOOM) - game_data.areas[area_selected].y + 1
 				
+				if game_data.areas[area_selected].width < 8 then game_data.areas[area_selected].width = 8 end
+				if game_data.areas[area_selected].height < 8 then game_data.areas[area_selected].height = 8 end
+				if game_data.areas[area_selected].x + game_data.areas[area_selected].width - 1 >= game_data.screen_width then game_data.areas[area_selected].width = game_data.screen_width - game_data.areas[area_selected].x end
+				if game_data.areas[area_selected].y + game_data.areas[area_selected].height - 1 >= game_data.screen_height then game_data.areas[area_selected].height = game_data.screen_height - game_data.areas[area_selected].y end
+
+				-- clear levels and recalculate data
 				if area_selected == GAME_AREA then UpdateLevelsData() end
-			else
-				game_data.areas[area_selected].y = game_data.areas[area_selected].y + 1
-			end
-		end
-		
-		if love.keyboard.isDown("left") then
-			if love.keyboard.isDown("lshift") then
-				game_data.areas[area_selected].width = game_data.areas[area_selected].width - 1
-				
-				if area_selected == GAME_AREA then UpdateLevelsData() end
-			else
-				game_data.areas[area_selected].x = game_data.areas[area_selected].x - 1
-			end		
-		elseif love.keyboard.isDown("right") then
-			if love.keyboard.isDown("lshift") then
-				game_data.areas[area_selected].width = game_data.areas[area_selected].width + 1
-				
-				if area_selected == GAME_AREA then UpdateLevelsData() end
-			else
-				game_data.areas[area_selected].x = game_data.areas[area_selected].x + 1
 			end
 		end
 	elseif mode == MODE_EDIT_BLOCKS then
@@ -407,22 +423,26 @@ function love.update(dt)
 			block_y = math.floor((my - yc) / BLOCKS_ZOOM)
 			
 			-- draw
-			if love.mouse.isDown(1) == true then
-				if block_x >= 0 and block_x < game_data.block_width then
-					if block_y >= 0 and block_y < game_data.block_height then
-						game_data.blocks[current_block][block_x][block_y] = pen_color
+			if left_click == false then
+				if love.mouse.isDown(1) == true then
+					if block_x >= 0 and block_x < game_data.block_width then
+						if block_y >= 0 and block_y < game_data.block_height then
+							game_data.blocks[current_block][block_x][block_y] = pen_color
 
-						block_too_many_color = TooManyColorsInBlock(game_data.blocks[current_block])
+							block_too_many_color = TooManyColorsInBlock(game_data.blocks[current_block])
+						end
+					end
+				elseif love.mouse.isDown(2) == true then
+					if block_x >= 0 and block_x < game_data.block_width then
+						if block_y >= 0 and block_y < game_data.block_height then
+							game_data.blocks[current_block][block_x][block_y] = 0
+							
+							block_too_many_color = TooManyColorsInBlock(game_data.blocks[current_block])
+						end
 					end
 				end
-			elseif love.mouse.isDown(2) == true then
-				if block_x >= 0 and block_x < game_data.block_width then
-					if block_y >= 0 and block_y < game_data.block_height then
-						game_data.blocks[current_block][block_x][block_y] = 0
-						
-						block_too_many_color = TooManyColorsInBlock(game_data.blocks[current_block])
-					end
-				end
+			elseif love.mouse.isDown(1) == false then
+				left_click = false
 			end
 		end
 	elseif mode == MODE_EDIT_SPRITES then
@@ -437,22 +457,26 @@ function love.update(dt)
 			sprite_y = math.floor((my - yc) / SPRITES_ZOOM)
 			
 			-- draw
-			if love.mouse.isDown(1) == true then
-				if sprite_x >= 0 and sprite_x < game_data.sprite_width then
-					if sprite_y >= 0 and sprite_y < game_data.sprite_height then
-						game_data.sprites[current_sprite][sprite_x][sprite_y] = pen_color
-						
-						sprite_too_many_color = TooManyColorsInSprite(game_data.sprites[current_sprite])
+			if left_click == false then
+				if love.mouse.isDown(1) == true then
+					if sprite_x >= 0 and sprite_x < game_data.sprite_width then
+						if sprite_y >= 0 and sprite_y < game_data.sprite_height then
+							game_data.sprites[current_sprite][sprite_x][sprite_y] = pen_color
+							
+							sprite_too_many_color = TooManyColorsInSprite(game_data.sprites[current_sprite])
+						end
 					end
-				end
-			elseif love.mouse.isDown(2) == true then
-				if sprite_x >= 0 and sprite_x < game_data.sprite_width then
-					if sprite_y >= 0 and sprite_y < game_data.sprite_height then
-						game_data.sprites[current_sprite][sprite_x][sprite_y] = 0
+				elseif love.mouse.isDown(2) == true then
+					if sprite_x >= 0 and sprite_x < game_data.sprite_width then
+						if sprite_y >= 0 and sprite_y < game_data.sprite_height then
+							game_data.sprites[current_sprite][sprite_x][sprite_y] = 0
 
-						sprite_too_many_color = TooManyColorsInSprite(game_data.sprites[current_sprite])
+							sprite_too_many_color = TooManyColorsInSprite(game_data.sprites[current_sprite])
+						end
 					end
 				end
+			elseif love.mouse.isDown(1) == false then
+				left_click = false
 			end
 		end
 	elseif mode == MODE_EDIT_ANIMATIONS then
@@ -642,7 +666,16 @@ function love.draw()
 		love.graphics.setFont(EDITOR_FONT)
 		love.graphics.setColor(0, 1, 1)
 		love.graphics.print("Project name: " .. project_name, 440, 120)
-		love.graphics.print("[Wheel] to change, then left-click...", 300, 160)
+		love.graphics.print("Use [MouseWheel] to change...", 400, 160)
+		
+		-- show ok button
+		if ok == true then
+			love.graphics.setColor(1, 1, 0)
+		else
+			love.graphics.setColor(0, 1, 1)
+		end
+		
+		love.graphics.print("[ Ok ]", 580, 200)
 	elseif mode == MODE_SAVE_PROJECT then
 		-- draw title
 		DrawTitleCentered("SAVE PROJECT", EDITOR_WINDOW_WIDTH, 32)
@@ -696,8 +729,10 @@ function love.draw()
 			-- draw informations
 			love.graphics.setColor(0, 1, 1)
 			love.graphics.print("Pen " .. tostring(selected_color) .. " Ink " .. tostring(game_data.pens_palette[selected_color + 1]), 540, 220)
-			
-		
+
+			love.graphics.print("Use mouse wheel to change colors.", 350, 260)
+			love.graphics.print("You can use shift or control to quickly change it.", 250, 280)
+
 			-- draw shortcuts
 			love.graphics.print("[Left][Right] Change the pen [Up][Down] Change ink color", 10, 740)
 			love.graphics.print("[Esc] Back", 10, 760)
@@ -747,13 +782,18 @@ function love.draw()
 		-- draw shortcuts
 		love.graphics.setFont(EDITOR_FONT)
 		love.graphics.setColor(0, 1, 1)
-		local infos = tostring(game_data.areas[area_selected].x) .. "," .. tostring(game_data.areas[area_selected].y) .. " - " .. tostring(game_data.areas[area_selected].width) .. "," .. tostring(game_data.areas[area_selected].height)
-		love.graphics.print(infos, 540, 480)
+		local infos = "No area selected!"
+
+		if area_selected > 0 then
+			infos = tostring(game_data.areas[area_selected].x) .. "," .. tostring(game_data.areas[area_selected].y) .. " - " .. tostring(game_data.areas[area_selected].width) .. "," .. tostring(game_data.areas[area_selected].height)
+		end
+		
+		love.graphics.print(infos, 500, 480)
 		local r, g, b = GetPenRGB(game_data.border_paper)
 		love.graphics.setColor(r, g, b)
 		love.graphics.print("Border color: " .. tostring(game_data.border_paper), 500, 500)
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("[Tab] Select area to edit - [Arrows] Position - [Arrows][Shift] Resize", 10, 720)
+		love.graphics.print("[Tab] Select area to edit - [Left-Click] Position - [Right-Click] Resize", 10, 720)
 		love.graphics.print("[F1-F7] Change colors - [H] Set health on/off", 10, 740)
 		love.graphics.print("[Esc] Back", 10, 760)
 	elseif mode == MODE_EDIT_BLOCKS then
@@ -1315,39 +1355,7 @@ function love.keypressed(key, scancode, isrepeat)
 			mode = MODE_MENU
 		end		
 	elseif mode == MODE_EDIT_PALETTE then
-		if key == "left" then
-			-- select left color
-			if selected_color > 0 then
-				selected_color = selected_color - 1
-			end
-		elseif key == "right" then
-			-- select right color
-			if selected_color < game_data.max_pens - 1 then
-				selected_color = selected_color + 1
-			end
-		elseif key == "up" then
-			-- increase color in the full palette
-			local steps = 1
-				
-			if love.keyboard.isDown("lshift") then
-				steps = 10
-			end
-			
-			for i = 1, steps do
-				ChangePensInk(selected_color, 1)
-			end
-		elseif key == "down" then
-			-- decrease color in the full palette
-			local steps = 1
-				
-			if love.keyboard.isDown("lshift") then
-				steps = 10
-			end
-			
-			for i = 1, steps do
-				ChangePensInk(selected_color, -1)
-			end
-		elseif key == "escape" then
+		if key == "escape" then
 			mode = MODE_MENU
 		end
 	elseif mode == MODE_EDIT_SCREEN then
@@ -2823,6 +2831,30 @@ function love.wheelmoved(x, y)
 				
 			project_name = file_list[file_number]
 		end
+	elseif mode == MODE_EDIT_PALETTE then		
+		local shift_key = love.keyboard.isDown("lshift")
+		local control_key = love.keyboard.isDown("lctrl")
+		local steps = 1
+
+		if shift_key == true and control_key == true then
+			steps = 1000
+		elseif shift_key == false and control_key == true then
+			steps = 100
+		elseif shift_key == true and control_key == false then
+			steps = 10
+		end
+		
+		if y > 0 then
+			-- increase color in the full palette
+			for i = 1, steps do
+				ChangePensInk(selected_color, 1)
+			end
+		elseif y < 0 then
+			-- decrease color in the full palette
+			for i = 1, steps do
+				ChangePensInk(selected_color, -1)
+			end
+		end
 	end
 end
 
@@ -2963,6 +2995,9 @@ function love.mousepressed(x, y, button, istouch, presses)
 					run.vars.score = 0
 					game_data.vars.lives = 3
 					run.vars.level = 1
+					
+					-- unselect areas
+					area_selected = 0
 		
 					mode = MODE_EDIT_SCREEN
 				else
@@ -2972,6 +3007,8 @@ function love.mousepressed(x, y, button, istouch, presses)
 			elseif selected_menu == 9 then
 				-- edit blocks
 				if project_name ~= "" then
+					left_click = true
+					
 					mode = MODE_EDIT_BLOCKS
 				else
 					beep:stop()
@@ -2980,6 +3017,8 @@ function love.mousepressed(x, y, button, istouch, presses)
 			elseif selected_menu == 10 then
 				-- edit sprites
 				if project_name ~= "" then
+					left_click = true
+					
 					mode = MODE_EDIT_SPRITES
 				else
 					beep:stop()
@@ -3098,22 +3137,50 @@ function love.mousepressed(x, y, button, istouch, presses)
 		end
 	elseif mode == MODE_LOAD_PROJECT then
 		if button == 1 then
-			if project_name ~= "" then
-				file_number = 0
-				file_list = {}
-				
-				ResetAll()
-				
-				game_data = LoadGame(project_name, "game.txt", game_data)
-				
-				ConvertBlocksToImages()
-				ConvertSpritesToImages()
+			local mx = love.mouse.getX()
+			local my = love.mouse.getY()
 
-				mode = MODE_MENU
+			if mx >= 580 and mx <= 680 and my >= 200 and my <= 216 then
+				if project_name ~= "" then
+					file_number = 0
+					file_list = {}
+					
+					ResetAll()
+					
+					game_data = LoadGame(project_name, "game.txt", game_data)
+					
+					ConvertBlocksToImages()
+					ConvertSpritesToImages()
+
+					mode = MODE_MENU
+				end
 			end
 		end
 	elseif mode == MODE_TEST_GAME then
 		run.keypressed(key, scancode, isrepeat)
+	elseif mode == MODE_EDIT_PALETTE then
+		if button == 1 then
+			local mx = love.mouse.getX()
+			local my = love.mouse.getY()
+
+			local xc = (EDITOR_WINDOW_WIDTH / 2) - (8 * 2 * PALETTE_ZOOM)
+			local yc = 120
+			local wc = 2 * PALETTE_ZOOM
+			local hc = PALETTE_ZOOM
+			
+			local x = math.floor((mx - xc) / wc)
+			local y = math.floor((my - yc) / hc)
+			
+			if x < 0 or y < 0 then
+				-- do nothing
+			elseif x >= math.min(game_data.max_pens, 16) then
+				-- do nothing
+			elseif x + (y * 16) >= game_data.max_pens then
+				-- do nothing
+			else
+				selected_color = x + (y * 16)
+			end
+		end
 	elseif mode == MODE_EDIT_LEVELS then
 		-- position actors
 		if button == 1 then
