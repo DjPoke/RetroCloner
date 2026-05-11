@@ -50,6 +50,7 @@ MODE_EDIT_GAMES_DATA = 13
 MODE_IMPORT_SOUNDS = 14
 MODE_IMPORT_MUSICS = 15
 MODE_IMPORT_IMAGES = 16
+MODE_WAIT_CLICK = 17
 
 NEW_PROJECT_MODE = 0
 NEW_PROJECT_MODE_INPUT = 1
@@ -274,6 +275,8 @@ blink_timer = 0.0
 
 left_click = false
 ok = false
+
+has_focus = true
 
 -- requires
 require("tools")
@@ -595,11 +598,21 @@ function love.update(dt)
 end
 
 function love.draw()
-	-- set grey background
-	love.graphics.setColor(0, 0.5, 1)
+	-- set blue background, or grey if the window
+	-- do not have the focus
+	if has_focus == true then
+		love.graphics.setColor(0, 0.5, 1)
+	else
+		love.graphics.setColor(0.5, 0.5, .5)
+	end
+	
 	love.graphics.rectangle("fill", 0, 0, EDITOR_WINDOW_WIDTH, EDITOR_WINDOW_HEIGHT)
 	
-	if mode == MODE_MENU then
+	if mode == MODE_WAIT_CLICK then
+		love.graphics.setFont(EDITOR_FONT)
+		love.graphics.setColor(0, 1, 1)
+		love.graphics.print("Mouse focus lost! Click me to get the focus again!", 250, 350)
+	elseif mode == MODE_MENU then
 		-- draw title
 		DrawTitleCentered("RETRO CLONER", EDITOR_WINDOW_WIDTH, 32)
 
@@ -1355,12 +1368,12 @@ function love.keypressed(key, scancode, isrepeat)
 			run.quit()
 			
 			-- set editor window size
-			love.window.setMode(EDITOR_WINDOW_WIDTH, EDITOR_WINDOW_HEIGHT, {fullscreen = false, resizable = false, vsync = 1})
+			love.window.updateMode(EDITOR_WINDOW_WIDTH, EDITOR_WINDOW_HEIGHT)
 			
 			-- set window title
 			love.window.setTitle(EDITOR_WINDOW_TITLE)
-
-			mode = MODE_MENU
+			
+			mode = MODE_WAIT_CLICK
 		end		
 	elseif mode == MODE_EDIT_PALETTE then
 		if key == "escape" then
@@ -2919,8 +2932,13 @@ function love.wheelmoved(x, y)
 end
 
 function love.mousepressed(x, y, button, istouch, presses)
-	if mode == MODE_MENU then
+	if mode == MODE_WAIT_CLICK then
 		if button == 1 then
+			mode = MODE_MENU
+		end
+	elseif mode == MODE_MENU then
+		if button == 1 then
+			
 			if selected_menu < 1 then
 				beep:stop()
 				beep:play()
@@ -2979,7 +2997,7 @@ function love.mousepressed(x, y, button, istouch, presses)
 						WINDOW_BORDER = math.floor(WINDOW_WIDTH / 8)
 						if not game_data.border then WINDOW_BORDER = 0 end
 			
-						love.window.setMode(WINDOW_WIDTH + (WINDOW_BORDER * 2), WINDOW_HEIGHT + (WINDOW_BORDER * 2), {fullscreen = false, resizable = true, vsync = 1})
+						love.window.updateMode(WINDOW_WIDTH + (WINDOW_BORDER * 2), WINDOW_HEIGHT + (WINDOW_BORDER * 2))
 						
 						-- set window title
 						love.window.setTitle("Game test")
@@ -3279,6 +3297,10 @@ function love.mousepressed(x, y, button, istouch, presses)
 			end
 		end
 	end
+end
+
+function love.focus(f)
+    has_focus = f
 end
 
 function love.filedropped(file)

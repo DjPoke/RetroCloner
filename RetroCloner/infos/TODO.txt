@@ -3,7 +3,7 @@ TODO
 ====
 
 * Bugs:
-	- Problème dans les clics 'menu' et dans les glisser-déposer, à cause de la perte de focus
+	- ...
 
 * Améliorations:
 	- Ajouter des hit box x et y pour certaines animations
