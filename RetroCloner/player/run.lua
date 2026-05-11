@@ -1290,8 +1290,8 @@ function run.update(dt)
 										local y = run.vars.level_actors[i].y
 										local dir = run.vars.level_actors[i].dir
 										local actor_number = run.vars.level_actors[i].number
-										local collision_box = game_data.actors[actor_number].type.collision_box
-										local animation = game_data.actors[actor_number].type.weapon
+										local collision_box = game_data.actors[actor_number].type.collision_box1
+										local animation = game_data.actors[actor_number].type.weapon1
 										local wound = game_data.actors[actor_number].type.wound
 											
 										if animation > 0 then
@@ -1809,13 +1809,14 @@ function run.update(dt)
 					local bw = game_data.sprite_width
 					local bh = game_data.sprite_height
 
-					local div = game_data.actors[actor_number].type.collision_box
+					local divx = game_data.actors[actor_number].type.collision_box_x
+					local divy = game_data.actors[actor_number].type.collision_box_y
 
-					bx = bx + math.floor((bw - (bw / div)) / 2)
-					by = by + math.floor((bh - (bh / div)) / 2)
+					bx = bx + math.floor((bw - (bw / divx)) / 2)
+					by = by + math.floor((bh - (bh / divy)) / 2)
 
-					bw = bw / div
-					bh = bh / div
+					bw = bw / divx
+					bh = bh / divy
 					
 					if Collision(px, py, pw, ph, bx, by, bw, bh) == true then
 						-- add points, lives or health

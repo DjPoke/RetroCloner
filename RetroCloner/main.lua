@@ -106,7 +106,6 @@ menu = {
 	"Edit Sprites",
 	"Edit Animations",
 	"Edit Actors",
-	"Edit Actor's Collision Boxes",
 	"------------------------------",
 	"Edit Levels",
 	"Edit Game Data",
@@ -997,12 +996,16 @@ function love.draw()
 
 					local k = player_animations[current_player_type][i]
 					local v = game_data.actors[current_actor].type[k]
-					
-					love.graphics.print(k .. ": " .. tostring(v), 440, 160 + ((i - 1) * 20))
+
+					if string.sub(k, 1, 13) ~= "collision_box" then
+						love.graphics.print(k .. ": " .. tostring(v), 440, 160 + ((i - 1) * 20))
+					elseif string.sub(k, 1, 13) == "collision_box" then
+						love.graphics.print(k .. ": 1/" .. tostring(v), 440, 160 + ((i - 1) * 20))
+					end
 				end
 			elseif game_data.actors[current_actor].entity == ENTITY_TYPE_ENEMY then
 				love.graphics.print("Enemy type " .. game_data.actors[current_actor].type.name, 440, 120)
-				
+
 				-- show animation's names list
 				for i = 1, #enemy_animations[current_enemy_type] do
 					love.graphics.setColor(0, 1, 1)
@@ -1011,11 +1014,15 @@ function love.draw()
 					local k = enemy_animations[current_enemy_type][i]
 					local v = game_data.actors[current_actor].type[k]
 
-					love.graphics.print(k .. ": " .. tostring(v), 440, 160 + ((i - 1) * 20))
+					if string.sub(k, 1, 13) ~= "collision_box" then
+						love.graphics.print(k .. ": " .. tostring(v), 440, 160 + ((i - 1) * 20))
+					elseif string.sub(k, 1, 13) == "collision_box" then
+						love.graphics.print(k .. ": 1/" .. tostring(v), 440, 160 + ((i - 1) * 20))
+					end
 				end
 			elseif game_data.actors[current_actor].entity == ENTITY_TYPE_BONUS then
 				love.graphics.print("Bonus type " .. game_data.actors[current_actor].type.name, 440, 120)
-				
+
 				-- show animation's names list
 				for i = 1, #bonus_animations[current_bonus_type] do
 					love.graphics.setColor(0, 1, 1)
@@ -1024,9 +1031,9 @@ function love.draw()
 					local k = bonus_animations[current_bonus_type][i]
 					local v = game_data.actors[current_actor].type[k]
 
-					if k ~= "collision_box" then
+					if string.sub(k, 1, 13) ~= "collision_box" then
 						love.graphics.print(k .. ": " .. tostring(v), 440, 160 + ((i - 1) * 20))
-					elseif k == "collision_box" then
+					elseif string.sub(k, 1, 13) == "collision_box" then
 						love.graphics.print(k .. ": 1/" .. tostring(v), 440, 160 + ((i - 1) * 20))
 					end
 				end
@@ -2140,6 +2147,14 @@ function love.keypressed(key, scancode, isrepeat)
 							if game_data.actors[current_actor].type.wound > 1 then
 								game_data.actors[current_actor].type.wound = game_data.actors[current_actor].type.wound - 1
 							end
+						elseif anim == "collision_box_x" then
+							if game_data.actors[current_actor].type.collision_box_x > 1 then
+								game_data.actors[current_actor].type.collision_box_x = math.floor(game_data.actors[current_actor].type.collision_box_x / 2)
+							end
+						elseif anim == "collision_box_y" then
+							if game_data.actors[current_actor].type.collision_box_y > 1 then
+								game_data.actors[current_actor].type.collision_box_y = math.floor(game_data.actors[current_actor].type.collision_box_y / 2)
+							end
 						elseif anim == "collision_box1" then
 							if game_data.actors[current_actor].type.collision_box1 > 1 then
 								game_data.actors[current_actor].type.collision_box1 = math.floor(game_data.actors[current_actor].type.collision_box1 / 2)
@@ -2174,6 +2189,18 @@ function love.keypressed(key, scancode, isrepeat)
 							if game_data.actors[current_actor].type.wound > 1 then
 								game_data.actors[current_actor].type.wound = game_data.actors[current_actor].type.wound - 1
 							end
+						elseif anim == "collision_box_x" then
+							if game_data.actors[current_actor].type.collision_box_x > 1 then
+								game_data.actors[current_actor].type.collision_box_x = math.floor(game_data.actors[current_actor].type.collision_box_x / 2)
+							end
+						elseif anim == "collision_box_y" then
+							if game_data.actors[current_actor].type.collision_box_y > 1 then
+								game_data.actors[current_actor].type.collision_box_y = math.floor(game_data.actors[current_actor].type.collision_box_y / 2)
+							end
+						elseif anim == "collision_box1" then
+							if game_data.actors[current_actor].type.collision_box1 > 1 then
+								game_data.actors[current_actor].type.collision_box1 = math.floor(game_data.actors[current_actor].type.collision_box1 / 2)
+							end
 						elseif anim == "gravity" then
 							if game_data.actors[current_actor].type.gravity == false then
 								game_data.actors[current_actor].type.gravity = true
@@ -2198,9 +2225,13 @@ function love.keypressed(key, scancode, isrepeat)
 							else
 								game_data.actors[current_actor].type.bonus = game_data.actors[current_actor].type.bonus - 1
 							end
-						elseif anim == "collision_box" then
-							if game_data.actors[current_actor].type.collision_box > 1 then
-								game_data.actors[current_actor].type.collision_box = math.floor(game_data.actors[current_actor].type.collision_box / 2)
+						elseif anim == "collision_box_x" then
+							if game_data.actors[current_actor].type.collision_box_x > 1 then
+								game_data.actors[current_actor].type.collision_box_x = math.floor(game_data.actors[current_actor].type.collision_box_x / 2)
+							end
+						elseif anim == "collision_box_y" then
+							if game_data.actors[current_actor].type.collision_box_y > 1 then
+								game_data.actors[current_actor].type.collision_box_y = math.floor(game_data.actors[current_actor].type.collision_box_y / 2)
 							end
 						elseif game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] > 0 then
 							game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] = game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] - 1
@@ -2233,6 +2264,14 @@ function love.keypressed(key, scancode, isrepeat)
 						elseif anim == "wound" then
 							if game_data.actors[current_actor].type.wound < 100 then
 								game_data.actors[current_actor].type.wound = game_data.actors[current_actor].type.wound + 1
+							end
+						elseif anim == "collision_box_x" then
+							if game_data.actors[current_actor].type.collision_box_x < 4 then
+								game_data.actors[current_actor].type.collision_box_x = game_data.actors[current_actor].type.collision_box_x * 2
+							end
+						elseif anim == "collision_box_y" then
+							if game_data.actors[current_actor].type.collision_box_y < 4 then
+								game_data.actors[current_actor].type.collision_box_y = game_data.actors[current_actor].type.collision_box_y * 2
 							end
 						elseif anim == "collision_box1" then
 							if game_data.actors[current_actor].type.collision_box1 < 4 then
@@ -2268,6 +2307,18 @@ function love.keypressed(key, scancode, isrepeat)
 							if game_data.actors[current_actor].type.wound < 100 then
 								game_data.actors[current_actor].type.wound = game_data.actors[current_actor].type.wound + 1
 							end
+						elseif anim == "collision_box_x" then
+							if game_data.actors[current_actor].type.collision_box_x < 4 then
+								game_data.actors[current_actor].type.collision_box_x = game_data.actors[current_actor].type.collision_box_x * 2
+							end
+						elseif anim == "collision_box_y" then
+							if game_data.actors[current_actor].type.collision_box_y < 4 then
+								game_data.actors[current_actor].type.collision_box_y = game_data.actors[current_actor].type.collision_box_y * 2
+							end
+						elseif anim == "collision_box1" then
+							if game_data.actors[current_actor].type.collision_box1 < 4 then
+								game_data.actors[current_actor].type.collision_box1 = game_data.actors[current_actor].type.collision_box1 * 2
+							end
 						elseif anim == "gravity" then
 							if game_data.actors[current_actor].type.gravity == false then
 								game_data.actors[current_actor].type.gravity = true
@@ -2290,9 +2341,13 @@ function love.keypressed(key, scancode, isrepeat)
 							else
 								game_data.actors[current_actor].type.bonus = game_data.actors[current_actor].type.bonus + 1
 							end
-						elseif anim == "collision_box" then
-							if game_data.actors[current_actor].type.collision_box < 4 then
-								game_data.actors[current_actor].type.collision_box = game_data.actors[current_actor].type.collision_box * 2
+						elseif anim == "collision_box_x" then
+							if game_data.actors[current_actor].type.collision_box_x < 4 then
+								game_data.actors[current_actor].type.collision_box_x = game_data.actors[current_actor].type.collision_box_x * 2
+							end
+						elseif anim == "collision_box_y" then
+							if game_data.actors[current_actor].type.collision_box_y < 4 then
+								game_data.actors[current_actor].type.collision_box_y = game_data.actors[current_actor].type.collision_box_y * 2
 							end
 						elseif game_data.actors[current_actor].type[anim] < game_data.max_animations then
 							game_data.actors[current_actor].type[anim] = game_data.actors[current_actor].type[anim] + 1
@@ -3053,10 +3108,7 @@ function love.mousepressed(x, y, button, istouch, presses)
 					beep:stop()
 					beep:play()
 				end
-			elseif selected_menu == 13 then
-				-- edit actor's collision boxes
-				-- TODO!
-			elseif selected_menu == 15 then
+			elseif selected_menu == 14 then
 				-- edit levels
 				if project_name ~= "" then
 					mode = MODE_EDIT_LEVELS
@@ -3064,7 +3116,7 @@ function love.mousepressed(x, y, button, istouch, presses)
 					beep:stop()
 					beep:play()
 				end
-			elseif selected_menu == 16 then
+			elseif selected_menu == 15 then
 				-- edit games data
 				if project_name ~= "" then
 					if current_parameter == 0 then
@@ -3079,7 +3131,7 @@ function love.mousepressed(x, y, button, istouch, presses)
 					beep:stop()
 					beep:play()
 				end
-			elseif selected_menu == 18 then
+			elseif selected_menu == 17 then
 				-- import sounds
 				if project_name ~= "" then
 					current_sound = 1
@@ -3089,7 +3141,7 @@ function love.mousepressed(x, y, button, istouch, presses)
 					beep:stop()
 					beep:play()
 				end
-			elseif selected_menu == 19 then
+			elseif selected_menu == 18 then
 				-- import musics
 				if project_name ~= "" then
 					current_music = 1
@@ -3099,7 +3151,7 @@ function love.mousepressed(x, y, button, istouch, presses)
 					beep:stop()
 					beep:play()
 				end
-			elseif selected_menu == 20 then
+			elseif selected_menu == 19 then
 				-- import images
 				if project_name ~= "" then
 					current_image = 1
@@ -3109,9 +3161,9 @@ function love.mousepressed(x, y, button, istouch, presses)
 					beep:stop()
 					beep:play()
 				end
-			elseif selected_menu == 22 then
+			elseif selected_menu == 21 then
 				love.event.quit(0)
-			elseif selected_menu > 22 then
+			elseif selected_menu > 21 then
 				beep:stop()
 				beep:play()
 			end

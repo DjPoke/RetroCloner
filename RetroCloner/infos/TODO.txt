@@ -3,10 +3,10 @@ TODO
 ====
 
 * Bugs:
-	- ...
+	- Imprécision dans les clics 'menu'
 
 * Améliorations:
-	- Faire le menu "actor's collision boxes", et supprimer les collisions box des acteurs actuelles
+	- Faire les collisions en fonction des collision_box_x et collision_box_y, pour tous les types
 
 * Terminer la partie jeu:
 	- Intégrer le z-order seulement dans le mode beat'em up, pour le jouer et les ennemis
