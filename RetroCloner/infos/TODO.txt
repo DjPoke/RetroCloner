@@ -7,6 +7,7 @@ TODO
 
 * Améliorations:
 	- Afficher les acteurs (idle) avec leur collision box
+	- Ajouter des hit box x et y pour certaines animations
 
 * Terminer la partie jeu:
 	- Intégrer le z-order seulement dans le mode beat'em up, pour le jouer et les ennemis
