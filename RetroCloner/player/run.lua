@@ -510,10 +510,15 @@ function run.update(dt)
 							new_y = new_y + game_data.vars.player_speed
 						end
 						
+						-- calculate offset y for beat'em up collisions
+						local offset_y = math.floor((game_data.sprite_height * 3) / 4)
+						
 						-- check for player's collisions with blocks, because may be he has moved
-						new_x, collision = SlidingCollisionX(new_x, old_y, game_data.sprite_width, game_data.sprite_height, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
-						new_y, collision = SlidingCollisionY(old_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
-						new_x, new_y = SlidingCollisionZ(new_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+						new_x, collision = SlidingCollisionX(new_x, old_y + offset_y, game_data.sprite_width, game_data.sprite_height - offset_y, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+						new_y, collision = SlidingCollisionY(old_x, new_y + offset_y, game_data.sprite_width, game_data.sprite_height - offset_y, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+						new_y = new_y - offset_y
+						new_x, new_y = SlidingCollisionZ(new_x, new_y + offset_y, game_data.sprite_width, game_data.sprite_height - offset_y, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+						new_y = new_y - offset_y
 					elseif game_data.actors[actor_number].type.name == "run & gun (edge view)" then
 						-- TODO!				
 					elseif game_data.actors[actor_number].type.name == "run & gun (top view)" then
