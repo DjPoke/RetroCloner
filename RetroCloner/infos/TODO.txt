@@ -3,8 +3,7 @@ TODO
 ====
 
 * Bugs:
-	- Certains menus s'affichent sur les sprites/blocks
-	- Dans l'éditeur de niveaux, les blocks et sprites à droite sont trop petits
+	- ...
 
 * Améliorations:
 	- Faire le menu "actor's collision boxes", et supprimer les collisions box des acteurs actuelles

@@ -60,6 +60,7 @@ LEVEL_MODE_ACTORS = 1
 
 PALETTE_ZOOM = 16
 SCREEN_ZOOM = 2
+SCREEN_ZOOM2 = 4
 BLOCKS_ZOOM = 32
 SPRITES_ZOOM = 16
 ANIMATION_ZOOM = 2
@@ -1132,8 +1133,8 @@ function love.draw()
 			-- show edited actor instance number
 			if #img_sprites > 0 then
 				if current_level_actors_edit_mode == true then
-					love.graphics.setColor(0, 1, 1)
-					love.graphics.print("Edited actor: " .. current_level_edited_actor_instance, 450, 670)
+					love.graphics.setColor(1, 1, 0)
+					love.graphics.print("Edited actor: " .. current_level_edited_actor_instance, 450, 660)
 				end
 			end
 			
@@ -1147,9 +1148,9 @@ function love.draw()
 				
 				if #img_blocks > 0 then
 					love.graphics.setColor(1, 1, 1)
-					love.graphics.draw(img_blocks[current_level_selected_block], 920, 280, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
+					love.graphics.draw(img_blocks[current_level_selected_block], 920, 280, 0, game_data.pixel_size * SCREEN_ZOOM2, SCREEN_ZOOM2)
 
-					ShowCursor(920, 280, game_data.block_width * game_data.pixel_size * SCREEN_ZOOM, game_data.block_height * SCREEN_ZOOM, 1, 1, 1)
+					ShowCursor(920, 280, game_data.block_width * game_data.pixel_size * SCREEN_ZOOM2, game_data.block_height * SCREEN_ZOOM2, 1, 1, 1)
 				end
 			elseif current_level_mode == LEVEL_MODE_ACTORS then
 				love.graphics.print("Actor " .. tostring(current_level_selected_actor), 860, 240)
@@ -1159,9 +1160,9 @@ function love.draw()
 					
 					if sprite > 0 then
 						love.graphics.setColor(1, 1, 1)
-						love.graphics.draw(img_sprites[sprite], 900, 280, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
+						love.graphics.draw(img_sprites[sprite], 900, 280, 0, game_data.pixel_size * SCREEN_ZOOM2, SCREEN_ZOOM2)
 
-						ShowCursor(900, 280, game_data.sprite_width * game_data.pixel_size * SCREEN_ZOOM, game_data.sprite_height * SCREEN_ZOOM, 1, 1, 1)
+						ShowCursor(900, 280, game_data.sprite_width * game_data.pixel_size * SCREEN_ZOOM2, game_data.sprite_height * SCREEN_ZOOM2, 1, 1, 1)
 					end
 				end
 			end
