@@ -3,11 +3,11 @@ TODO
 ====
 
 * Bugs:
-	- Imprécision dans les clics 'menu'
+	- Problème dans les clics 'menu' et dans les glisser-déposer, à cause de la perte de focus
 
 * Améliorations:
-	- Afficher les acteurs (idle) avec leur collision box
 	- Ajouter des hit box x et y pour certaines animations
+	- Afficher les acteurs (idle, hit, etc.) avec leur collision box et leur hit box
 
 * Terminer la partie jeu:
 	- Intégrer le z-order seulement dans le mode beat'em up, pour le jouer et les ennemis
