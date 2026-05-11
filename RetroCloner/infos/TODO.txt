@@ -6,7 +6,6 @@ TODO
 	- Imprécision dans les clics 'menu'
 
 * Améliorations:
-	- Faire les collisions en fonction des collision_box_x et collision_box_y, pour tous les autres types (platformer est fait)
 	- Afficher les acteurs (idle) avec leur collision box
 
 * Terminer la partie jeu:
