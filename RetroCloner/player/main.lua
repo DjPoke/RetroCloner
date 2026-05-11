@@ -162,6 +162,11 @@ end
 
 function love.keypressed(key, scancode, isrepeat)
 	run.keypressed(key, scancode, isrepeat)
+	
+	-- escape to quit
+	if key == "escape" then
+		love.event.quit(0)
+	end
 end
 
 function love.gamepadpressed(joystick, button)
