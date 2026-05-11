@@ -1356,6 +1356,10 @@ function love.keypressed(key, scancode, isrepeat)
 		end		
 	elseif mode == MODE_EDIT_PALETTE then
 		if key == "escape" then
+			-- update sprites
+			ConvertBlocksToImages()
+			ConvertSpritesToImages()
+
 			mode = MODE_MENU
 		end
 	elseif mode == MODE_EDIT_SCREEN then

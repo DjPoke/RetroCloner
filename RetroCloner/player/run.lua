@@ -406,70 +406,49 @@ function run.update(dt)
 							end
 						end
 					elseif game_data.actors[actor_number].type.name == "beat'em up" then
-						-- automove disabled
-						if game_data.vars.automove == false then
-							if joy_up == false and joy_down == false and joy_left == false and joy_right == false then
-								run.vars.level_actors[1].dir_x = 0
-								run.vars.level_actors[1].dir_y = 0
-							end
-						end
+						-- no movement
+						run.vars.level_actors[1].dir_x = 0
+						run.vars.level_actors[1].dir_y = 0
 						
-						if joy_up == true then
-							if joy_left == true then
-								run.vars.level_actors[1].dir = 225
-								run.vars.level_actors[1].dir_x = -1
-								run.vars.level_actors[1].dir_y = -1
-							elseif joy_right == true then
-								run.vars.level_actors[1].dir = 315
-								run.vars.level_actors[1].dir_x = 1
-								run.vars.level_actors[1].dir_y = -1
-							else
-								run.vars.level_actors[1].dir = 270
-								run.vars.level_actors[1].dir_x = 0
-								run.vars.level_actors[1].dir_y = -1
-							end
+						-- choose movement
+						if joy_up == true and joy_left == true then
+							run.vars.level_actors[1].dir = 225
+							run.vars.level_actors[1].dir_x = -1
+							run.vars.level_actors[1].dir_y = -1
+							run.vars.level_actors[1].hflip = true
+						elseif joy_up == true and joy_right == true then
+							run.vars.level_actors[1].dir = 315
+							run.vars.level_actors[1].dir_x = 1
+							run.vars.level_actors[1].dir_y = -1
+							run.vars.level_actors[1].hflip = false
+						elseif joy_down == true and joy_left == true then
+							run.vars.level_actors[1].dir = 135
+							run.vars.level_actors[1].dir_x = -1
+							run.vars.level_actors[1].dir_y = 1
+							run.vars.level_actors[1].hflip = true
+						elseif joy_down == true and joy_right == true then
+							run.vars.level_actors[1].dir = 45
+							run.vars.level_actors[1].dir_x = 1
+							run.vars.level_actors[1].dir_y = 1
+							run.vars.level_actors[1].hflip = false
+						elseif joy_up == true then
+							run.vars.level_actors[1].dir = 270
+							run.vars.level_actors[1].dir_x = 0
+							run.vars.level_actors[1].dir_y = -1
 						elseif joy_down == true then
-							if joy_left == true then
-								run.vars.level_actors[1].dir = 135
-								run.vars.level_actors[1].dir_x = -1
-								run.vars.level_actors[1].dir_y = 1
-							elseif joy_right == true then
-								run.vars.level_actors[1].dir = 45
-								run.vars.level_actors[1].dir_x = 1
-								run.vars.level_actors[1].dir_y = 1
-							else
-								run.vars.level_actors[1].dir = 90
-								run.vars.level_actors[1].dir_x = 0
-								run.vars.level_actors[1].dir_y = 1
-							end
+							run.vars.level_actors[1].dir = 90
+							run.vars.level_actors[1].dir_x = 0
+							run.vars.level_actors[1].dir_y = 1
 						elseif joy_left == true then
-							if joy_up == true then
-								run.vars.level_actors[1].dir = 225						
-								run.vars.level_actors[1].dir_x = -1
-								run.vars.level_actors[1].dir_y = -1
-							elseif joy_down == true then
-								run.vars.level_actors[1].dir = 135
-								run.vars.level_actors[1].dir_x = -1
-								run.vars.level_actors[1].dir_y = 1
-							else
-								run.vars.level_actors[1].dir = 180
-								run.vars.level_actors[1].dir_x = -1
-								run.vars.level_actors[1].dir_y = 0
-							end
+							run.vars.level_actors[1].dir = 180
+							run.vars.level_actors[1].dir_x = -1
+							run.vars.level_actors[1].dir_y = 0
+							run.vars.level_actors[1].hflip = true
 						elseif joy_right == true then
-							if joy_up == true then
-								run.vars.level_actors[1].dir = 315
-								run.vars.level_actors[1].dir_x = 1
-								run.vars.level_actors[1].dir_y = -1
-							elseif joy_down == true then
-								run.vars.level_actors[1].dir = 45
-								run.vars.level_actors[1].dir_x = 1
-								run.vars.level_actors[1].dir_y = 1
-							else
-								run.vars.level_actors[1].dir = 0
-								run.vars.level_actors[1].dir_x = 1
-								run.vars.level_actors[1].dir_y = 0
-							end
+							run.vars.level_actors[1].dir = 0
+							run.vars.level_actors[1].dir_x = 1
+							run.vars.level_actors[1].dir_y = 0
+							run.vars.level_actors[1].hflip = false
 						end
 						
 						if run.vars.level_actors[1].dir_x == 0 and run.vars.level_actors[1].dir_y == 0 then
@@ -538,14 +517,11 @@ function run.update(dt)
 					elseif game_data.actors[actor_number].type.name == "run & gun (edge view)" then
 						-- TODO!				
 					elseif game_data.actors[actor_number].type.name == "run & gun (top view)" then
-						-- automove disabled
-						if game_data.vars.automove == false then
-							if joy_up == false and joy_down == false and joy_left == false and joy_right == false then
-								run.vars.level_actors[1].dir_x = 0
-								run.vars.level_actors[1].dir_y = 0
-							end
-						end
+						-- no movement
+						run.vars.level_actors[1].dir_x = 0
+						run.vars.level_actors[1].dir_y = 0
 						
+						-- choose movement
 						if joy_up == true then
 							if joy_left == true then
 								run.vars.level_actors[1].dir = 225
@@ -668,15 +644,17 @@ function run.update(dt)
 						new_y, collision = SlidingCollisionY(old_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
 						new_x, new_y = SlidingCollisionZ(new_x, new_y, game_data.sprite_width, game_data.sprite_height, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
 					elseif game_data.actors[actor_number].type.name == "maze & chase" then						
-						-- automove disabled
-						if game_data.vars.automove == false then
-							if joy_up == false and joy_down == false and joy_left == false and joy_right == false then
-								run.vars.level_actors[1].dir_x = 0
-								run.vars.level_actors[1].dir_y = 0
-							end
+						-- automove
+						moving = false
+
+						if joy_up == false and joy_down == false and joy_left == false and joy_right == false then
+							run.vars.level_actors[1].dir_x = 0
+							run.vars.level_actors[1].dir_y = 0
 						end
 						
 						-- get inputs
+						local old_dir = run.vars.level_actors[1].dir
+						
 						run.vars.requested_dir = run.vars.level_actors[1].dir
 						
 						if run.vars.level_actors[1].dir == 0 then
@@ -756,42 +734,38 @@ function run.update(dt)
 						-- can we turn ?
 						local can_turn = false
 
-						if run.vars.level_actors[1].dir_x ~= 0 then
-							local dir_sign = (run.vars.requested_dir == 0) and 1 or -1
-							local test_x = old_x + dir_sign * game_data.vars.player_speed
-
-							local _, collision = SlidingCollisionX(
-								test_x,
-								old_y,
-								game_data.sprite_width,
-								game_data.sprite_height,
-								run.vars.requested_dir,
-								game_data.levels[run.vars.level],
-								game_data.block_width,
-								game_data.block_height
-							)
-
-							if collision == false then
+						-- can we go right
+						if run.vars.level_actors[1].dir_x == 1 then
+							local td = GetAvailableDirectionsPlayer(old_x + game_data.vars.player_speed, old_y, old_dir)
+							
+							if HasValue(td, run.vars.requested_dir) then
 								can_turn = true
 							end
 						end
 
-						if run.vars.level_actors[1].dir_y ~= 0 then
-							local dir_sign = (run.vars.requested_dir == 90) and 1 or -1
-							local test_y = old_y + dir_sign * game_data.vars.player_speed
+						-- can we go left
+						if run.vars.level_actors[1].dir_x == -1 then
+							local td = GetAvailableDirectionsPlayer(old_x - game_data.vars.player_speed, old_y, old_dir)
+							
+							if HasValue(td, run.vars.requested_dir) then
+								can_turn = true
+							end
+						end
 
-							local _, collision = SlidingCollisionY(
-								old_x,
-								test_y,
-								game_data.sprite_width,
-								game_data.sprite_height,
-								run.vars.requested_dir,
-								game_data.levels[run.vars.level],
-								game_data.block_width,
-								game_data.block_height
-							)
+						-- can we go up
+						if run.vars.level_actors[1].dir_y == -1 then
+							local td = GetAvailableDirectionsPlayer(old_x, old_y - game_data.vars.player_speed, old_dir)
+							
+							if HasValue(td, run.vars.requested_dir) then
+								can_turn = true
+							end
+						end
 
-							if collision == false then
+						-- can we go down
+						if run.vars.level_actors[1].dir_y == 1 then
+							local td = GetAvailableDirectionsPlayer(old_x, old_y + game_data.vars.player_speed, old_dir)
+							
+							if HasValue(td, run.vars.requested_dir) then
 								can_turn = true
 							end
 						end
@@ -806,36 +780,17 @@ function run.update(dt)
 						local target_y = old_y
 
 						if run.vars.level_actors[1].dir == 180 then
-							if joy_left == true or game_data.vars.automove == true then
-								moving = true
-								target_x = target_x - game_data.vars.player_speed
-							end
-
+							moving = true
+							target_x = target_x - game_data.vars.player_speed
 						elseif run.vars.level_actors[1].dir == 0 then
-							if joy_right == true or game_data.vars.automove == true then
-								moving = true
-								target_x = target_x + game_data.vars.player_speed
-							end
-
+							moving = true
+							target_x = target_x + game_data.vars.player_speed
 						elseif run.vars.level_actors[1].dir == 270 then
-							if joy_up == true or game_data.vars.automove == true then
-								moving = true
-								target_y = target_y - game_data.vars.player_speed
-							end
-
+							moving = true
+							target_y = target_y - game_data.vars.player_speed
 						elseif run.vars.level_actors[1].dir == 90 then
-							if joy_down == true or game_data.vars.automove == true then
-								moving = true
-								target_y = target_y + game_data.vars.player_speed
-							end
-						end
-
-						-- animating
-						if moving == true then
-							if run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
-								run.vars.level_actors[1].animation = GetActorAnimationNumber(actor_number, "move")
-								run.vars.level_actors[1].frame = 1
-							end
+							moving = true
+							target_y = target_y + game_data.vars.player_speed
 						end
 
 						-- collision after movements
@@ -852,8 +807,10 @@ function run.update(dt)
 								game_data.block_width,
 								game_data.block_height
 							)
+							
 							new_y = old_y
-
+							
+							if collision == true then moving = false end
 						elseif run.vars.level_actors[1].dir == 90 or run.vars.level_actors[1].dir == 270 then
 							new_y, collision = SlidingCollisionY(
 								old_x,
@@ -865,8 +822,25 @@ function run.update(dt)
 								game_data.block_width,
 								game_data.block_height
 							)
+
 							new_x = old_x
+							
+							if collision == true then moving = false end
 						end
+						
+						-- animating
+						if moving == true then
+							if run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "idle") then
+								run.vars.level_actors[1].animation = GetActorAnimationNumber(actor_number, "move")
+								run.vars.level_actors[1].frame = 1
+							end
+						elseif moving == false then
+							if run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "move") then
+								run.vars.level_actors[1].animation = GetActorAnimationNumber(actor_number, "idle")
+								run.vars.level_actors[1].frame = 1
+							end
+						end
+
 					elseif game_data.actors[actor_number].type.name == "fixed shooter" then
 						-- TODO!
 					elseif game_data.actors[actor_number].type.name == "horizontal shooter" then
@@ -3268,7 +3242,7 @@ function SlidingCollisionZ(x1, y1, w1, h1, d1, map, w2, h2)
 	return x1, y1
 end
 
--- get available directions
+-- get available directions for enemies
 function GetAvailableDirections(x, y, current_dir)
     local dirs = {}
 
@@ -3316,6 +3290,56 @@ function GetAvailableDirections(x, y, current_dir)
                 table.insert(dirs, dir)
             end
         end
+    end
+
+    return dirs
+end
+
+-- get available directions for player
+function GetAvailableDirectionsPlayer(x, y, current_dir)
+    local dirs = {}
+
+    local possible = {0, 90, 180, 270}
+
+    for _, dir in ipairs(possible) do
+		local test_x = x
+		local test_y = y
+
+		if dir == 0 then
+			test_x = test_x + game_data.vars.player_speed
+		elseif dir == 180 then
+			test_x = test_x - game_data.vars.player_speed
+		elseif dir == 90 then
+			test_y = test_y + game_data.vars.player_speed
+		elseif dir == 270 then
+			test_y = test_y - game_data.vars.player_speed
+		end
+
+		local _, collision_x = SlidingCollisionX(
+			test_x,
+			test_y,
+			game_data.sprite_width,
+			game_data.sprite_height,
+			dir,
+			game_data.levels[run.vars.level],
+			game_data.block_width,
+			game_data.block_height
+		)
+
+		local _, collision_y = SlidingCollisionY(
+			test_x,
+			test_y,
+			game_data.sprite_width,
+			game_data.sprite_height,
+			dir,
+			game_data.levels[run.vars.level],
+			game_data.block_width,
+			game_data.block_height
+		)
+
+		if collision_x == false and collision_y == false then
+			table.insert(dirs, dir)
+		end
     end
 
     return dirs
