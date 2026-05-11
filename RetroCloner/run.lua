@@ -369,12 +369,29 @@ function run.update(dt)
 							new_y = new_y + run.vars.fall_power + run.vars.jump_power
 						end
 						
+						-- calculate collision box
+						local divx = game_data.actors[1].type.collision_box_x
+						local divy = game_data.actors[1].type.collision_box_y
+										
+						old_x = old_x + math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
+						old_y = old_y + math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
+						new_x = new_x + math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
+						new_y = new_y + math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
+						
+						player_width = game_data.sprite_width / divx
+						player_height = game_data.sprite_height / divy
+						
 						-- check for player's collisions with blocks, because may be he has moved
-						new_y, run.vars.on_the_ground = GroundCollision(old_x, new_y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height, run.vars.on_stairs, moving_down)
-						new_y = CeilingCollision(old_x, new_y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
-						new_x = LeftCollision(new_x, old_y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
-						new_x = RightCollision(new_x, old_y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
-						new_x, run.vars.on_the_ground = CornerCollision(new_x, new_y, game_data.sprite_width, game_data.sprite_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height, run.vars.on_the_ground)
+						new_y, run.vars.on_the_ground = GroundCollision(old_x, new_y, player_width, player_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height, run.vars.on_stairs, moving_down)
+						new_y = CeilingCollision(old_x, new_y, player_width, player_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+						new_x = LeftCollision(new_x, old_y, player_width, player_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+						new_x = RightCollision(new_x, old_y, player_width, player_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+						new_x, run.vars.on_the_ground = CornerCollision(new_x, new_y, player_width, player_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height, run.vars.on_the_ground)
+
+						old_x = old_x - math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
+						old_y = old_y - math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
+						new_x = new_x - math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
+						new_y = new_y - math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
 
 						-- restore idle animation
 						if run.vars.on_the_ground == true then
