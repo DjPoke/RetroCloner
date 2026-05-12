@@ -1833,18 +1833,19 @@ function run.update(dt)
 						local ew = game_data.sprite_width
 						local eh = game_data.sprite_height
 						
-						-- the player hit à right
+						-- the player hit the enemy
 						if run.vars.invincible == false then
 							if run.vars.level_actors[1].animation == GetActorAnimationNumber(player_number, "hit") then
-								if run.vars.level_actors[1].dir < 90 or run.vars.level_actors[1].dir > 270 then
+								if run.vars.level_actors[1].dir == 0 then
 									px = px + math.floor(pw * 3 / 4)
 									pw = math.floor(pw / 4)
-								elseif run.vars.level_actors[1].dir > 90 and run.vars.level_actors[1].dir < 270 then
+								elseif run.vars.level_actors[1].dir == 180 then
 									pw = math.floor(pw / 4)
 								end
 							end
 						end
 
+						-- enemy collision box
 						local divx_e = game_data.actors[actor_number].type.collision_box_x
 						local divy_e = game_data.actors[actor_number].type.collision_box_y
 
@@ -1900,7 +1901,8 @@ function run.update(dt)
 							local ey = run.vars.level_actors[i].y
 							local ew = game_data.sprite_width
 							local eh = game_data.sprite_height
-							
+
+							-- player collision box
 							local divx_p = game_data.actors[player_number].type.collision_box_x
 							local divy_p = game_data.actors[player_number].type.collision_box_y
 
@@ -1910,6 +1912,7 @@ function run.update(dt)
 							pw = pw / divx_p
 							ph = ph / divy_p
 
+							-- enemy collision box
 							local divx_e = game_data.actors[actor_number].type.collision_box_x
 							local divy_e = game_data.actors[actor_number].type.collision_box_y
 
@@ -1920,34 +1923,7 @@ function run.update(dt)
 							eh = eh / divy_e
 							
 							if Collision(px, py, pw, ph, ex, ey, ew, eh) == true then
-								if run.vars.invincible == true then
-									-- kill the enemy
-									run.vars.enemy_health[i] = 0
-									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "die")
-									run.vars.level_actors[i].frame = 1
-									
-									-- add bonus to score
-									run.vars.score = run.vars.score + game_data.actors[actor_number].type.bonus
-									
-									-- play enemy die sound
-									-- TODO!
-								elseif run.vars.level_actors[1].animation == GetActorAnimationNumber(player_number, "hit") then
-									-- kill the enemy
-									run.vars.enemy_health[i] = run.vars.enemy_health[i] - game_data.actors[player_number].type.wound
-									
-									if run.vars.enemy_health[i] < 0 then run.vars.enemy_health[i] = 0 end
-									
-									if run.vars.enemy_health[i] == 0 then
-										run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "die")
-										run.vars.level_actors[i].frame = 1
-
-										-- add bonus to score
-										run.vars.score = run.vars.score + game_data.actors[actor_number].type.bonus
-										
-										-- play enemy die sound
-										-- TODO!
-									end
-								elseif game_data.health_area == true then
+								if game_data.health_area == true then
 									-- kill the player
 									run.vars.health = run.vars.health - game_data.actors[actor_number].type.wound
 									
