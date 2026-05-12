@@ -3,7 +3,8 @@ TODO
 ====
 
 * Bugs:
-	- Bug lors de l'ajout d'un nouveau sprite, doit passer au sprite édité
+	- Bug lors de l'ajout d'un nouveau sprite, le logiciel doit passer au sprite édité
+	- Plantage de l'éditeur de niveau, "commons.lua 206", si je redimensionne et repositionne l'écran dans l'éditeur d'écrans
 
 * Terminer la partie jeu:
 	- Faire le controle joueur beat'em up (wip)
