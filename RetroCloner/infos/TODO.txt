@@ -5,11 +5,8 @@ TODO
 * Bugs:
 	- ...
 
-* Améliorations:
-	- Ajouter des hit box x et y pour certaines animations
-	- Afficher les acteurs (idle, hit, etc.) avec leur collision box et leur hit box
-
 * Terminer la partie jeu:
+	- Faire les collisions player/enemy dans le cas du beat'em up
 	- Intégrer le z-order seulement dans le mode beat'em up, pour le jouer et les ennemis
 	- Faire le controle joueur beat'em up (wip)
 	- Ajouter un ennemi 'fighter'

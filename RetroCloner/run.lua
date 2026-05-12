@@ -1820,6 +1820,9 @@ function run.update(dt)
 					local actor_number = run.vars.level_actors[i].number
 
 					if game_data.actors[actor_number].entity == ENTITY_TYPE_ENEMY then
+						-- first collision: the player hit the enemy
+						local hit = false
+
 						local px = run.vars.level_actors[1].x
 						local py = run.vars.level_actors[1].y
 						local pw = game_data.sprite_width
@@ -1830,14 +1833,17 @@ function run.update(dt)
 						local ew = game_data.sprite_width
 						local eh = game_data.sprite_height
 						
-						local divx_p = game_data.actors[player_number].type.collision_box_x
-						local divy_p = game_data.actors[player_number].type.collision_box_y
-
-						px = px + math.floor((pw - (pw / divx_p)) / 2)
-						py = py + math.floor((ph - (ph / divy_p)) / 2)
-
-						pw = pw / divx_p
-						ph = ph / divy_p
+						-- the player hit à right
+						if run.vars.invincible == false then
+							if run.vars.level_actors[1].animation == GetActorAnimationNumber(player_number, "hit") then
+								if run.vars.level_actors[1].dir < 90 or run.vars.level_actors[1].dir > 270 then
+									px = px + math.floor(pw * 3 / 4)
+									pw = math.floor(pw / 4)
+								elseif run.vars.level_actors[1].dir > 90 and run.vars.level_actors[1].dir < 270 then
+									pw = math.floor(pw / 4)
+								end
+							end
+						end
 
 						local divx_e = game_data.actors[actor_number].type.collision_box_x
 						local divy_e = game_data.actors[actor_number].type.collision_box_y
@@ -1851,6 +1857,8 @@ function run.update(dt)
 						if Collision(px, py, pw, ph, ex, ey, ew, eh) == true then
 							if run.vars.invincible == true then
 								-- kill the enemy
+								hit = true
+								
 								run.vars.enemy_health[i] = 0
 								run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "die")
 								run.vars.level_actors[i].frame = 1
@@ -1862,6 +1870,8 @@ function run.update(dt)
 								-- TODO!
 							elseif run.vars.level_actors[1].animation == GetActorAnimationNumber(player_number, "hit") then
 								-- kill the enemy
+								hit = true
+								
 								run.vars.enemy_health[i] = run.vars.enemy_health[i] - game_data.actors[player_number].type.wound
 								
 								if run.vars.enemy_health[i] < 0 then run.vars.enemy_health[i] = 0 end
@@ -1876,16 +1886,86 @@ function run.update(dt)
 									-- play enemy die sound
 									-- TODO!
 								end
-							elseif game_data.health_area == true then
-								-- kill the player
-								run.vars.health = run.vars.health - game_data.actors[actor_number].type.wound
-								
-								if run.vars.health <= 0 then run.vars.health = 0 end
+							end
+						end
 
-								-- play player wounded sound
-								-- TODO!
-								
-								if run.vars.health == 0 then
+						-- second collision : the enemy touch the player
+						if hit == false then
+							local px = run.vars.level_actors[1].x
+							local py = run.vars.level_actors[1].y
+							local pw = game_data.sprite_width
+							local ph = game_data.sprite_height
+							
+							local ex = run.vars.level_actors[i].x
+							local ey = run.vars.level_actors[i].y
+							local ew = game_data.sprite_width
+							local eh = game_data.sprite_height
+							
+							local divx_p = game_data.actors[player_number].type.collision_box_x
+							local divy_p = game_data.actors[player_number].type.collision_box_y
+
+							px = px + math.floor((pw - (pw / divx_p)) / 2)
+							py = py + math.floor((ph - (ph / divy_p)) / 2)
+
+							pw = pw / divx_p
+							ph = ph / divy_p
+
+							local divx_e = game_data.actors[actor_number].type.collision_box_x
+							local divy_e = game_data.actors[actor_number].type.collision_box_y
+
+							ex = ex + math.floor((ew - (ew / divx_e)) / 2)
+							ey = ey + math.floor((eh - (eh / divy_e)) / 2)
+
+							ew = ew / divx_e
+							eh = eh / divy_e
+							
+							if Collision(px, py, pw, ph, ex, ey, ew, eh) == true then
+								if run.vars.invincible == true then
+									-- kill the enemy
+									run.vars.enemy_health[i] = 0
+									run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "die")
+									run.vars.level_actors[i].frame = 1
+									
+									-- add bonus to score
+									run.vars.score = run.vars.score + game_data.actors[actor_number].type.bonus
+									
+									-- play enemy die sound
+									-- TODO!
+								elseif run.vars.level_actors[1].animation == GetActorAnimationNumber(player_number, "hit") then
+									-- kill the enemy
+									run.vars.enemy_health[i] = run.vars.enemy_health[i] - game_data.actors[player_number].type.wound
+									
+									if run.vars.enemy_health[i] < 0 then run.vars.enemy_health[i] = 0 end
+									
+									if run.vars.enemy_health[i] == 0 then
+										run.vars.level_actors[i].animation = GetActorAnimationNumber(actor_number, "die")
+										run.vars.level_actors[i].frame = 1
+
+										-- add bonus to score
+										run.vars.score = run.vars.score + game_data.actors[actor_number].type.bonus
+										
+										-- play enemy die sound
+										-- TODO!
+									end
+								elseif game_data.health_area == true then
+									-- kill the player
+									run.vars.health = run.vars.health - game_data.actors[actor_number].type.wound
+									
+									if run.vars.health <= 0 then run.vars.health = 0 end
+
+									-- play player wounded sound
+									-- TODO!
+									
+									if run.vars.health == 0 then
+										run.vars.dead = true
+										run.vars.dead_timer = 3.0
+										run.vars.level_actors[1].animation = GetActorAnimationNumber(player_number, "die")
+										run.vars.level_actors[1].frame = 1
+
+										-- play player die sound
+										-- TODO!
+									end
+								elseif game_data.health_area == false then
 									run.vars.dead = true
 									run.vars.dead_timer = 3.0
 									run.vars.level_actors[1].animation = GetActorAnimationNumber(player_number, "die")
@@ -1894,14 +1974,6 @@ function run.update(dt)
 									-- play player die sound
 									-- TODO!
 								end
-							elseif game_data.health_area == false then
-								run.vars.dead = true
-								run.vars.dead_timer = 3.0
-								run.vars.level_actors[1].animation = GetActorAnimationNumber(player_number, "die")
-								run.vars.level_actors[1].frame = 1
-
-								-- play player die sound
-								-- TODO!
 							end
 						end
 					end
