@@ -523,18 +523,20 @@ function love.update(dt)
 					local bx = math.floor((mx - xc) / (game_data.block_width * game_data.pixel_size * LEVELS_ZOOM))
 					local by = math.floor((my - yc) / (game_data.block_height * LEVELS_ZOOM))
 
-					if love.mouse.isDown(1) == true then
-						-- draw blocks in the level
-						if bx >= 0 and bx < game_data.levels_data.sw then
-							if by >= 0 and by < game_data.levels_data.sh then
-								game_data.levels[current_level].blocks[bx - current_level_scroll_x][by - current_level_scroll_y] = current_level_selected_block
+					if left_click == false then
+						if love.mouse.isDown(1) == true then
+							-- draw blocks in the level
+							if bx >= 0 and bx < game_data.levels_data.sw then
+								if by >= 0 and by < game_data.levels_data.sh then
+									game_data.levels[current_level].blocks[bx - current_level_scroll_x][by - current_level_scroll_y] = current_level_selected_block
+								end
 							end
-						end
-					elseif love.mouse.isDown(2) == true then
-						-- clear blocks in the level
-						if bx >= 0 and bx < game_data.levels_data.sw then
-							if by >= 0 and by < game_data.levels_data.sh then
-								game_data.levels[current_level].blocks[bx - current_level_scroll_x][by - current_level_scroll_y] = 0
+						elseif love.mouse.isDown(2) == true then
+							-- clear blocks in the level
+							if bx >= 0 and bx < game_data.levels_data.sw then
+								if by >= 0 and by < game_data.levels_data.sh then
+									game_data.levels[current_level].blocks[bx - current_level_scroll_x][by - current_level_scroll_y] = 0
+								end
 							end
 						end
 					end
@@ -1353,9 +1355,6 @@ function love.keypressed(key, scancode, isrepeat)
 			mode = MODE_MENU
 		end
 	elseif mode == MODE_TEST_GAME then
-		-- execute run keys
-		run.keypressed(key, scancode, isrepeat)
-
 		if key == "escape" then
 			-- show mouse
 			love.mouse.setVisible(true)
@@ -1363,13 +1362,13 @@ function love.keypressed(key, scancode, isrepeat)
 			-- quit the game
 			run.quit()
 			
-			-- set editor window size
-			love.window.updateMode(EDITOR_WINDOW_WIDTH, EDITOR_WINDOW_HEIGHT)
-			
 			-- set window title
 			love.window.setTitle(EDITOR_WINDOW_TITLE)
 			
 			mode = MODE_MENU
+		else
+			-- execute run keys
+			run.keypressed(key, scancode, isrepeat)
 		end		
 	elseif mode == MODE_EDIT_PALETTE then
 		if key == "escape" then
@@ -2987,8 +2986,6 @@ function love.mousepressed(x, y, button, istouch, presses)
 			
 						WINDOW_BORDER = math.floor(WINDOW_WIDTH / 8)
 						if not game_data.border then WINDOW_BORDER = 0 end
-			
-						love.window.updateMode(WINDOW_WIDTH + (WINDOW_BORDER * 2), WINDOW_HEIGHT + (WINDOW_BORDER * 2))
 						
 						-- set window title
 						love.window.setTitle("Game test")
@@ -3120,6 +3117,8 @@ function love.mousepressed(x, y, button, istouch, presses)
 			elseif selected_menu == 14 then
 				-- edit levels
 				if project_name ~= "" then
+					left_click = true
+					
 					mode = MODE_EDIT_LEVELS
 				else
 					beep:stop()
