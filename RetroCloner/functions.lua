@@ -655,7 +655,7 @@ function UpdateLevelsData()
 	end
 	
 	-- add player actor to the level
-	table.insert(t.actors, {number = 0, startx = 0, starty = 0, x = 0, y = 0, animation = 0, frame = 0})
+	table.insert(t.actors, {number = 1, start_x = 0, start_y = 0, x = 0, y = 0, dir = 0, param = 0, animation = 0, frame = 0, hflip = false, vflip = false})
 	
 	for i = 1, cpt_levels do
 		table.insert(game_data.levels, t)

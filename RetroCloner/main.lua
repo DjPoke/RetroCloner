@@ -1162,25 +1162,25 @@ function love.draw()
 
 			-- print current block or current actor
 			if current_level_mode == LEVEL_MODE_BLOCKS then
-				love.graphics.print("Block " .. tostring(current_level_selected_block), 860, 240)
+				love.graphics.print("Block " .. tostring(current_level_selected_block), 1060, 240)
 				
 				if #img_blocks > 0 then
 					love.graphics.setColor(1, 1, 1)
-					love.graphics.draw(img_blocks[current_level_selected_block], 920, 280, 0, game_data.pixel_size * SCREEN_ZOOM2, SCREEN_ZOOM2)
+					love.graphics.draw(img_blocks[current_level_selected_block], 1120, 280, 0, game_data.pixel_size * SCREEN_ZOOM2, SCREEN_ZOOM2)
 
-					ShowCursor(920, 280, game_data.block_width * game_data.pixel_size * SCREEN_ZOOM2, game_data.block_height * SCREEN_ZOOM2, 1, 1, 1)
+					ShowCursor(1120, 280, game_data.block_width * game_data.pixel_size * SCREEN_ZOOM2, game_data.block_height * SCREEN_ZOOM2, 1, 1, 1)
 				end
 			elseif current_level_mode == LEVEL_MODE_ACTORS then
-				love.graphics.print("Actor " .. tostring(current_level_selected_actor), 860, 240)
+				love.graphics.print("Actor " .. tostring(current_level_selected_actor), 1060, 240)
 				
 				if #img_sprites > 0 then
 					local sprite = GetActorSprite(current_level_selected_actor, "idle", 1)
 					
 					if sprite > 0 then
 						love.graphics.setColor(1, 1, 1)
-						love.graphics.draw(img_sprites[sprite], 900, 280, 0, game_data.pixel_size * SCREEN_ZOOM2, SCREEN_ZOOM2)
+						love.graphics.draw(img_sprites[sprite], 1100, 280, 0, game_data.pixel_size * SCREEN_ZOOM2, SCREEN_ZOOM2)
 
-						ShowCursor(900, 280, game_data.sprite_width * game_data.pixel_size * SCREEN_ZOOM2, game_data.sprite_height * SCREEN_ZOOM2, 1, 1, 1)
+						ShowCursor(1100, 280, game_data.sprite_width * game_data.pixel_size * SCREEN_ZOOM2, game_data.sprite_height * SCREEN_ZOOM2, 1, 1, 1)
 					end
 				end
 			end
@@ -1505,7 +1505,7 @@ function love.keypressed(key, scancode, isrepeat)
 				-- add block data
 				table.insert(game_data.blocks_data, {type = blocks_types[1]})
 				
-				current_block = current_block + 1
+				current_block = #game_data.blocks
 			end
 		elseif key == "c" then
 			-- copy current block
@@ -1656,7 +1656,7 @@ function love.keypressed(key, scancode, isrepeat)
 				
 				table.insert(game_data.sprites, t)
 				
-				current_sprite = current_sprite + 1
+				current_sprite = #game_data.sprites
 			end
 		elseif key == "c" then
 			-- copy current sprite
@@ -1765,7 +1765,7 @@ function love.keypressed(key, scancode, isrepeat)
 				table.insert(game_data.animations, {1})
 				table.insert(game_data.animations_loop, {loop = false, v1 = 0, v2 = 0})
 				
-				current_animation = current_animation + 1
+				current_animation = #game_data.animations
 				current_frame = 1
 
 				animation_playing = false
@@ -1984,7 +1984,7 @@ function love.keypressed(key, scancode, isrepeat)
 					table.insert(game_data.actors, {entity = current_entity_type, type = DeepCopy(enemy_types[current_enemy_type])})
 				end
 
-				current_actor = current_actor + 1
+				current_actor = #game_data.actors
 				current_property = 1
 			end			
 
@@ -2449,7 +2449,7 @@ function love.keypressed(key, scancode, isrepeat)
 					-- add new void level
 					table.insert(game_data.levels, t)
 
-					current_level = current_level + 1
+					current_level = #game_data.levels
 					
 					game_data.scrolling_start_x[current_level] = 0
 					game_data.scrolling_start_y[current_level] = 0

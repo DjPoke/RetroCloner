@@ -3,15 +3,14 @@ TODO
 ====
 
 * Bugs:
-	- Bug lors de l'ajout d'un nouveau sprite, le logiciel doit passer au sprite édité
-	- Plantage de l'éditeur de niveau, "commons.lua 206", si je redimensionne et repositionne l'écran dans l'éditeur d'écrans
+	- ...
 
 * Terminer la partie jeu:
 	- Faire le controle joueur beat'em up (wip)
+	- Ajouter un ennemi 'fighter'
 	- Faire les collisions player/enemy dans le cas du beat'em up
 	- Intégrer le z-order seulement dans le mode beat'em up, pour le jouer et les ennemis
 	- Si z-order non actif, afficher les bonus en 1er, puis les monstres, puis le joueur. Sinon, afficher ce qui est au dessus du joueur, le joueur, et ce qui est en dessous.
-	- Ajouter un ennemi 'fighter'
 	
 	- Animer et déplacer les autres types d'ennemis (wip)
 	- Ajouter des acteurs boss avec la possibilité de les scaler en x1, x2 ou x3, et un comportement distinct des ennemis
