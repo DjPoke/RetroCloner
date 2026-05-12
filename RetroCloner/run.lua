@@ -2421,6 +2421,12 @@ function run.draw()
 		r, g, b = GetPenRGB(game_data.background_paper)
 		love.graphics.clear(r, g, b)
 
+		-- draw interface, if it exists
+		if run.vars.images.interface ~= nil then
+			love.graphics.setColor(1, 1, 1)
+			love.graphics.draw(run.vars.images.interface, WINDOW_BORDER, WINDOW_BORDER, 0, game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM)
+		end
+
 		-- draw game area
 		r, g, b = GetPenRGB(game_data.game_paper)
 		love.graphics.setColor(r, g, b)
