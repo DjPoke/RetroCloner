@@ -3,13 +3,14 @@ TODO
 ====
 
 * Bugs:
-	- Détruire les projectiles du joueur/ennemis si ils sont hors de l'écran de jeu
+	- Il faut détruire les projectiles du joueur/ennemis si ils sont hors de l'écran de jeu
 
 * Terminer la partie jeu:
-	- Faire réagir enemy 'fighter'
+	- Faire réagir et afficher enemy 'fighter'
 	- Faire les collisions player/enemy dans le cas du beat'em up
-	- Intégrer le z-order seulement dans le mode beat'em up, pour le jouer et les ennemis
-	- Si z-order non actif, afficher les bonus en 1er, puis les monstres, puis le joueur. Sinon, afficher ce qui est au dessus du joueur, le joueur, et ce qui est en dessous.
+	- Intégrer le z-order seulement dans le mode beat'em up, pour le joueur et les ennemis
+	- Si le z-order est non actif, afficher les bonus en 1er, puis les monstres, puis le joueur.
+	  Sinon, afficher ce qui est au dessus du joueur, le joueur, et ce qui est en dessous de lui.
 	
 	- Animer et déplacer les autres types d'ennemis (wip)
 	- Ajouter des acteurs boss avec la possibilité de les scaler en x1, x2 ou x3, et un comportement distinct des ennemis
