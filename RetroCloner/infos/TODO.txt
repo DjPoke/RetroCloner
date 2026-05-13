@@ -3,10 +3,10 @@ TODO
 ====
 
 * Bugs:
-	- ...
+	- Détruire les projectiles du joueur/ennemis si ils sont hors de l'écran de jeu
 
 * Terminer la partie jeu:
-	- Ajouter un ennemi 'fighter'
+	- Faire réagir enemy 'fighter'
 	- Faire les collisions player/enemy dans le cas du beat'em up
 	- Intégrer le z-order seulement dans le mode beat'em up, pour le jouer et les ennemis
 	- Si z-order non actif, afficher les bonus en 1er, puis les monstres, puis le joueur. Sinon, afficher ce qui est au dessus du joueur, le joueur, et ce qui est en dessous.

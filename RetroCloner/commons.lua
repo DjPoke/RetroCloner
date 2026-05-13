@@ -60,7 +60,8 @@ enemy_types = {
 	{name = "seek 8 directions", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, bonus = 20, weapon1 = 0, collision_box1 = 1},
 	{name = "random 4 directions", idle = 0, walk_up = 0, walk_down = 0, walk_left = 0, walk_right = 0, fire_up = 0, fire_down = 0, fire_left = 0, fire_right = 0,
 		affraid_up = 0, affraid_down = 0, affraid_left = 0, affraid_right = 0, die = 0, health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, bonus = 20, weapon1 = 0, collision_box1 = 1},
-	{name = "random 8 directions", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, bonus = 20, weapon1 = 0, collision_box1 = 1}
+	{name = "random 8 directions", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, bonus = 20, weapon1 = 0, collision_box1 = 1},
+	{name = "beat'em all fighter", idle = 0, walk = 0, punch = 0, kick = 0, jumping_kick = 0, wounded = 0, die = 0, health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, bonus = 20}
 }
 
 enemy_animations = {
@@ -76,7 +77,8 @@ enemy_animations = {
 	{"idle", "walk", "fire", "affraid", "die", "health", "wound", "collision_box_x", "collision_box_y", "bonus", "weapon1", "collision_box1"},
 	{"idle", "walk_up", "walk_down", "walk_left", "walk_right", "fire_up", "fire_down", "fire_left", "fire_right",
 		"affraid_up", "affraid_down", "affraid_left", "affraid_right", "die", "health", "wound", "collision_box_x", "collision_box_y", "bonus", "weapon1", "collision_box1"},
-	{"idle", "walk", "fire", "affraid", "die", "health", "wound", "collision_box_x", "collision_box_y", "bonus", "weapon1", "collision_box1"}
+	{"idle", "walk", "fire", "affraid", "die", "health", "wound", "collision_box_x", "collision_box_y", "bonus", "weapon1", "collision_box1"},
+	{"idle", "walk", "punch", "kick", "jumping_kick", "wounded", "die", "health", "wound", "collision_box_x", "collision_box_y", "bonus"}
 }
 
 -- types of bonus-malus
