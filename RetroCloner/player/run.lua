@@ -42,6 +42,7 @@ run.vars = {
 	animations_timer = 0.0,
 	blink_timer = 0.0,
 	interlude_timer = 0.0,
+	jumping = false,
 	jump_power = 0,
 	fall_power = 0,
 	dir_x = 0,
@@ -345,24 +346,32 @@ function run.update(dt)
 						end
 						
 						-- jumping ?
-						if run.vars.jump_power < 0 then
-							run.vars.jump_power = run.vars.jump_power + 1
+						if run.vars.jumping == true then
+							if run.vars.jump_power < 0 then
+								run.vars.jump_power = run.vars.jump_power + 1
+							else
+								run.vars.jumping = false
+							end
 						end
 
 						-- increase gravity force
-						if run.vars.on_the_ground == false then
-							if run.vars.jump_power == 0 then
-								if run.vars.fall_power < game_data.vars.gravity then
-									run.vars.fall_power = run.vars.fall_power + 1
+						if run.vars.jumping == false then
+							if run.vars.on_the_ground == false then
+								if run.vars.jump_power == 0 then
+									if run.vars.fall_power < game_data.vars.gravity then
+										run.vars.fall_power = run.vars.fall_power + 1
+									end
 								end
+							elseif run.vars.on_the_ground == true then
+								run.vars.fall_power = 1
+								run.vars.jumping = false
 							end
-						elseif run.vars.on_the_ground == true then
-							run.vars.fall_power = 1
 						end
 
 						-- on stairs ? no more fall
 						if run.vars.on_stairs == true then
 							run.vars.fall_power = 0
+							run.vars.jumping = false
 						end
 
 						-- apply gravity
@@ -489,7 +498,11 @@ function run.update(dt)
 							end
 
 							-- walk left
-							new_x = new_x - game_data.vars.player_speed
+							if run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "walk") or
+										run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "jump") or
+										run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "jumping_kick") then
+								new_x = new_x - game_data.vars.player_speed
+							end
 						elseif run.vars.level_actors[1].dir_x == 1 then
 							moving = true
 							
@@ -500,7 +513,11 @@ function run.update(dt)
 							end
 							
 							-- walk right
-							new_x = new_x + game_data.vars.player_speed
+							if run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "walk") or
+										run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "jump") or
+										run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "jumping_kick") then
+								new_x = new_x + game_data.vars.player_speed
+							end
 						end
 							
 						if run.vars.level_actors[1].dir_y == -1 then
@@ -514,7 +531,9 @@ function run.update(dt)
 							end
 
 							-- walk left
-							new_y = new_y - game_data.vars.player_speed
+							if run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "walk") then
+								new_y = new_y - game_data.vars.player_speed
+							end
 						elseif run.vars.level_actors[1].dir_y == 1 then
 							moving = true
 							
@@ -525,35 +544,80 @@ function run.update(dt)
 							end
 							
 							-- walk right
-							new_y = new_y + game_data.vars.player_speed
+							if run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "walk") then
+								new_y = new_y + game_data.vars.player_speed
+							end
 						end
 						
-						-- calculate collision box
-						local divx = game_data.actors[player_number].type.collision_box_x
-						local divy = game_data.actors[player_number].type.collision_box_y
-										
-						old_x = old_x + math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
-						old_y = old_y + math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
-						new_x = new_x + math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
-						new_y = new_y + math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
+						-- jumping ?
+						if run.vars.jumping == true then
+							-- trying to jump kick
+							if love.keyboard.isDown("c") then
+								if run.vars.level_actors[1].animation == GetActorAnimationNumber(actor_number, "jump") then
+									run.vars.level_actors[1].animation = GetActorAnimationNumber(actor_number, "jumping_kick")
+									run.vars.level_actors[1].frame = 1
+								end
+							end
 						
-						player_width = game_data.sprite_width / divx
-						player_height = game_data.sprite_height / divy
-						
-						-- calculate offset y for beat'em up collisions
-						local offset_y = math.floor((player_height * 3) / 4)
-						
-						-- check for player's collisions with blocks, because may be he has moved
-						new_x, collision = SlidingCollisionX(new_x, old_y + offset_y, player_width, player_height - offset_y, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
-						new_y, collision = SlidingCollisionY(old_x, new_y + offset_y, player_width, player_height - offset_y, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
-						new_y = new_y - offset_y
-						new_x, new_y = SlidingCollisionZ(new_x, new_y + offset_y, player_width, player_height - offset_y, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
-						new_y = new_y - offset_y
+							if run.vars.jump_power < 0 then
+								-- we are at the top of the jump
+								if run.vars.jump_power == -1 then
+									run.vars.fall_power = 1
+								end
+								
+								-- reduce jump force
+								run.vars.jump_power = run.vars.jump_power + 1
+							end
+							
+							-- apply gravity
+							new_y = new_y + run.vars.fall_power + run.vars.jump_power
 
-						old_x = old_x - math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
-						old_y = old_y - math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
-						new_x = new_x - math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
-						new_y = new_y - math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
+							-- increase gravity force
+							if run.vars.fall_power > 0 then
+								if run.vars.fall_power < game_data.vars.jump_power - 1 then
+									run.vars.fall_power = run.vars.fall_power + 1
+								else
+									run.vars.fall_power = 0
+									run.vars.jumping = false
+
+									run.vars.level_actors[1].animation = GetActorAnimationNumber(actor_number, "idle")
+									run.vars.level_actors[1].frame = 1
+								end
+							end
+						end
+
+						if run.vars.jumping == false then
+							-- calculate collision box
+							local divx = game_data.actors[player_number].type.collision_box_x
+							local divy = game_data.actors[player_number].type.collision_box_y
+											
+							old_x = old_x + math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
+							old_y = old_y + math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
+							new_x = new_x + math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
+							new_y = new_y + math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
+							
+							player_width = game_data.sprite_width / divx
+							player_height = game_data.sprite_height / divy
+							
+							-- calculate offset y for beat'em up collisions
+							local offset_y = math.floor((player_height * 3) / 4)
+							
+							-- check for player's collisions with blocks, because may be he has moved
+							new_x, collision = SlidingCollisionX(new_x, old_y + offset_y, player_width, player_height - offset_y, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+							
+							new_y, collision = SlidingCollisionY(old_x, new_y + offset_y, player_width, player_height - offset_y, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+							
+							new_y = new_y - offset_y
+
+							new_x, new_y = SlidingCollisionZ(new_x, new_y + offset_y, player_width, player_height - offset_y, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+
+							new_y = new_y - offset_y
+
+							old_x = old_x - math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
+							old_y = old_y - math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
+							new_x = new_x - math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
+							new_y = new_y - math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
+						end
 					elseif game_data.actors[actor_number].type.name == "run & gun (edge view)" then
 						-- TODO!				
 					elseif game_data.actors[actor_number].type.name == "run & gun (top view)" then
@@ -2637,6 +2701,11 @@ function run.keypressed(key, scancode, isrepeat)
 				
 				-- fire 2: "b"
 				Fire2(actor_number)
+			elseif key == "v" then
+				local actor_number = run.vars.level_actors[1].number
+				
+				-- fire 3: "v"
+				Fire3(actor_number)
 			end
 		end
 	elseif run.vars.game_mode == MODE_WINNER then
@@ -2723,6 +2792,11 @@ function run.gamepadpressed(joystick, button)
 				
 					-- fire 2: "b"
 					Fire2(actor_number)
+				elseif button == "x" then
+					local actor_number = run.vars.level_actors[1].number
+				
+					-- fire 3: "x"
+					Fire3(actor_number)
 				end
 			end
 		end
@@ -2765,21 +2839,30 @@ function Fire1(a)
 	if run.vars.health > 0 then
 		if game_data.actors[a].type.name == "platformer" then
 			-- the player is on the ground ?
-			if run.vars.on_the_ground == true or run.vars.on_stairs == true then
-				-- the player is idle or walking or climbing ?
-				if run.vars.level_actors[1].animation == GetActorAnimationNumber(a, "idle") or
-											run.vars.level_actors[1].animation == GetActorAnimationNumber(a, "walk") then
-					-- jump
-					run.vars.level_actors[1].animation = GetActorAnimationNumber(a, "jump")
-					run.vars.level_actors[1].frame = 1
-					run.vars.jump_power = -game_data.vars.jump_power
-					
-					-- play jump sound
-					-- TODO!
+			if run.vars.jumping == false then
+				if run.vars.on_the_ground == true or run.vars.on_stairs == true then
+					-- the player is idle or walking: jump
+					if run.vars.level_actors[1].animation == GetActorAnimationNumber(a, "idle") or
+												run.vars.level_actors[1].animation == GetActorAnimationNumber(a, "walk") then
+						-- jump
+						run.vars.level_actors[1].animation = GetActorAnimationNumber(a, "jump")
+						run.vars.level_actors[1].frame = 1
+
+						run.vars.jump_power = -game_data.vars.jump_power
+						run.vars.jumping = true
+						
+						-- play jump sound
+						-- TODO!
+					end
 				end
 			end
 		elseif game_data.actors[a].type.name == "beat'em up" then
-			-- TODO!
+			-- the player is idle or walking: punch
+			if run.vars.level_actors[1].animation == GetActorAnimationNumber(a, "idle") or 
+											run.vars.level_actors[1].animation == GetActorAnimationNumber(a, "walk") then
+				run.vars.level_actors[1].animation = GetActorAnimationNumber(a, "punch")
+				run.vars.level_actors[1].frame = 1				
+			end
 		elseif game_data.actors[a].type.name == "run & gun (edge view)" then
 			-- TODO!
 		elseif game_data.actors[a].type.name == "run & gun (top view)" then
@@ -2818,7 +2901,7 @@ function Fire2(a)
 	if run.vars.health > 0 then
 		if game_data.actors[a].type.name == "platformer" then
 			-- the player is on the ground ?
-			if run.vars.on_the_ground == true then
+			if run.vars.on_the_ground == true or run.vars.on_stairs == true then
 				-- the player is idle or walking ?
 				if run.vars.level_actors[1].animation == GetActorAnimationNumber(a, "idle") or
 											run.vars.level_actors[1].animation == GetActorAnimationNumber(a, "walk") then
@@ -2829,20 +2912,14 @@ function Fire2(a)
 					-- play hit sound
 					-- TODO!
 				end
-			elseif run.vars.on_stairs == true then
-				-- the player is idle or walking ?
-				if run.vars.level_actors[1].animation == GetActorAnimationNumber(a, "idle") or
-											run.vars.level_actors[1].animation == GetActorAnimationNumber(a, "walk") then
-					-- hit
-					run.vars.level_actors[1].animation = GetActorAnimationNumber(a, "hit")
-					run.vars.level_actors[1].frame = 1
-					
-					-- play hit sound
-					-- TODO!
-				end				
 			end
 		elseif game_data.actors[a].type.name == "beat'em up" then
-			-- TODO!
+			-- the player is idle or walking: kick
+			if run.vars.level_actors[1].animation == GetActorAnimationNumber(a, "idle") or 
+											run.vars.level_actors[1].animation == GetActorAnimationNumber(a, "walk") then
+				run.vars.level_actors[1].animation = GetActorAnimationNumber(a, "kick")
+				run.vars.level_actors[1].frame = 1				
+			end
 		elseif game_data.actors[a].type.name == "run & gun (edge view)" then
 			-- TODO!
 		elseif game_data.actors[a].type.name == "run & gun (top view)" then
@@ -2872,6 +2949,25 @@ function Fire2(a)
 			-- TODO!
 		elseif game_data.actors[a].type.name == "vertical shooter" then
 			-- TODO!
+		end
+	end
+end
+
+-- fire 3 button (TODO! add other kinds of players)
+function Fire3(a)
+	if run.vars.health > 0 then
+		if game_data.actors[a].type.name == "beat'em up" then
+			-- the player is idle or walking: jumping kick
+			if run.vars.jumping == false then
+				if run.vars.level_actors[1].animation == GetActorAnimationNumber(a, "idle") or 
+												run.vars.level_actors[1].animation == GetActorAnimationNumber(a, "walk") then
+					run.vars.level_actors[1].animation = GetActorAnimationNumber(a, "jump")
+					run.vars.level_actors[1].frame = 1
+
+					run.vars.jump_power = -game_data.vars.jump_power
+					run.vars.jumping = true
+				end
+			end
 		end
 	end
 end

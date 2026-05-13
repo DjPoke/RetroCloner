@@ -3,10 +3,9 @@ TODO
 ====
 
 * Bugs:
-	- ...
+	- Bug collisions beat'em up lors du saut
 
 * Terminer la partie jeu:
-	- Faire le controle joueur beat'em up (wip)
 	- Ajouter un ennemi 'fighter'
 	- Faire les collisions player/enemy dans le cas du beat'em up
 	- Intégrer le z-order seulement dans le mode beat'em up, pour le jouer et les ennemis
