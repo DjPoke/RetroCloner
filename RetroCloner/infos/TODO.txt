@@ -3,7 +3,7 @@ TODO
 ====
 
 * Bugs:
-	- Bug collisions beat'em up lors du saut
+	- ...
 
 * Terminer la partie jeu:
 	- Ajouter un ennemi 'fighter'

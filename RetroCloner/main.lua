@@ -539,6 +539,8 @@ function love.update(dt)
 								end
 							end
 						end
+					elseif love.mouse.isDown(1) == false then
+						left_click = false
 					end
 				end
 			end

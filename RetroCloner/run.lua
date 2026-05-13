@@ -10,7 +10,7 @@ local MODE_INTERLUDE = 5
 local DT_CORRECTION = 60
 local SCROLLING_SLOW_DOWN = 4
 
-local ENEMY_SEEK_MODE = 0
+local ENEMY_SEEK_MODE = beat
 local ENEMY_RANDOM_MODE = 1
 local ENEMY_AFFRAID_MODE = 2
 
@@ -45,6 +45,7 @@ run.vars = {
 	jumping = false,
 	jump_power = 0,
 	fall_power = 0,
+	jumping_offset_y = 0,
 	dir_x = 0,
 	dir_y = 0,
 	requested_dir = 0,
@@ -212,10 +213,10 @@ function run.update(dt)
 				local joy_left = false
 				local joy_right = false
 
-					-- move the player
+				-- move the player
 				local player_number = run.vars.level_actors[1].number
 				local actor_number = run.vars.level_actors[1].number
-			
+
 				if game_speed_tick == true then	
 					-- get keyboard fist
 					joy_up = love.keyboard.isDown("up")
@@ -569,8 +570,8 @@ function run.update(dt)
 								run.vars.jump_power = run.vars.jump_power + 1
 							end
 							
-							-- apply gravity
-							new_y = new_y + run.vars.fall_power + run.vars.jump_power
+							-- apply gravity, only visually
+							run.vars.jumping_offset_y = run.vars.jumping_offset_y + (run.vars.fall_power + run.vars.jump_power)
 
 							-- increase gravity force
 							if run.vars.fall_power > 0 then
@@ -586,38 +587,37 @@ function run.update(dt)
 							end
 						end
 
-						if run.vars.jumping == false then
-							-- calculate collision box
-							local divx = game_data.actors[player_number].type.collision_box_x
-							local divy = game_data.actors[player_number].type.collision_box_y
-											
-							old_x = old_x + math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
-							old_y = old_y + math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
-							new_x = new_x + math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
-							new_y = new_y + math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
-							
-							player_width = game_data.sprite_width / divx
-							player_height = game_data.sprite_height / divy
-							
-							-- calculate offset y for beat'em up collisions
-							local offset_y = math.floor((player_height * 3) / 4)
-							
-							-- check for player's collisions with blocks, because may be he has moved
-							new_x, collision = SlidingCollisionX(new_x, old_y + offset_y, player_width, player_height - offset_y, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
-							
-							new_y, collision = SlidingCollisionY(old_x, new_y + offset_y, player_width, player_height - offset_y, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
-							
-							new_y = new_y - offset_y
+						-- calculate collision box
+						local divx = game_data.actors[player_number].type.collision_box_x
+						local divy = game_data.actors[player_number].type.collision_box_y
+										
+						old_x = old_x + math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
+						old_y = old_y + math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
+						new_x = new_x + math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
+						new_y = new_y + math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
+						
+						player_width = game_data.sprite_width / divx
+						player_height = game_data.sprite_height / divy
+						
+						-- calculate offset y for beat'em up collisions:
+						-- collides only with the feet
+						local offset_y = math.floor((player_height * 3) / 4)
+						
+						-- check for player's collisions with blocks, because may be he has moved
+						new_x, collision = SlidingCollisionX(new_x, old_y + offset_y, player_width, player_height - offset_y, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+						
+						new_y, collision = SlidingCollisionY(old_x, new_y + offset_y, player_width, player_height - offset_y, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+						
+						new_y = new_y - offset_y
 
-							new_x, new_y = SlidingCollisionZ(new_x, new_y + offset_y, player_width, player_height - offset_y, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
+						new_x, new_y = SlidingCollisionZ(new_x, new_y + offset_y, player_width, player_height - offset_y, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
 
-							new_y = new_y - offset_y
+						new_y = new_y - offset_y
 
-							old_x = old_x - math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
-							old_y = old_y - math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
-							new_x = new_x - math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
-							new_y = new_y - math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
-						end
+						old_x = old_x - math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
+						old_y = old_y - math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
+						new_x = new_x - math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
+						new_y = new_y - math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
 					elseif game_data.actors[actor_number].type.name == "run & gun (edge view)" then
 						-- TODO!				
 					elseif game_data.actors[actor_number].type.name == "run & gun (top view)" then
@@ -3074,8 +3074,8 @@ function DrawActors(i, actor_number, px, py)
 				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM * hflip, WINDOW_ZOOM)
 			elseif game_data.actors[actor_number].type.name == "beat'em up" then
 				if hflip == -1 then flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) end
-				
-				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM * hflip, WINDOW_ZOOM)
+
+				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + run.vars.jumping_offset_y, 0, game_data.pixel_size * WINDOW_ZOOM * hflip, WINDOW_ZOOM)
 			elseif game_data.actors[actor_number].type.name == "run & gun (edge view)" then
 				if hflip == -1 then flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) end
 				
