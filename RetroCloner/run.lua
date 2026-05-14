@@ -3063,33 +3063,40 @@ function DrawActors(i, actor_number, px, py)
 		local flip_offset_x = 0
 		local flip_offset_y = 0
 		
-		if game_data.actors[actor_number].entity == ENTITY_TYPE_ENEMY or game_data.actors[actor_number].entity == ENTITY_TYPE_BONUS then
-			--draw monsters and bonus
+		if game_data.actors[actor_number].entity == ENTITY_TYPE_ENEMY then
+			--draw monsters
+			local scale = game_data.actors[actor_number].type.scale
+			
+			love.graphics.draw(img_sprites[sprite], px + xc, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM * scale, WINDOW_ZOOM * scale)
+		elseif game_data.actors[actor_number].entity == ENTITY_TYPE_BONUS then
+			--draw bonus
 			love.graphics.draw(img_sprites[sprite], px + xc, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM)
 		else
 			-- what kind of player ? (TODO!)
+			local scale = game_data.actors[actor_number].type.scale
+			
 			if game_data.actors[actor_number].type.name == "platformer" then
-				if hflip == -1 then flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) end
+				if hflip == -1 then flip_offset_x = ScaleWidth(game_data.sprite_width * scale, WINDOW_ZOOM) end
 				
-				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM * hflip, WINDOW_ZOOM)
+				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM * hflip * scale, WINDOW_ZOOM * scale)
 			elseif game_data.actors[actor_number].type.name == "beat'em up" then
-				if hflip == -1 then flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) end
+				if hflip == -1 then flip_offset_x = ScaleWidth(game_data.sprite_width * scale, WINDOW_ZOOM) end
 
-				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + run.vars.jumping_offset_y, 0, game_data.pixel_size * WINDOW_ZOOM * hflip, WINDOW_ZOOM)
+				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + run.vars.jumping_offset_y, 0, game_data.pixel_size * WINDOW_ZOOM * hflip * scale, WINDOW_ZOOM * scale)
 			elseif game_data.actors[actor_number].type.name == "run & gun (edge view)" then
-				if hflip == -1 then flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) end
+				if hflip == -1 then flip_offset_x = ScaleWidth(game_data.sprite_width * scale, WINDOW_ZOOM) end
 				
-				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM * hflip, WINDOW_ZOOM)
+				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM * hflip * scale, WINDOW_ZOOM * scale)
 			elseif game_data.actors[actor_number].type.name == "run & gun (top view)" then
-				flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) / 2
-				flip_offset_y = ScaleHeight(game_data.sprite_height, WINDOW_ZOOM) / 2
+				flip_offset_x = ScaleWidth(game_data.sprite_width * scale, WINDOW_ZOOM) / 2
+				flip_offset_y = ScaleHeight(game_data.sprite_height * scale, WINDOW_ZOOM) / 2
 				
-				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.level_actors[1].dir), game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM, game_data.sprite_width / 2, game_data.sprite_height / 2)
+				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.level_actors[1].dir), game_data.pixel_size * WINDOW_ZOOM * scale, WINDOW_ZOOM * scale, game_data.sprite_width / 2, game_data.sprite_height / 2)
 			elseif game_data.actors[actor_number].type.name == "maze & chase" then
-				flip_offset_x = ScaleWidth(game_data.sprite_width, WINDOW_ZOOM) / 2
-				flip_offset_y = ScaleHeight(game_data.sprite_height, WINDOW_ZOOM) / 2
+				flip_offset_x = ScaleWidth(game_data.sprite_width * scale, WINDOW_ZOOM) / 2
+				flip_offset_y = ScaleHeight(game_data.sprite_height * scale, WINDOW_ZOOM) / 2
 				
-				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.level_actors[1].dir), game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM, game_data.sprite_width / 2, game_data.sprite_height / 2)
+				love.graphics.draw(img_sprites[sprite], px + xc + flip_offset_x, py + yc + flip_offset_y, math.rad(run.vars.level_actors[1].dir), game_data.pixel_size * WINDOW_ZOOM * scale, WINDOW_ZOOM * scale, game_data.sprite_width / 2, game_data.sprite_height / 2)
 			elseif game_data.actors[actor_number].type.name == "fixed shooter" then
 				-- TODO!
 			elseif game_data.actors[actor_number].type.name == "horizontal shooter" then

@@ -1127,21 +1127,23 @@ function love.draw()
 				local real_x = pos_x + x
 				local real_y = pos_y + y
 				
+				local scale = game_data.actors[current_actor].type.scale
+				
 				if #img_sprites > 0 then
 					if current_level_actors_edit_mode == false then
 						-- draw all actors
 						love.graphics.setColor(1, 1, 1)
-						love.graphics.draw(img_sprites[sprite], real_x, real_y, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
+						love.graphics.draw(img_sprites[sprite], real_x, real_y, 0, game_data.pixel_size * SCREEN_ZOOM * scale, SCREEN_ZOOM * scale)
 					elseif current_level_actors_edit_mode == true then
 						-- editing actor instance i
 						if i == current_level_edited_actor_instance then
 							if blink_timer < MID_BLINK_TIME then
 								love.graphics.setColor(1, 1, 1)
-								love.graphics.draw(img_sprites[sprite], real_x, real_y, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
+								love.graphics.draw(img_sprites[sprite], real_x, real_y, 0, game_data.pixel_size * SCREEN_ZOOM * scale, SCREEN_ZOOM * scale)
 							end
 						else
 							love.graphics.setColor(1, 1, 1)
-							love.graphics.draw(img_sprites[sprite], real_x, real_y, 0, game_data.pixel_size * SCREEN_ZOOM, SCREEN_ZOOM)
+							love.graphics.draw(img_sprites[sprite], real_x, real_y, 0, game_data.pixel_size * SCREEN_ZOOM * scale, SCREEN_ZOOM * scale)
 						end						
 					end
 				end

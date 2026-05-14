@@ -6,6 +6,8 @@ TODO
 	- Il faut détruire les projectiles du joueur/ennemis si ils sont hors de l'écran de jeu
 
 * Terminer la partie jeu:
+	- Utiliser la valeur scale pour scaler les collisions des personnages
+
 	- Faire réagir et afficher enemy 'fighter'
 	- Faire les collisions player/enemy dans le cas du beat'em up
 	- Intégrer le z-order seulement dans le mode beat'em up, pour le joueur et les ennemis
@@ -13,7 +15,6 @@ TODO
 	  Sinon, afficher ce qui est au dessus du joueur, le joueur, et ce qui est en dessous de lui.
 	
 	- Animer et déplacer les autres types d'ennemis (wip)
-	- Scaler les personnages visuellement et pour les collisions
 
 	- Ajouter un bonus au hasard parmi ceux créés, si on tue un ennemi, avec des chances qu'il y soit et des chances que ce soit l'un plutôt que l'autre, sleon le type
 	- Faire des acteurs clés et portes numérotés, dont les numéros peuvent correspondre pour ouvrir la porte
