@@ -2165,6 +2165,10 @@ function love.keypressed(key, scancode, isrepeat)
 							if game_data.actors[current_actor].type.collision_box_y > 1 then
 								game_data.actors[current_actor].type.collision_box_y = math.floor(game_data.actors[current_actor].type.collision_box_y / 2)
 							end
+						elseif anim == "scale" then
+							if game_data.actors[current_actor].type.scale > 1 then
+								game_data.actors[current_actor].type.scale = game_data.actors[current_actor].type.scale - 1
+							end
 						elseif anim == "collision_box1" then
 							if game_data.actors[current_actor].type.collision_box1 > 1 then
 								game_data.actors[current_actor].type.collision_box1 = math.floor(game_data.actors[current_actor].type.collision_box1 / 2)
@@ -2206,6 +2210,10 @@ function love.keypressed(key, scancode, isrepeat)
 						elseif anim == "collision_box_y" then
 							if game_data.actors[current_actor].type.collision_box_y > 1 then
 								game_data.actors[current_actor].type.collision_box_y = math.floor(game_data.actors[current_actor].type.collision_box_y / 2)
+							end
+						elseif anim == "scale" then
+							if game_data.actors[current_actor].type.scale > 1 then
+								game_data.actors[current_actor].type.scale = game_data.actors[current_actor].type.scale - 1
 							end
 						elseif anim == "collision_box1" then
 							if game_data.actors[current_actor].type.collision_box1 > 1 then
@@ -2283,6 +2291,10 @@ function love.keypressed(key, scancode, isrepeat)
 							if game_data.actors[current_actor].type.collision_box_y < 4 then
 								game_data.actors[current_actor].type.collision_box_y = game_data.actors[current_actor].type.collision_box_y * 2
 							end
+						elseif anim == "scale" then
+							if game_data.actors[current_actor].type.scale < 3 then
+								game_data.actors[current_actor].type.scale = game_data.actors[current_actor].type.scale + 1
+							end
 						elseif anim == "collision_box1" then
 							if game_data.actors[current_actor].type.collision_box1 < 4 then
 								game_data.actors[current_actor].type.collision_box1 = game_data.actors[current_actor].type.collision_box1 * 2
@@ -2324,6 +2336,10 @@ function love.keypressed(key, scancode, isrepeat)
 						elseif anim == "collision_box_y" then
 							if game_data.actors[current_actor].type.collision_box_y < 4 then
 								game_data.actors[current_actor].type.collision_box_y = game_data.actors[current_actor].type.collision_box_y * 2
+							end
+						elseif anim == "scale" then
+							if game_data.actors[current_actor].type.scale < 3 then
+								game_data.actors[current_actor].type.scale = game_data.actors[current_actor].type.scale + 1
 							end
 						elseif anim == "collision_box1" then
 							if game_data.actors[current_actor].type.collision_box1 < 4 then

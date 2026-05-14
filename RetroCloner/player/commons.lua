@@ -3,34 +3,57 @@ blocks_types = {"background", "wall", "platform", "stairs", "death", "eatable"}
 
 -- types of player
 player_types = {
-	{name = "platformer", idle = 0, walk = 0, jump = 0, climb = 0, hit = 0, die = 0, hflip = false, wound = 1, collision_box_x = 1, collision_box_y = 1},
-	{name = "beat'em up", idle = 0, walk = 0, jump = 0, punch = 0, kick = 0, jumping_kick = 0, wounded = 0, die = 0, hflip = false, wound = 1, collision_box_x = 1, collision_box_y = 1},
-	{name = "run & gun (edge view)", idle = 0, run = 0, jump = 0, fire1 = 0, fire2 = 0, crouch = 0, crouched_fire = 0, die = 0, hflip = false, wound = 1, collision_box_x = 1, collision_box_y = 1,
-		weapon1 = 0, collision_box1 = 2, weapon2 = 0, collision_box2 = 2},
-	{name = "run & gun (top view)", idle = 0, run = 0, fire1 = 0, fire2 = 0, die = 0, directions = 8, wound = 1, collision_box_x = 1, collision_box_y = 1,
-		weapon1 = 0, collision_box1 = 2, weapon2 = 0, collision_box2 = 2},
-	{name = "maze & chase", idle = 0, move = 0, die = 0, wound = 1, collision_box_x = 1, collision_box_y = 1},
-	{name = "fixed shooter", idle = 0, move = 0, fire1 = 0, die = 0, wound = 1, collision_box_x = 1, collision_box_y = 1,
-		weapon1 = 0, collision_box1 = 2},
-	{name = "horizontal shooter", idle = 0, move = 0, fire1 = 0, fire2 = 0, die = 0, hflip = false, wound = 1, collision_box_x = 1, collision_box_y = 1,
-		weapon1 = 0, collision_box1 = 2, weapon2 = 0, collision_box2 = 2},
-	{name = "vertical shooter", idle = 0, move = 0, fire1 = 0, fire2 = 0, die = 0, vflip = false, wound = 1, collision_box_x = 1, collision_box_y = 1,
-		weapon1 = 0, collision_box1 = 2, weapon2 = 0, collision_box2 = 2}
+	-- platformer
+	{name = "platformer", idle = 0, walk = 0, jump = 0, climb = 0, hit = 0, die = 0,
+			hflip = false, wound = 1, collision_box_x = 1, collision_box_y = 1, scale = 1},
+	-- beat'em up
+	{name = "beat'em up", idle = 0, walk = 0, jump = 0, punch = 0, kick = 0, jumping_kick = 0, wounded = 0, die = 0,
+			hflip = false, wound = 1, collision_box_x = 1, collision_box_y = 1, scale = 1},
+	-- run & gun (edge view)
+	{name = "run & gun (edge view)", idle = 0, run = 0, jump = 0, fire1 = 0, fire2 = 0, crouch = 0, crouched_fire = 0, die = 0,
+			hflip = false, wound = 1, collision_box_x = 1, collision_box_y = 1, scale = 1,
+			weapon1 = 0, collision_box1 = 2, weapon2 = 0, collision_box2 = 2},
+	-- run & gun (top view)
+	{name = "run & gun (top view)", idle = 0, run = 0, fire1 = 0, fire2 = 0, die = 0,
+			directions = 8, wound = 1, collision_box_x = 1, collision_box_y = 1, scale = 1,
+			weapon1 = 0, collision_box1 = 2, weapon2 = 0, collision_box2 = 2},
+	-- maze & chase
+	{name = "maze & chase", idle = 0, move = 0, die = 0, wound = 1, collision_box_x = 1, collision_box_y = 1, scale = 1},
+	-- fixed shooter
+	{name = "fixed shooter", idle = 0, move = 0, fire1 = 0, die = 0,
+			wound = 1, collision_box_x = 1, collision_box_y = 1, scale = 1,
+			weapon1 = 0, collision_box1 = 2},
+	-- horizontal shooter
+	{name = "horizontal shooter", idle = 0, move = 0, fire1 = 0, fire2 = 0, die = 0,
+			hflip = false, wound = 1, collision_box_x = 1, collision_box_y = 1, scale = 1,
+			weapon1 = 0, collision_box1 = 2, weapon2 = 0, collision_box2 = 2},
+	-- vertical shooter
+	{name = "vertical shooter", idle = 0, move = 0, fire1 = 0, fire2 = 0, die = 0,
+			vflip = false, wound = 1, collision_box_x = 1, collision_box_y = 1, scale = 1,
+			weapon1 = 0, collision_box1 = 2, weapon2 = 0, collision_box2 = 2}
 }
 
 player_animations = {
-	{"idle", "walk", "jump", "climb", "hit", "die", "hflip", "wound", "collision_box_x", "collision_box_y"},
-	{"idle", "walk", "jump", "punch", "kick", "jumping_kick", "wounded", "die", "hflip", "wound", "collision_box_x", "collision_box_y"},
-	{"idle", "run", "jump", "fire1", "fire2", "crouch", "crouched_fire", "die", "hflip", "wound", "collision_box_x", "collision_box_y",
+	-- platformer
+	{"idle", "walk", "jump", "climb", "hit", "die", "hflip", "wound", "collision_box_x", "collision_box_y", "scale"},
+	-- beat'em up
+	{"idle", "walk", "jump", "punch", "kick", "jumping_kick", "wounded", "die", "hflip", "wound", "collision_box_x", "collision_box_y", "scale"},
+	-- run & gun (edge view)
+	{"idle", "run", "jump", "fire1", "fire2", "crouch", "crouched_fire", "die", "hflip", "wound", "collision_box_x", "collision_box_y", "scale",
 		"weapon1", "collision_box1", "weapon2", "collision_box2"},
-	{"idle", "run", "fire1", "fire2", "die", "directions", "wound", "collision_box_x", "collision_box_y",
+	-- run & gun (top view)
+	{"idle", "run", "fire1", "fire2", "die", "directions", "wound", "collision_box_x", "collision_box_y", "scale",
 		"weapon1", "collision_box1", "weapon2", "collision_box2"},
-	{"idle", "move", "die", "wound", "collision_box_x", "collision_box_y"},
-	{"idle", "move", "die", "wound", "collision_box_x", "collision_box_y",
+	-- maze & chase
+	{"idle", "move", "die", "wound", "collision_box_x", "collision_box_y", "scale"},
+	-- fixed shooter
+	{"idle", "move", "die", "wound", "collision_box_x", "collision_box_y", "scale",
 		"weapon1", "collision_box1"},
-	{"idle", "move", "fire1", "fire2", "die", "wound", "collision_box_x", "collision_box_y",
+	-- horizontal shooter
+	{"idle", "move", "fire1", "fire2", "die", "wound", "collision_box_x", "collision_box_y", "scale",
 		"weapon1", "collision_box1", "weapon2", "collision_box2"},
-	{"idle", "move", "fire1", "fire2", "die", "wound", "collision_box_x", "collision_box_y",
+	-- vertical shooter
+	{"idle", "move", "fire1", "fire2", "die", "wound", "collision_box_x", "collision_box_y", "scale",
 		"weapon1", "collision_box1", "weapon2", "collision_box2"}
 }
 
@@ -48,37 +71,105 @@ player_levels_max_size = {
 
 -- types of enemies
 enemy_types = {
-	{name = "static", idle = 0, affraid = 0, die = 0, health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, bonus = 20},
-	{name = "moving left-right", idle = 0, walk_left = 0, walk_right = 0, affraid_left = 0, affraid_right = 0, die = 0, health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, gravity = false, steps = 32, bonus = 20},
-	{name = "moving up-down", idle = 0, walk_up = 0, walk_down = 0, affraid_up = 0, affraid_down = 0, die = 0, health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, steps = 32, bonus = 20},
-	{name = "sniper", idle = 0, fire = 0, affraid = 0, die = 0, direction = 180, health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, bonus = 20, weapon1 = 0, collision_box1 = 1},
-	{name = "oscillate left-right", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, bonus = 20, weapon1 = 0, collision_box1 = 1},
-	{name = "oscillate up-down", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, bonus = 20, weapon1 = 0, collision_box1 = 1},
-	{name = "turn", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, bonus = 20, weapon1 = 0, collision_box1 = 1},
-	{name = "seek 4 directions", idle = 0, walk_up = 0, walk_down = 0, walk_left = 0, walk_right = 0, fire_up = 0, fire_down = 0, fire_left = 0, fire_right = 0,
-		affraid_up = 0, affraid_down = 0, affraid_left = 0, affraid_right = 0, die = 0, health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, bonus = 20, weapon1 = 0, collision_box1 = 1},
-	{name = "seek 8 directions", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, bonus = 20, weapon1 = 0, collision_box1 = 1},
-	{name = "random 4 directions", idle = 0, walk_up = 0, walk_down = 0, walk_left = 0, walk_right = 0, fire_up = 0, fire_down = 0, fire_left = 0, fire_right = 0,
-		affraid_up = 0, affraid_down = 0, affraid_left = 0, affraid_right = 0, die = 0, health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, bonus = 20, weapon1 = 0, collision_box1 = 1},
-	{name = "random 8 directions", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0, health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, bonus = 20, weapon1 = 0, collision_box1 = 1},
-	{name = "beat'em all fighter", idle = 0, walk = 0, punch = 0, kick = 0, jumping_kick = 0, wounded = 0, die = 0, health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, bonus = 20}
+	-- static
+	{name = "static", idle = 0, affraid = 0, die = 0,
+			health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, scale = 1, bonus = 20},
+	-- moving left-right
+	{name = "moving left-right", idle = 0, walk_left = 0, walk_right = 0, affraid_left = 0, affraid_right = 0, die = 0,
+			health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, scale = 1, gravity = false, steps = 32, bonus = 20},
+	-- moving up-down
+	{name = "moving up-down", idle = 0, walk_up = 0, walk_down = 0, affraid_up = 0, affraid_down = 0, die = 0,
+			health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, scale = 1, steps = 32, bonus = 20},
+	-- sniper
+	{name = "sniper", idle = 0, fire = 0, affraid = 0, die = 0,
+			direction = 180, health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, scale = 1, bonus = 20,
+			weapon1 = 0, collision_box1 = 1},
+	-- oscillate left-right
+	{name = "oscillate left-right", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0,
+			health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, scale = 1, bonus = 20,
+			weapon1 = 0, collision_box1 = 1},
+	-- oscillate up-down
+	{name = "oscillate up-down", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0,
+			health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, scale = 1, bonus = 20,
+			weapon1 = 0, collision_box1 = 1},
+	-- turn
+	{name = "turn", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0,
+			health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, scale = 1, bonus = 20,
+			weapon1 = 0, collision_box1 = 1},
+	-- seek 4 directions
+	{name = "seek 4 directions", idle = 0, walk_up = 0, walk_down = 0, walk_left = 0, walk_right = 0,
+			fire_up = 0, fire_down = 0, fire_left = 0, fire_right = 0,
+			affraid_up = 0, affraid_down = 0, affraid_left = 0, affraid_right = 0, die = 0,
+			health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, scale = 1, bonus = 20,
+			weapon1 = 0, collision_box1 = 1},
+	-- seek 8 directions
+	{name = "seek 8 directions", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0,
+			health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, scale = 1, bonus = 20,
+			weapon1 = 0, collision_box1 = 1},
+	-- random 4 directions
+	{name = "random 4 directions", idle = 0, walk_up = 0, walk_down = 0, walk_left = 0, walk_right = 0,
+			fire_up = 0, fire_down = 0, fire_left = 0, fire_right = 0,
+			affraid_up = 0, affraid_down = 0, affraid_left = 0, affraid_right = 0, die = 0,
+			health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, scale = 1, bonus = 20,
+			weapon1 = 0, collision_box1 = 1},
+	-- random 8 directions
+	{name = "random 8 directions", idle = 0, walk = 0, fire = 0, affraid = 0, die = 0,
+			health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, scale = 1, bonus = 20,
+			weapon1 = 0, collision_box1 = 1},
+	-- beat'em all fighter
+	{name = "beat'em all fighter", idle = 0, walk = 0, punch = 0, kick = 0, jumping_kick = 0, wounded = 0, die = 0,
+			health = 1, wound = 1, collision_box_x = 1, collision_box_y = 1, scale = 1, bonus = 20}
 }
 
 enemy_animations = {
-	{"idle", "affraid", "die", "health", "wound", "collision_box_x", "collision_box_y", "bonus"},
-	{"idle", "walk_left", "walk_right", "affraid_left", "affraid_right", "die", "health", "wound", "collision_box_x", "collision_box_y", "gravity", "steps", "bonus"},
-	{"idle", "walk_up", "walk_down", "affraid_up", "affraid_down", "die", "health", "wound", "collision_box_x", "collision_box_y", "steps", "bonus"},
-	{"idle", "fire", "affraid", "die", "direction", "health", "wound", "collision_box_x", "collision_box_y", "bonus", "weapon1", "collision_box1"},
-	{"idle", "walk", "fire", "affraid", "die", "health", "wound", "collision_box_x", "collision_box_y", "bonus", "weapon1", "collision_box1"},
-	{"idle", "walk", "fire", "affraid", "die", "health", "wound", "collision_box_x", "collision_box_y", "bonus", "weapon1", "collision_box1"},
-	{"idle", "walk", "fire", "affraid", "die", "health", "wound", "collision_box_x", "collision_box_y", "bonus", "weapon1", "collision_box1"},
-	{"idle", "walk_up", "walk_down", "walk_left", "walk_right", "fire_up", "fire_down", "fire_left", "fire_right",
-		"affraid_up", "affraid_down", "affraid_left", "affraid_right", "die", "health", "wound", "collision_box_x", "collision_box_y", "bonus", "weapon1", "collision_box1"},
-	{"idle", "walk", "fire", "affraid", "die", "health", "wound", "collision_box_x", "collision_box_y", "bonus", "weapon1", "collision_box1"},
-	{"idle", "walk_up", "walk_down", "walk_left", "walk_right", "fire_up", "fire_down", "fire_left", "fire_right",
-		"affraid_up", "affraid_down", "affraid_left", "affraid_right", "die", "health", "wound", "collision_box_x", "collision_box_y", "bonus", "weapon1", "collision_box1"},
-	{"idle", "walk", "fire", "affraid", "die", "health", "wound", "collision_box_x", "collision_box_y", "bonus", "weapon1", "collision_box1"},
-	{"idle", "walk", "punch", "kick", "jumping_kick", "wounded", "die", "health", "wound", "collision_box_x", "collision_box_y", "bonus"}
+	-- static
+	{"idle", "affraid", "die",
+			"health", "wound", "collision_box_x", "collision_box_y", "scale", "bonus"},
+	-- moving left-right
+	{"idle", "walk_left", "walk_right", "affraid_left", "affraid_right", "die",
+			"health", "wound", "collision_box_x", "collision_box_y", "scale", "gravity", "steps", "bonus"},
+	-- moving up-down
+	{"idle", "walk_up", "walk_down", "affraid_up", "affraid_down", "die",
+			"health", "wound", "collision_box_x", "collision_box_y", "scale", "steps", "bonus"},
+	-- sniper
+	{"idle", "fire", "affraid", "die",
+			"direction", "health", "wound", "collision_box_x", "collision_box_y", "scale", "bonus",
+			"weapon1", "collision_box1"},
+	-- oscillate left-right
+	{"idle", "walk", "fire", "affraid", "die",
+			"health", "wound", "collision_box_x", "collision_box_y", "scale", "bonus",
+			"weapon1", "collision_box1"},
+	-- oscillate up-down
+	{"idle", "walk", "fire", "affraid", "die",
+			"health", "wound", "collision_box_x", "collision_box_y", "scale", "bonus",
+			"weapon1", "collision_box1"},
+	-- turn
+	{"idle", "walk", "fire", "affraid", "die",
+			"health", "wound", "collision_box_x", "collision_box_y", "scale", "bonus",
+			"weapon1", "collision_box1"},
+	-- seek 4 directions
+	{"idle", "walk_up", "walk_down", "walk_left", "walk_right",
+			"fire_up", "fire_down", "fire_left", "fire_right",
+			"affraid_up", "affraid_down", "affraid_left", "affraid_right", "die",
+			"health", "wound", "collision_box_x", "collision_box_y", "scale", "bonus",
+			"weapon1", "collision_box1"},
+	-- seek 8 directions
+	{"idle", "walk", "fire", "affraid", "die",
+			"health", "wound", "collision_box_x", "collision_box_y", "scale", "bonus",
+			"weapon1", "collision_box1"},
+	-- random 4 directions
+	{"idle", "walk_up", "walk_down", "walk_left", "walk_right",
+			"fire_up", "fire_down", "fire_left", "fire_right",
+			"affraid_up", "affraid_down", "affraid_left", "affraid_right", "die",
+			"health", "wound", "collision_box_x", "collision_box_y", "scale", "bonus",
+			"weapon1", "collision_box1"},
+	-- random 8 directions
+	{"idle", "walk", "fire", "affraid", "die",
+			"health", "wound", "collision_box_x", "collision_box_y", "scale", "bonus",
+			"weapon1", "collision_box1"},
+	-- beat'em all fighter
+	{"idle", "walk", "punch", "kick", "jumping_kick", "wounded", "die",
+			"health", "wound", "collision_box_x", "collision_box_y", "scale", "bonus"}
 }
 
 -- types of bonus-malus
