@@ -6,7 +6,7 @@ TODO
 	- Il faut détruire les projectiles du joueur/ennemis si ils sont hors de l'écran de jeu
 
 * Terminer la partie jeu:
-	- Utiliser la valeur scale pour scaler les collisions des personnages
+	- Utiliser la valeur scale pour scaler les collisions des personnages (joueur et ennemis)
 
 	- Faire réagir et afficher enemy 'fighter'
 	- Faire les collisions player/enemy dans le cas du beat'em up
