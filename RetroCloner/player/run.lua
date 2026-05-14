@@ -389,8 +389,8 @@ function run.update(dt)
 						new_x = new_x + math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
 						new_y = new_y + math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
 						
-						player_width = game_data.sprite_width / divx
-						player_height = game_data.sprite_height / divy
+						player_width = (game_data.sprite_width / divx) * game_data.actors[player_number].type.scale
+						player_height = (game_data.sprite_height / divy) * game_data.actors[player_number].type.scale
 						
 						-- check for player's collisions with blocks, because may be he has moved
 						new_y, run.vars.on_the_ground = GroundCollision(old_x, new_y, player_width, player_height, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height, run.vars.on_stairs, moving_down)
@@ -596,8 +596,8 @@ function run.update(dt)
 						new_x = new_x + math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
 						new_y = new_y + math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
 						
-						player_width = game_data.sprite_width / divx
-						player_height = game_data.sprite_height / divy
+						player_width = (game_data.sprite_width / divx) * game_data.actors[player_number].type.scale
+						player_height = (game_data.sprite_height / divy) * game_data.actors[player_number].type.scale
 						
 						-- calculate offset y for beat'em up collisions:
 						-- collides only with the feet
@@ -752,8 +752,8 @@ function run.update(dt)
 						new_x = new_x + math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
 						new_y = new_y + math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
 						
-						player_width = game_data.sprite_width / divx
-						player_height = game_data.sprite_height / divy
+						player_width = (game_data.sprite_width / divx) * game_data.actors[player_number].type.scale
+						player_height = (game_data.sprite_height / divy) * game_data.actors[player_number].type.scale
 						
 						-- check for player's collisions with blocks, because may be he has moved
 						new_x, collision = SlidingCollisionX(new_x, old_y, player_width, player_height, run.vars.level_actors[1].dir, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
@@ -864,8 +864,8 @@ function run.update(dt)
 						new_x = new_x + math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
 						new_y = new_y + math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
 						
-						player_width = game_data.sprite_width / divx
-						player_height = game_data.sprite_height / divy
+						player_width = (game_data.sprite_width / divx) * game_data.actors[player_number].type.scale
+						player_height = (game_data.sprite_height / divy) * game_data.actors[player_number].type.scale
 
 						-- can we go right
 						if run.vars.level_actors[1].dir_x == 1 then
@@ -1217,8 +1217,8 @@ function run.update(dt)
 			px = px + math.floor((pw - (pw / divx)) / 2)
 			py = py + math.floor((ph - (ph / divy)) / 2)
 
-			pw = pw / divx
-			ph = ph / divy
+			pw = (pw / divx) * game_data.actors[player_number].type.scale
+			ph = (ph / divy) * game_data.actors[player_number].type.scale
 
 			if DeathBlockArea(px, py, pw, ph, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height) == true then
 				-- the player die
@@ -1248,8 +1248,8 @@ function run.update(dt)
 			px = px + math.floor((pw - (pw / divx)) / 2)
 			py = py + math.floor((ph - (ph / divy)) / 2)
 
-			pw = pw / divx
-			ph = ph / divy
+			pw = (pw / divx) * game_data.actors[player_number].type.scale
+			ph = (ph / divy) * game_data.actors[player_number].type.scale
 
 			EatBlocks(px, py, pw, ph, game_data.levels[run.vars.level], game_data.block_width, game_data.block_height)
 		end
@@ -1700,8 +1700,8 @@ function run.update(dt)
 							new_x = new_x + math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
 							new_y = new_y + math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
 
-							local enemy_width = game_data.sprite_width / divx
-							local enemy_height = game_data.sprite_height / divy
+							local enemy_width = (game_data.sprite_width / divx) * game_data.actors[actor_number].type.scale
+							local enemy_height = (game_data.sprite_height / divy) * game_data.actors[actor_number].type.scale
 						
 							local collision_x = false
 							local collision_y = false
@@ -1709,7 +1709,9 @@ function run.update(dt)
 							
 							-- check if the enemy can move or not on x axis
 							if requested_dir ~= 90 and requested_dir ~= 270 then
-								local _, collision = SlidingCollisionX(
+								local collision = false
+								
+								new_x, collision = SlidingCollisionX(
 									new_x,
 									old_y,
 									game_data.sprite_width,
@@ -1726,7 +1728,9 @@ function run.update(dt)
 
 							-- check if the enemy can move or not on y axis
 							if requested_dir ~= 0 and requested_dir ~= 180 then
-								local _, collision = SlidingCollisionY(
+								local collision = false
+								
+								new_y, collision = SlidingCollisionY(
 									old_x,
 									new_y,
 									game_data.sprite_width,
@@ -1743,27 +1747,21 @@ function run.update(dt)
 							
 							-- restore position
 							if collision_x == true then
-								new_x = old_x
-								
-								-- collides ? choose an other direction
-								if game_data.actors[actor_number].type.name == "turn" then
-									
-								elseif game_data.actors[actor_number].type.name == "seek 4 directions" then
+								if game_data.actors[actor_number].type.name == "seek 4 directions" then
+									-- collides ? choose an other direction
 									new_dir = 90 + (math.random(0, 1) * 180)
 								elseif game_data.actors[actor_number].type.name == "random 4 directions" then
+									-- collides ? choose an other direction
 									new_dir = 90 + (math.random(0, 1) * 180)
 								end
 							end
 							
 							if collision_y == true then
-								new_y = old_y
-
-								-- collides ? choose an other direction
-								if game_data.actors[actor_number].type.name == "turn" then
-									-- TODO!
-								elseif game_data.actors[actor_number].type.name == "seek 4 directions" then
+								if game_data.actors[actor_number].type.name == "seek 4 directions" then
+									-- collides ? choose an other direction
 									new_dir = (math.random(0, 1) * 180)
 								elseif game_data.actors[actor_number].type.name == "random 4 directions" then
+									-- collides ? choose an other direction
 									new_dir = (math.random(0, 1) * 180)
 								end
 							end
@@ -1896,7 +1894,7 @@ function run.update(dt)
 						local ey = run.vars.level_actors[i].y
 						local ew = game_data.sprite_width
 						local eh = game_data.sprite_height
-						
+												
 						-- the player hit the enemy
 						if run.vars.invincible == false then
 							if run.vars.level_actors[1].animation == GetActorAnimationNumber(player_number, "hit") then
@@ -1916,8 +1914,8 @@ function run.update(dt)
 						ex = ex + math.floor((ew - (ew / divx_e)) / 2)
 						ey = ey + math.floor((eh - (eh / divy_e)) / 2)
 
-						ew = ew / divx_e
-						eh = eh / divy_e
+						ew = (ew / divx_e) * game_data.actors[actor_number].type.scale
+						eh = (eh / divy_e) * game_data.actors[actor_number].type.scale
 						
 						if Collision(px, py, pw, ph, ex, ey, ew, eh) == true then
 							if run.vars.invincible == true then
@@ -1973,8 +1971,8 @@ function run.update(dt)
 							px = px + math.floor((pw - (pw / divx_p)) / 2)
 							py = py + math.floor((ph - (ph / divy_p)) / 2)
 
-							pw = pw / divx_p
-							ph = ph / divy_p
+							pw = (pw / divx_p) * game_data.actors[player_number].type.scale
+							ph = (ph / divy_p) * game_data.actors[player_number].type.scale
 
 							-- enemy collision box
 							local divx_e = game_data.actors[actor_number].type.collision_box_x
@@ -1983,8 +1981,8 @@ function run.update(dt)
 							ex = ex + math.floor((ew - (ew / divx_e)) / 2)
 							ey = ey + math.floor((eh - (eh / divy_e)) / 2)
 
-							ew = ew / divx_e
-							eh = eh / divy_e
+							ew = (ew / divx_e) * game_data.actors[actor_number].type.scale
+							eh = (eh / divy_e) * game_data.actors[actor_number].type.scale
 							
 							if Collision(px, py, pw, ph, ex, ey, ew, eh) == true then
 								if game_data.health_area == true then
@@ -2062,8 +2060,8 @@ function run.update(dt)
 					px = px + math.floor((pw - (pw / divx_p)) / 2)
 					py = py + math.floor((ph - (ph / divy_p)) / 2)
 
-					pw = pw / divx_p
-					ph = ph / divy_p
+					pw = (pw / divx_p) * game_data.actors[player_number].type.scale
+					ph = (ph / divy_p) * game_data.actors[player_number].type.scale
 
 					local divx_b = game_data.actors[actor_number].type.collision_box_x
 					local divy_b = game_data.actors[actor_number].type.collision_box_y
