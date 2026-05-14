@@ -1126,8 +1126,10 @@ function love.draw()
 				local y = (game_data.levels[current_level].actors[i].start_y + (current_level_scroll_y * game_data.block_height)) * SCREEN_ZOOM
 				local real_x = pos_x + x
 				local real_y = pos_y + y
-				
-				local scale = game_data.actors[current_actor].type.scale
+
+				local scale = game_data.actors[actor_number].type.scale
+
+				if scale == nil then scale = 1 end
 				
 				if #img_sprites > 0 then
 					if current_level_actors_edit_mode == false then
