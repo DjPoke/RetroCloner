@@ -1709,7 +1709,9 @@ function run.update(dt)
 							
 							-- check if the enemy can move or not on x axis
 							if requested_dir ~= 90 and requested_dir ~= 270 then
-								local _, collision = SlidingCollisionX(
+								local collision = false
+								
+								new_x, collision = SlidingCollisionX(
 									new_x,
 									old_y,
 									game_data.sprite_width,
@@ -1726,7 +1728,9 @@ function run.update(dt)
 
 							-- check if the enemy can move or not on y axis
 							if requested_dir ~= 0 and requested_dir ~= 180 then
-								local _, collision = SlidingCollisionY(
+								local collision = false
+								
+								new_y, collision = SlidingCollisionY(
 									old_x,
 									new_y,
 									game_data.sprite_width,
@@ -1743,27 +1747,21 @@ function run.update(dt)
 							
 							-- restore position
 							if collision_x == true then
-								new_x = old_x
-								
-								-- collides ? choose an other direction
-								if game_data.actors[actor_number].type.name == "turn" then
-									
-								elseif game_data.actors[actor_number].type.name == "seek 4 directions" then
+								if game_data.actors[actor_number].type.name == "seek 4 directions" then
+									-- collides ? choose an other direction
 									new_dir = 90 + (math.random(0, 1) * 180)
 								elseif game_data.actors[actor_number].type.name == "random 4 directions" then
+									-- collides ? choose an other direction
 									new_dir = 90 + (math.random(0, 1) * 180)
 								end
 							end
 							
 							if collision_y == true then
-								new_y = old_y
-
-								-- collides ? choose an other direction
-								if game_data.actors[actor_number].type.name == "turn" then
-									-- TODO!
-								elseif game_data.actors[actor_number].type.name == "seek 4 directions" then
+								if game_data.actors[actor_number].type.name == "seek 4 directions" then
+									-- collides ? choose an other direction
 									new_dir = (math.random(0, 1) * 180)
 								elseif game_data.actors[actor_number].type.name == "random 4 directions" then
+									-- collides ? choose an other direction
 									new_dir = (math.random(0, 1) * 180)
 								end
 							end
@@ -2062,8 +2060,8 @@ function run.update(dt)
 					px = px + math.floor((pw - (pw / divx_p)) / 2)
 					py = py + math.floor((ph - (ph / divy_p)) / 2)
 
-					pw = pw / divx_p
-					ph = ph / divy_p
+					pw = (pw / divx_p) * game_data.actors[player_number].type.scale
+					ph = (ph / divy_p) * game_data.actors[player_number].type.scale
 
 					local divx_b = game_data.actors[actor_number].type.collision_box_x
 					local divy_b = game_data.actors[actor_number].type.collision_box_y
