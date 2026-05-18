@@ -4,7 +4,6 @@ TODO
 
 * Bugs:
 	- Il faut détruire les projectiles du joueur/ennemis si ils sont hors de l'écran de jeu
-	- Les 'fighter' dans KFight disparaissent
 
 * Terminer la partie jeu:
 	- Faire réagir l'ennemi 'fighter'

@@ -10,7 +10,7 @@ local MODE_INTERLUDE = 5
 local DT_CORRECTION = 60
 local SCROLLING_SLOW_DOWN = 4
 
-local ENEMY_SEEK_MODE = beat
+local ENEMY_SEEK_MODE = 0
 local ENEMY_RANDOM_MODE = 1
 local ENEMY_AFFRAID_MODE = 2
 
@@ -1698,7 +1698,7 @@ function run.update(dt)
 						if moving == true then
 							local divx = game_data.actors[actor_number].type.collision_box_x
 							local divy = game_data.actors[actor_number].type.collision_box_y
-
+							
 							old_x = old_x + math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
 							old_y = old_y + math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
 							new_x = new_x + math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
@@ -1711,8 +1711,10 @@ function run.update(dt)
 							local collision_y = false
 							local new_dir = requested_dir
 							
+							-- calculate offset y for a beat'em up game
 							local offset_y = math.floor((enemy_height * 3) / 4)
 							
+							-- reset offset y for another kind of game
 							if game_data.actors[player_number].type.name ~= "beat'em up" then
 								offset_y = 0
 							end
@@ -1753,6 +1755,9 @@ function run.update(dt)
 								
 								-- if the enemy collide, he do not move on y
 								collision_y = collision
+								
+								-- substract offset y
+								new_y = new_y - offset_y
 							end
 							
 							-- restore position
@@ -1787,6 +1792,9 @@ function run.update(dt)
 								game_data.block_width,
 								game_data.block_height
 							)
+																			
+							-- substract offset y
+							new_y = new_y - offset_y
 							
 							old_x = old_x - math.floor((game_data.sprite_width - (game_data.sprite_width / divx)) / 2)
 							old_y = old_y - math.floor((game_data.sprite_height - (game_data.sprite_height / divy)) / 2)
