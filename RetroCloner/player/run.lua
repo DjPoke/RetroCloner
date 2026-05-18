@@ -3062,15 +3062,15 @@ function DrawActors(i, actor_number, px, py)
 		local flip_offset_y = 0
 		
 		if game_data.actors[actor_number].entity == ENTITY_TYPE_ENEMY then
-			--draw monsters
+			-- draw enemies
 			local scale = game_data.actors[actor_number].type.scale
 			
 			love.graphics.draw(img_sprites[sprite], px + xc, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM * scale, WINDOW_ZOOM * scale)
 		elseif game_data.actors[actor_number].entity == ENTITY_TYPE_BONUS then
-			--draw bonus
+			-- draw bonus
 			love.graphics.draw(img_sprites[sprite], px + xc, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM)
 		else
-			-- what kind of player ? (TODO!)
+			-- draw all kinds of player (TODO!)
 			local scale = game_data.actors[actor_number].type.scale
 			
 			if game_data.actors[actor_number].type.name == "platformer" then

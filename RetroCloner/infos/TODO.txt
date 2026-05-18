@@ -4,9 +4,10 @@ TODO
 
 * Bugs:
 	- Il faut détruire les projectiles du joueur/ennemis si ils sont hors de l'écran de jeu
+	- Les 'fighter' dans KFight disparaissent
 
 * Terminer la partie jeu:
-	- Faire réagir et afficher ennemi 'fighter'
+	- Faire réagir l'ennemi 'fighter'
 	- Faire les collisions player/enemy dans le cas du beat'em up
 	- Intégrer le z-order seulement dans le mode beat'em up, pour le joueur et les ennemis
 	- Si le z-order est non actif, afficher les bonus en 1er, puis les monstres, puis le joueur.

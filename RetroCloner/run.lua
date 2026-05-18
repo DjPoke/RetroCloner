@@ -1255,6 +1255,8 @@ function run.update(dt)
 		end
 		
 		-- move enemies
+		local player_number = run.vars.level_actors[1].number
+		
 		for i = 2, #run.vars.level_actors do
 			if run.vars.enemy_health[i] > 0 then
 				local actor_number = run.vars.level_actors[i].number
@@ -1688,6 +1690,8 @@ function run.update(dt)
 							moving = true
 						elseif game_data.actors[actor_number].type.name == "random 8 directions" then
 							-- TODO!
+						elseif game_data.actors[actor_number].type.name == "beat'em all fighter" then
+							-- TODO!
 						end
 
 						-- check for enemies collisions with blocks
@@ -1707,15 +1711,21 @@ function run.update(dt)
 							local collision_y = false
 							local new_dir = requested_dir
 							
+							local offset_y = math.floor((enemy_height * 3) / 4)
+							
+							if game_data.actors[player_number].type.name ~= "beat'em up" then
+								offset_y = 0
+							end
+							
 							-- check if the enemy can move or not on x axis
 							if requested_dir ~= 90 and requested_dir ~= 270 then
 								local collision = false
 								
 								new_x, collision = SlidingCollisionX(
 									new_x,
-									old_y,
+									old_y + offset_y,
 									game_data.sprite_width,
-									game_data.sprite_height,
+									game_data.sprite_height - offset_y,
 									requested_dir,
 									game_data.levels[run.vars.level],
 									game_data.block_width,
@@ -1732,9 +1742,9 @@ function run.update(dt)
 								
 								new_y, collision = SlidingCollisionY(
 									old_x,
-									new_y,
+									new_y + offset_y,
 									game_data.sprite_width,
-									game_data.sprite_height,
+									game_data.sprite_height - offset_y,
 									requested_dir,
 									game_data.levels[run.vars.level],
 									game_data.block_width,
@@ -1769,9 +1779,9 @@ function run.update(dt)
 							-- collide with corners
 							new_x, new_y = SlidingCollisionZ(
 								new_x,
-								new_y,
+								new_y + offset_y,
 								game_data.sprite_width,
-								game_data.sprite_height,
+								game_data.sprite_height - offset_y,
 								requested_dir,
 								game_data.levels[run.vars.level],
 								game_data.block_width,
@@ -3062,15 +3072,15 @@ function DrawActors(i, actor_number, px, py)
 		local flip_offset_y = 0
 		
 		if game_data.actors[actor_number].entity == ENTITY_TYPE_ENEMY then
-			--draw monsters
+			-- draw enemies
 			local scale = game_data.actors[actor_number].type.scale
 			
 			love.graphics.draw(img_sprites[sprite], px + xc, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM * scale, WINDOW_ZOOM * scale)
 		elseif game_data.actors[actor_number].entity == ENTITY_TYPE_BONUS then
-			--draw bonus
+			-- draw bonus
 			love.graphics.draw(img_sprites[sprite], px + xc, py + yc, 0, game_data.pixel_size * WINDOW_ZOOM, WINDOW_ZOOM)
 		else
-			-- what kind of player ? (TODO!)
+			-- draw all kinds of player (TODO!)
 			local scale = game_data.actors[actor_number].type.scale
 			
 			if game_data.actors[actor_number].type.name == "platformer" then
