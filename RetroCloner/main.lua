@@ -880,7 +880,7 @@ function love.draw()
 		love.graphics.print("[A]dd a block - [C]opy block - [P]aste block - [Del]ete block - [T]ype", 10, 680)
 		love.graphics.print("[F1] Flip horizontally - [F2] Flip vertically - [F]ill", 10, 700)
 		love.graphics.print("[Tab] Change pen - [Mouse] Move - [LClick] Draw - [RClick] Clear", 10, 720)
-		love.graphics.print("[PgDown] Previous block - [PgUp] Next block", 10, 740)
+		love.graphics.print("[PageDown] Previous block - [PageUp] Next block", 10, 740)
 		love.graphics.print("[Esc] Back", 10, 760)
 	elseif mode == MODE_EDIT_SPRITES then
 		-- draw title
@@ -933,7 +933,7 @@ function love.draw()
 		love.graphics.print("[A]dd a sprite - [C]opy sprite - [P]aste sprite - [Del]ete sprite", 10, 680)
 		love.graphics.print("[F1] Flip horizontally - [F2] Flip vertically - [F]ill", 10, 700)
 		love.graphics.print("[Tab] Change pen - [Mouse] Move - [LClick] Draw - [RClick] Clear", 10, 720)
-		love.graphics.print("[PgDown] Previous sprite - [PgUp] Next sprite", 10, 740)
+		love.graphics.print("[PageDown] Previous sprite - [PageUp] Next sprite", 10, 740)
 		love.graphics.print("[Esc] Back", 10, 760)
 	elseif mode == MODE_EDIT_ANIMATIONS then
 		-- draw title
@@ -1007,7 +1007,7 @@ function love.draw()
 		love.graphics.print("[A]dd an animation - [C]opy animation - [P]aste animation - [Del]ete animation", 10, 660)
 		love.graphics.print("[F] Add a frame - [Backspace] Delete last frame", 10, 680)
 		love.graphics.print("[Arrows] Navigate between frames and sprites", 10, 700)
-		love.graphics.print("[PgDown] Previous animation - [PgUp] Next animation", 10, 720)
+		love.graphics.print("[PageDown] Previous animation - [PageUp] Next animation", 10, 720)
 		love.graphics.print("[L]oop On/Off - [F1-F2] Set loop limits - [Space] Play current animation", 10, 740)
 		love.graphics.print("[Esc] Back", 10, 760)
 	elseif mode == MODE_EDIT_ACTORS then
@@ -1029,9 +1029,13 @@ function love.draw()
 				-- show animation's names list
 				for i = 1, #player_animations[current_player_type] do
 					love.graphics.setColor(0, 1, 1)
-					if current_property == i then love.graphics.setColor(1, 1, 0) end
+					
+					if current_property == i then
+						love.graphics.setColor(1, 1, 0)
+						love.graphics.print(player_animations[current_player_type][i].infos, 10, 660)
+					end
 
-					local k = player_animations[current_player_type][i]
+					local k = player_animations[current_player_type][i].parameter
 					local v = game_data.actors[current_actor].type[k]
 
 					if string.sub(k, 1, 13) ~= "collision_box" then
@@ -1046,9 +1050,13 @@ function love.draw()
 				-- show animation's names list
 				for i = 1, #enemy_animations[current_enemy_type] do
 					love.graphics.setColor(0, 1, 1)
-					if current_property == i then love.graphics.setColor(1, 1, 0) end
+					
+					if current_property == i then
+						love.graphics.setColor(1, 1, 0)
+						love.graphics.print(enemy_animations[current_enemy_type][i].infos, 10, 660)
+					end
 
-					local k = enemy_animations[current_enemy_type][i]
+					local k = enemy_animations[current_enemy_type][i].parameter
 					local v = game_data.actors[current_actor].type[k]
 
 					if string.sub(k, 1, 13) ~= "collision_box" then
@@ -1063,9 +1071,13 @@ function love.draw()
 				-- show animation's names list
 				for i = 1, #bonus_animations[current_bonus_type] do
 					love.graphics.setColor(0, 1, 1)
-					if current_property == i then love.graphics.setColor(1, 1, 0) end
+					
+					if current_property == i then
+						love.graphics.setColor(1, 1, 0)
+						love.graphics.print(bonus_animations[current_bonus_type][i].infos, 10, 660)
+					end
 
-					local k = bonus_animations[current_bonus_type][i]
+					local k = bonus_animations[current_bonus_type][i].parameter
 					local v = game_data.actors[current_actor].type[k]
 
 					if string.sub(k, 1, 13) ~= "collision_box" then
@@ -1084,7 +1096,7 @@ function love.draw()
 		love.graphics.setColor(0, 1, 1)
 		love.graphics.print("[A]dd actor - [Del]ete actor - [Tab] Change entity kind - [T] Select type", 10, 700)
 		love.graphics.print("[Up][Down] Change parameter - [Left][Right][Shift] Change value", 10, 720)
-		love.graphics.print("[PgDown] Previous actor - [PgUp] Next actor", 10, 740)
+		love.graphics.print("[PageDown] Previous actor - [PageUp] Next actor", 10, 740)
 		love.graphics.print("[Esc] Back", 10, 760)
 	elseif mode == MODE_EDIT_LEVELS then
 		-- draw title
@@ -1252,7 +1264,7 @@ function love.draw()
 
 		-- draw shortcuts
 		love.graphics.setColor(0, 1, 1)
-		love.graphics.print("[PgUp][PgDown] Change parameters page - [Up][Down] Change selected parameter", 10, 720)
+		love.graphics.print("[PageUp][PageDown] Change parameters page - [Up][Down] Change selected parameter", 10, 720)
 		love.graphics.print("[Left][Right] Change value of the parameter", 10, 740)
 		love.graphics.print("[Esc] Back", 10, 760)
 	elseif mode == MODE_IMPORT_SOUNDS then
@@ -2171,7 +2183,7 @@ function love.keypressed(key, scancode, isrepeat)
 
 				for i = 1, steps do
 					if current_entity_type == ENTITY_TYPE_PLAYER then
-						local anim = player_animations[current_player_type][current_property]
+						local anim = player_animations[current_player_type][current_property].parameter
 						
 						if anim == "hflip" then
 							game_data.actors[current_actor].type.hflip = not game_data.actors[current_actor].type.hflip
@@ -2205,13 +2217,13 @@ function love.keypressed(key, scancode, isrepeat)
 							if game_data.actors[current_actor].type.collision_box2 > 1 then
 								game_data.actors[current_actor].type.collision_box2 = math.floor(game_data.actors[current_actor].type.collision_box2 / 2)
 							end
-						elseif game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] > 0 then
-							game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] = game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] - 1
-						elseif game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] == 0 then
-							game_data.actors[current_actor].type[player_animations[current_player_type][current_property]] = game_data.max_animations
+						elseif game_data.actors[current_actor].type[player_animations[current_player_type][current_property].parameter] > 0 then
+							game_data.actors[current_actor].type[player_animations[current_player_type][current_property].parameter] = game_data.actors[current_actor].type[player_animations[current_player_type][current_property].parameter] - 1
+						elseif game_data.actors[current_actor].type[player_animations[current_player_type][current_property].parameter] == 0 then
+							game_data.actors[current_actor].type[player_animations[current_player_type][current_property].parameter] = game_data.max_animations
 						end
 					elseif current_entity_type == ENTITY_TYPE_ENEMY then
-						local anim = enemy_animations[current_enemy_type][current_property]
+						local anim = enemy_animations[current_enemy_type][current_property].parameter
 						
 						if anim == "bonus" then
 							if love.keyboard.isDown("lshift") == true then
@@ -2257,13 +2269,13 @@ function love.keypressed(key, scancode, isrepeat)
 							if game_data.actors[current_actor].type.steps > 1 then
 								game_data.actors[current_actor].type.steps = game_data.actors[current_actor].type.steps - 1
 							end
-						elseif game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] > 0 then
-							game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] = game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] - 1
-						elseif game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] == 0 then
-							game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property]] = game_data.max_animations
+						elseif game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property].parameter] > 0 then
+							game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property].parameter] = game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property].parameter] - 1
+						elseif game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property].parameter] == 0 then
+							game_data.actors[current_actor].type[enemy_animations[current_enemy_type][current_property].parameter] = game_data.max_animations
 						end
 					elseif current_entity_type == ENTITY_TYPE_BONUS then
-						local anim = bonus_animations[current_bonus_type][current_property]
+						local anim = bonus_animations[current_bonus_type][current_property].parameter
 						
 						if anim == "bonus" then
 							if love.keyboard.isDown("lshift") == true then
@@ -2279,10 +2291,10 @@ function love.keypressed(key, scancode, isrepeat)
 							if game_data.actors[current_actor].type.collision_box_y > 1 then
 								game_data.actors[current_actor].type.collision_box_y = math.floor(game_data.actors[current_actor].type.collision_box_y / 2)
 							end
-						elseif game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] > 0 then
-							game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] = game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] - 1
-						elseif game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] == 0 then
-							game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property]] = game_data.max_animations
+						elseif game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property].parameter] > 0 then
+							game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property].parameter] = game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property].parameter] - 1
+						elseif game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property].parameter] == 0 then
+							game_data.actors[current_actor].type[bonus_animations[current_bonus_type][current_property].parameter] = game_data.max_animations
 						end
 					end
 				end
@@ -2297,7 +2309,7 @@ function love.keypressed(key, scancode, isrepeat)
 
 				for i = 1, steps do
 					if current_entity_type == ENTITY_TYPE_PLAYER then
-						local anim = player_animations[current_player_type][current_property]
+						local anim = player_animations[current_player_type][current_property].parameter
 						
 						if anim == "hflip" then
 							game_data.actors[current_actor].type.hflip = not game_data.actors[current_actor].type.hflip
@@ -2337,7 +2349,7 @@ function love.keypressed(key, scancode, isrepeat)
 							game_data.actors[current_actor].type[anim] = 0
 						end
 					elseif current_entity_type == ENTITY_TYPE_ENEMY then
-						local anim = enemy_animations[current_enemy_type][current_property]
+						local anim = enemy_animations[current_enemy_type][current_property].parameter
 						
 						if anim == "bonus" then
 							if love.keyboard.isDown("lshift") == true then
@@ -2387,7 +2399,7 @@ function love.keypressed(key, scancode, isrepeat)
 							game_data.actors[current_actor].type[anim] = 0
 						end
 					elseif current_entity_type == ENTITY_TYPE_BONUS then
-						local anim = bonus_animations[current_bonus_type][current_property]
+						local anim = bonus_animations[current_bonus_type][current_property].parameter
 						
 						if anim == "bonus" then
 							if love.keyboard.isDown("lshift") == true then
@@ -2431,6 +2443,8 @@ function love.keypressed(key, scancode, isrepeat)
 				current_entity_type = game_data.actors[current_actor].entity
 
 				FindCurrentEntityType(game_data)
+
+				current_property = 1
 			end
 		elseif key == "pageup" then
 			-- edit next actor
@@ -2452,6 +2466,8 @@ function love.keypressed(key, scancode, isrepeat)
 				current_entity_type = game_data.actors[current_actor].entity
 
 				FindCurrentEntityType(game_data)
+
+				current_property = 1
 			end
 		elseif key == "escape" then
 			mode = MODE_MENU
