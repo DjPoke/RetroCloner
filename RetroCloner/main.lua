@@ -760,11 +760,10 @@ function love.draw()
 			love.graphics.setColor(0, 1, 1)
 			love.graphics.print("Pen " .. tostring(selected_color) .. " Ink " .. tostring(game_data.pens_palette[selected_color + 1]), 540, 220)
 
-			love.graphics.print("Use mouse wheel to change colors.", 350, 260)
+			love.graphics.print("Click on a pen. Use mouse wheel to change colors.", 250, 260)
 			love.graphics.print("You can use shift or control to quickly change it.", 250, 280)
 
 			-- draw shortcuts
-			love.graphics.print("[Left][Right] Change the pen [Up][Down] Change ink color", 10, 740)
 			love.graphics.print("[Esc] Back", 10, 760)
 		end
 	elseif mode == MODE_EDIT_SCREEN then
