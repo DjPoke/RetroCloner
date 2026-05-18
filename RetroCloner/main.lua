@@ -175,12 +175,29 @@ game_data = {
 		gravity = 0,
 		jump_power = 0
 	},
-	sounds = { player = {walk = "-", run = "-", jump = "-", hit = "-", fire1 = "-", fire2 = "-", jump = "-", kick = "-", jumping_kick = "-", wounded = "-", die = "-"},
-			   enemies = {walk = "-", fire = "-", wounded ="-", die = "-"},
-			   bonus = {points = "-", lives = "-", health = "-", invincible = "-"}
+	sounds = {
+		player_walk = "-",
+		player_run = "-",
+		player_jump = "-",
+		player_hit = "-",
+		player_fire1 = "-",
+		player_fire2 = "-",
+		player_punch = "-",
+		player_kick = "-",
+		player_jumping_kick = "-",
+		player_wounded = "-",
+		player_die = "-",
+		enemy_walk = "-",
+		enemy_fire = "-",
+		enemy_wounded ="-",
+		enemy_die = "-",
+		bonus_points = "-",
+		bonus_lives = "-",
+		bonus_health = "-",
+		bonus_invincible = "-"
 	},
-	musics = { intro = "-", in_game = "-", winner = "-", game_over = "-" },
-	images = { intro = "-", interface = "-", winner = "-", game_over = "-", interlude = "-" }
+	musics = {intro = "-", in_game = "-", winner = "-", game_over = "-"},
+	images = {intro = "-", interface = "-", winner = "-", game_over = "-", interlude = "-"}
 }
 
 -- Game Data limits
@@ -792,12 +809,12 @@ function love.draw()
 			end
 		end
 		
-		-- draw shortcuts
+		-- draw informations
 		love.graphics.setFont(EDITOR_FONT)
 		love.graphics.setColor(0, 1, 1)
 		local infos = "No area selected!"
 
-		if area_selected > 0 then
+		if area_selected > 0 then			
 			infos = tostring(game_data.areas[area_selected].x) .. "," .. tostring(game_data.areas[area_selected].y) .. " - " .. tostring(game_data.areas[area_selected].width) .. "," .. tostring(game_data.areas[area_selected].height)
 		end
 		
@@ -805,6 +822,13 @@ function love.draw()
 		local r, g, b = GetPenRGB(game_data.border_paper)
 		love.graphics.setColor(r, g, b)
 		love.graphics.print("Border color: " .. tostring(game_data.border_paper), 500, 500)
+		
+		if area_selected == GAME_AREA then
+			love.graphics.setColor(1, 0, 0)
+			love.graphics.print("Warning! Resizing game area must be done before levels design!", 150, 680)
+		end
+	
+		-- draw shortcuts
 		love.graphics.setColor(0, 1, 1)
 		love.graphics.print("[Tab] Select area to edit - [Left-Click] Position - [Right-Click] Resize", 10, 720)
 		love.graphics.print("[F1-F7] Change colors - [H] Set health on/off", 10, 740)

@@ -67,9 +67,26 @@ function ResetAll()
 	block_too_many_color = false
 	sprite_too_many_color = false
 	
-	game_data.sounds = {player = {walk = "-", run = "-", jump = "-", hit = "-", fire1 = "-", fire2 = "-", jump = "-", kick = "-", jumping_kick = "-", wounded = "-", die = "-"},
-			   enemies = {walk = "-", fire = "-", wounded ="-", die = "-"},
-			   bonus = {points = "-", lives = "-", health = "-", invincible = "-"}
+	game_data.sounds = {
+		player_walk = "-",
+		player_run = "-",
+		player_jump = "-",
+		player_hit = "-",
+		player_fire1 = "-",
+		player_fire2 = "-",
+		player_punch = "-",
+		player_kick = "-",
+		player_jumping_kick = "-",
+		player_wounded = "-",
+		player_die = "-",
+		enemy_walk = "-",
+		enemy_fire = "-",
+		enemy_wounded ="-",
+		enemy_die = "-",
+		bonus_points = "-",
+		bonus_lives = "-",
+		bonus_health = "-",
+		bonus_invincible = "-"
 	}
 	game_data.musics = {intro = "-", in_game = "-", winner = "-", game_over = "-"}
 	game_data.images = {intro = "-", interface = "-", winner = "-", game_over = "-", interlude = "-"}
